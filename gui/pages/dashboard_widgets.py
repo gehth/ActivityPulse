@@ -3,7 +3,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QProgressBar, QToolTip, QSpinBox, QDialog, QDialogButtonBox, QPushButton
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QRectF
 from PyQt5.QtGui import QPainter, QColor, QFont, QBrush, QPen
-from gui.themes import get_colors, apply_card_shadow, AnimatedCard
+from gui.themes import get_colors, apply_card_shadow, AnimatedCard, QSS_STYLES
 from utils.time_utils import format_minutes, format_duration
 import re
 
@@ -537,8 +537,8 @@ class IdleTimeCard(AnimatedCard):
     def _apply_styles(self) -> None:
         """应用QSS样式表"""
         colors = get_colors("dark" if self._is_dark else "light")
-        self.total_label.setStyleSheet(f"font-size: 13px; color: {colors['text_secondary']};")
-        self.longest_label.setStyleSheet(f"font-size: 13px; color: {colors['text_secondary']};")
+        self.total_label.setStyleSheet(QSS_STYLES["secondary_text"].format(c=colors))
+        self.longest_label.setStyleSheet(QSS_STYLES["secondary_text"].format(c=colors))
 
     def set_idle_data(self, idle_summary: dict) -> None:
         """设置空闲时间数据"""
@@ -573,7 +573,7 @@ class IdleTimeCard(AnimatedCard):
 
             if len(self._idle_periods) > 5:
                 more = QLabel(f"  ...还有 {len(self._idle_periods) - 5} 段")
-                more.setStyleSheet(f"font-size: 11px; color: {colors['text_muted']};")
+                more.setStyleSheet(QSS_STYLES["small_text"].format(c=colors))
                 self.periods_container.addWidget(more)
         else:
             self.no_idle_label.show()
@@ -624,14 +624,14 @@ class WeekCompareCard(AnimatedCard):
         this_indicator = QLabel("■")
         this_indicator.setStyleSheet(f"color: {colors['primary']}; font-size: 12px;")
         this_legend = QLabel("本周")
-        this_legend.setStyleSheet(f"font-size: 11px; color: {colors['text_secondary']};")
+        this_legend.setStyleSheet(QSS_STYLES["small_text"].format(c=colors))
         legend_row.addWidget(this_indicator)
         legend_row.addWidget(this_legend)
 
         last_indicator = QLabel("■")
         last_indicator.setStyleSheet(f"color: {colors['border']}; font-size: 12px;")
         last_legend = QLabel("上周")
-        last_legend.setStyleSheet(f"font-size: 11px; color: {colors['text_secondary']};")
+        last_legend.setStyleSheet(QSS_STYLES["small_text"].format(c=colors))
         legend_row.addWidget(last_indicator)
         legend_row.addWidget(last_legend)
         legend_row.addStretch()
@@ -680,7 +680,7 @@ class WeekCompareCard(AnimatedCard):
             )
             colors = get_colors("dark" if self._is_dark else "light")
             color = colors['success'] if is_up else colors['danger']
-            self._summary_label.setStyleSheet(f"color: {color}; font-size: 12px;")
+            self._summary_label.setStyleSheet(QSS_STYLES["muted_text"].format(c=colors))
         else:
             self._summary_label.setText(f"本周 {this_str}（上周无数据）")
 
@@ -699,14 +699,14 @@ class WeekCompareCard(AnimatedCard):
         this_indicator = QLabel("■")
         this_indicator.setStyleSheet(f"color: {colors['primary']}; font-size: 12px;")
         this_legend = QLabel("本周")
-        this_legend.setStyleSheet(f"font-size: 11px; color: {colors['text_secondary']};")
+        this_legend.setStyleSheet(QSS_STYLES["small_text"].format(c=colors))
         self._legend_row.addWidget(this_indicator)
         self._legend_row.addWidget(this_legend)
 
         last_indicator = QLabel("■")
         last_indicator.setStyleSheet(f"color: {colors['bg_sidebar_hover']}; font-size: 12px;")
         last_legend = QLabel("上周")
-        last_legend.setStyleSheet(f"font-size: 11px; color: {colors['text_secondary']};")
+        last_legend.setStyleSheet(QSS_STYLES["small_text"].format(c=colors))
         self._legend_row.addWidget(last_indicator)
         self._legend_row.addWidget(last_legend)
         self._legend_row.addStretch()

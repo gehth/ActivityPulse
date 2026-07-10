@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTime, pyqtSignal
 
 from database.db_manager import DatabaseManager
-from gui.themes import get_colors
+from gui.themes import get_colors, QSS_STYLES
 
 # 预定义标签颜色
 TAG_COLORS = [
@@ -56,7 +56,7 @@ class TagItemWidget(QFrame):
         info_layout.setSpacing(2)
 
         tag_label = QLabel(tag_data.get("tag", ""))
-        tag_label.setStyleSheet("font-weight: bold; font-size: 13px;")
+        tag_label.setStyleSheet(f"font-weight: bold; font-size: 13px; color: {colors['text_primary']};")
         layout_tag = tag_label  # keep reference
         info_layout.addWidget(tag_label)
 
@@ -67,7 +67,7 @@ class TagItemWidget(QFrame):
         detail_parts = [p for p in [time_str, note] if p]
         detail_text = " | ".join(detail_parts) if detail_parts else "无备注"
         detail_label = QLabel(detail_text)
-        detail_label.setStyleSheet("font-size: 11px;")
+        detail_label.setStyleSheet(QSS_STYLES["small_text"].format(c=colors))
         info_layout.addWidget(detail_label)
 
         layout.addLayout(info_layout, 1)
@@ -138,7 +138,7 @@ class AddTagDialog(QDialog):
 
         # 日期显示
         date_label = QLabel(f"📅 {self._date}")
-        date_label.setStyleSheet(f"color: {colors['text_secondary']}; font-size: 12px;")
+        date_label.setStyleSheet(QSS_STYLES["muted_text"].format(c=colors))
         layout.addWidget(date_label)
 
         # 标签名
@@ -388,7 +388,7 @@ class ActivityTagDialog(QDialog):
         # 空状态
         self._empty_label = QLabel("暂无标签，点击右上角添加")
         self._empty_label.setAlignment(Qt.AlignCenter)
-        self._empty_label.setStyleSheet(f"color: {colors['text_muted']}; font-size: 13px; padding: 40px;")
+        self._empty_label.setStyleSheet(QSS_STYLES["body_text"].format(c=colors) + " padding: 40px;")
         layout.addWidget(self._empty_label)
 
         # 关闭按钮

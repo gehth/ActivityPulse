@@ -47,6 +47,48 @@ COLORS = {
 }
 
 
+# ── QSS 样式片段常量 ──────────────────────────────────────────
+# 高频重复的CSS属性组合，供各组件setStyleSheet引用
+# 用法: widget.setStyleSheet(QSS_STYLES["section_title"].format(c=colors))
+
+QSS_STYLES = {
+    # 排版
+    "section_title": "font-size: 15px; font-weight: bold; color: {c[text_primary]};",
+    "section_desc": "font-size: 12px; color: {c[text_muted]};",
+    "metric_title": "font-size: 13px; color: {c[text_secondary]};",
+    "metric_value": "font-size: 28px; font-weight: bold; color: {c[text_primary]}; font-family: \"Consolas\", \"Microsoft YaHei\", monospace;",
+    "metric_change_up": "font-size: 12px; color: {c[success]}; font-family: \"Consolas\", monospace;",
+    "metric_change_down": "font-size: 12px; color: {c[danger]}; font-family: \"Consolas\", monospace;",
+    "body_text": "font-size: 13px; color: {c[text_primary]}; line-height: 1.5;",
+    "secondary_text": "font-size: 12px; color: {c[text_secondary]};",
+    "muted_text": "font-size: 12px; color: {c[text_muted]};",
+    "small_text": "font-size: 11px; color: {c[text_muted]};",
+
+    # 边框/圆角
+    "card_border": "border: 1px solid {c[border]}; border-radius: 8px;",
+    "input_border": "border: 1px solid {c[border]}; border-radius: 6px;",
+    "pill_border": "border-radius: 12px;",
+
+    # 按钮
+    "btn_outline": "background: transparent; border: 1px solid {c[border]}; color: {c[text_secondary]}; border-radius: 6px; padding: 4px 12px;",
+    "btn_outline_hover": "border-color: {c[primary]}; color: {c[primary]}; background-color: {c[primary_light]};",
+    "btn_primary_sm": "background-color: {c[primary]}; color: white; border: none; border-radius: 6px; padding: 4px 12px; font-size: 12px;",
+    "btn_danger_sm": "background-color: {c[danger]}; color: white; border: none; border-radius: 6px; padding: 4px 12px; font-size: 12px;",
+
+    # 标签/徽章
+    "badge": "font-size: 11px; padding: 2px 8px; border-radius: 4px;",
+    "badge_primary": "font-size: 11px; padding: 2px 8px; border-radius: 12px; background-color: {c[primary_light]}; color: {c[primary]};",
+    "badge_danger": "font-size: 11px; padding: 2px 8px; border-radius: 12px; background-color: {c[danger_light]}; color: {c[danger]};",
+    "badge_success": "font-size: 11px; padding: 2px 8px; border-radius: 12px; background-color: {c[primary_light]}; color: {c[success]};",
+
+    # 色块
+    "color_dot": "width: 12px; height: 12px; border-radius: 6px;",
+
+    # 分隔
+    "divider": "background-color: {c[border]}; max-height: 1px; margin: 8px 0;",
+}
+
+
 def get_theme_qss(theme: str = "light") -> str:
     """获取主题QSS样式表"""
     c = COLORS[theme]
