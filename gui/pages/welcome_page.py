@@ -24,6 +24,7 @@ class WelcomePage(QWidget):
         self._setup_ui()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         layout = QVBoxLayout(self)
         layout.setContentsMargins(60, 40, 60, 40)
         layout.setSpacing(24)

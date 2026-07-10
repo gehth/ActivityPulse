@@ -24,6 +24,7 @@ class ThumbnailLoadWorker(QThread):
         self._cancelled = False
 
     def run(self) -> None:
+        """执行任务"""
         for path in self._paths:
             if self._cancelled:
                 break
@@ -40,6 +41,7 @@ class ThumbnailLoadWorker(QThread):
                     pass
 
     def cancel(self) -> None:
+        """取消操作"""
         self._cancelled = True
 
 
@@ -69,6 +71,7 @@ class ScreenshotThumbnail(QFrame):
         self._setup_ui()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         layout = QVBoxLayout(self)
         layout.setContentsMargins(6, 6, 6, 6)
         layout.setSpacing(4)
@@ -134,6 +137,7 @@ class ScreenshotThumbnail(QFrame):
             self.clicked.emit(self._file_path, self._image_list, self._index)
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
 
 
@@ -152,6 +156,7 @@ class ScreenshotsPage(QWidget):
         self._setup_ui()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QScrollArea.NoFrame)

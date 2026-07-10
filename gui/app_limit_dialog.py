@@ -28,6 +28,7 @@ class AppLimitDialog(QDialog):
         self._load_limits()
     
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         layout = QVBoxLayout(self)
         layout.setSpacing(16)
         layout.setContentsMargins(24, 24, 24, 24)

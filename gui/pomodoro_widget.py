@@ -78,6 +78,7 @@ class PomodoroWidget(QWidget):
             pass
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         self.setFixedSize(280, 380)
         self.setObjectName("pomodoro_widget")
 
@@ -620,6 +621,7 @@ class PomodoroDialog(QFrame):
         self.setStyleSheet(self._get_qss(is_dark))
 
     def _get_qss(self, is_dark: bool) -> str:
+        """获取当前QSS样式表"""
         if is_dark:
             return """
                 #pomodoro_dialog {

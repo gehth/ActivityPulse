@@ -63,12 +63,14 @@ class TimelineWidget(QWidget):
         self.customContextMenuRequested.connect(self._show_context_menu)
 
     def set_blocks(self, blocks: list, is_dark: bool = False, idle_blocks: list = None) -> None:
+        """设置时间轴色块数据"""
         self.blocks = blocks
         self.idle_blocks = idle_blocks or []
         self._is_dark = is_dark
         self.update()
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         colors = get_colors("dark" if self._is_dark else "light")
@@ -192,6 +194,7 @@ class TimelineWidget(QWidget):
         painter.end()
 
     def mouseMoveEvent(self, event) -> None:
+        """鼠标移动事件重写"""
         margin_left = 55
         margin_top = 30
         margin_right = 20
@@ -347,6 +350,7 @@ class TimelineWidget(QWidget):
         layout.addWidget(split_time_label)
 
         def update_split_label(val) -> None:
+            """更新拆分标签显示"""
             pct = val / 100.0
             split_hour = block.start_hour + block.duration_hours * pct
             sh = int(split_hour)
@@ -384,6 +388,7 @@ class TimelinePage(QWidget):
         self._setup_ui()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QScrollArea.NoFrame)
@@ -584,6 +589,7 @@ class TimelinePage(QWidget):
         return idle_blocks
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         self.timeline_widget._is_dark = is_dark
         self.timeline_widget.update()

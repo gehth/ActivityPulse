@@ -105,6 +105,7 @@ class CategoriesPage(QWidget):
         self.db.save_config("custom_categories", json.dumps(self._custom_categories, ensure_ascii=False))
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QScrollArea.NoFrame)
@@ -440,6 +441,7 @@ class CategoriesPage(QWidget):
         QMessageBox.information(self, "提示", f"分类 \"{name}\" 已添加")
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
 
     def _on_open_limit_dialog(self) -> None:

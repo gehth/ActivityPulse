@@ -182,6 +182,7 @@ class MainWindow(QMainWindow):
             logging.exception("自动清理失败")
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         central = QWidget()
         self.setCentralWidget(central)
         main_layout = QHBoxLayout(central)
@@ -499,6 +500,7 @@ class MainWindow(QMainWindow):
             self._stop_monitoring()
 
     def _start_monitoring(self) -> None:
+        """启动所有监控器"""
         try:
             self.app_monitor.start()
             self.input_monitor.start()
@@ -511,6 +513,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "错误", f"启动监控失败: {e}")
 
     def _stop_monitoring(self) -> None:
+        """停止所有监控器"""
         try:
             self.app_monitor.stop()
             self.input_monitor.stop()

@@ -42,6 +42,7 @@ class MetricCard(AnimatedCard):
         self._anim_overshoot = 0.0
 
     def set_value(self, value: str, change: str = "", is_up: bool = True) -> None:
+        """设置显示值"""
         # 解析数字部分做动画
         match = re.match(r'([^\d]*)(\d+\.?\d*)(.*)', value)
         if match:
@@ -113,12 +114,14 @@ class HeatmapWidget(QWidget):
         self._margin_top = 25
 
     def set_data(self, data: dict, raw_seconds: dict = None, is_dark: bool = False) -> None:
+        """设置数据并更新显示"""
         self.data = data
         self.raw_seconds = raw_seconds or {}
         self._is_dark = is_dark
         self.update()
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
@@ -184,6 +187,7 @@ class HeatmapWidget(QWidget):
         QToolTip.hideText()
 
     def sizeHint(self) -> "QSize":
+        """返回组件推荐尺寸"""
         return self.minimumSizeHint()
 
 
@@ -255,6 +259,7 @@ class GoalProgressCard(AnimatedCard):
         self._apply_styles()
 
     def _apply_styles(self) -> None:
+        """应用QSS样式表"""
         colors = get_colors("dark" if self._is_dark else "light")
         self.goal_btn.setStyleSheet(f"""
             QPushButton {{
@@ -315,6 +320,7 @@ class GoalProgressCard(AnimatedCard):
         dialog, spin, btn_box = self._build_goal_dialog(colors)
 
         def on_accept() -> None:
+            """对话框确认回调"""
             new_val = spin.value()
             self._goal_minutes = new_val
             if self.db:
@@ -412,6 +418,7 @@ class GoalProgressCard(AnimatedCard):
         return dialog, spin, btn_box
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         super().set_theme(is_dark)
         self._apply_styles()
@@ -428,6 +435,7 @@ class GoalRingWidget(QWidget):
         self.setFixedSize(120, 120)
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         if not self._card:
             return
         painter = QPainter(self)
@@ -527,6 +535,7 @@ class IdleTimeCard(AnimatedCard):
         self._apply_styles()
 
     def _apply_styles(self) -> None:
+        """应用QSS样式表"""
         colors = get_colors("dark" if self._is_dark else "light")
         self.total_label.setStyleSheet(f"font-size: 13px; color: {colors['text_secondary']};")
         self.longest_label.setStyleSheet(f"font-size: 13px; color: {colors['text_secondary']};")
@@ -570,6 +579,7 @@ class IdleTimeCard(AnimatedCard):
             self.no_idle_label.show()
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         super().set_theme(is_dark)
         self._apply_styles()
@@ -675,6 +685,7 @@ class WeekCompareCard(AnimatedCard):
             self._summary_label.setText(f"本周 {this_str}（上周无数据）")
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         super().set_theme(is_dark)
         # 更新图例颜色
@@ -713,6 +724,7 @@ class WeekBarWidget(QWidget):
         self.setFixedHeight(140)
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         if not self._card:
             return
         painter = QPainter(self)
@@ -840,6 +852,7 @@ class HourlyDistCard(AnimatedCard):
         self._bar_widget.update()
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         super().set_theme(is_dark)
         self._bar_widget.update()
@@ -900,11 +913,13 @@ class HourlyBarWidget(QWidget):
                 self.update()
 
     def leaveEvent(self, event) -> None:
+        """鼠标离开事件重写"""
         self._hover_hour = -1
         QToolTip.hideText()
         self.update()
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         if not self._card:
             return
         painter = QPainter(self)

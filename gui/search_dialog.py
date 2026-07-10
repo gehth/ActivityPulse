@@ -28,6 +28,7 @@ class SearchDialog(QDialog):
         self._apply_styles()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 16, 20, 16)
         layout.setSpacing(12)
@@ -136,6 +137,7 @@ class SearchDialog(QDialog):
         return filter_bar
 
     def _apply_styles(self) -> None:
+        """应用QSS样式表"""
         self._is_dark = False
         self._light_qss = """
             SearchDialog {

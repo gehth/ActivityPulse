@@ -53,6 +53,7 @@ class AlertCard(QFrame):
         self._setup_ui()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         alert = self._alert
         alert_type = alert.get("alert_type", "unknown")
         severity = alert.get("severity", "warning")
@@ -203,6 +204,7 @@ class AnomalyAlertDialog(QDialog):
         self._load_alerts()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         self.setWindowTitle("异常行为告警中心")
         self.setMinimumSize(520, 480)
         self.resize(560, 560)

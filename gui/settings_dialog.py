@@ -26,6 +26,7 @@ class BackupWorker(QThread):
         self.output_dir = output_dir
 
     def run(self) -> None:
+        """执行任务"""
         try:
             path = create_backup(self.output_dir, self.progress.emit)
             self.finished.emit(path)
@@ -44,6 +45,7 @@ class RestoreWorker(QThread):
         self.backup_path = backup_path
 
     def run(self) -> None:
+        """执行任务"""
         try:
             result = restore_backup(self.backup_path, self.progress.emit)
             self.finished.emit(result)
@@ -64,6 +66,7 @@ class SettingsDialog(QDialog):
         self._load_settings()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         layout = QVBoxLayout(self)
         layout.setSpacing(16)
         layout.setContentsMargins(24, 24, 24, 24)
@@ -720,6 +723,7 @@ class SettingsDialog(QDialog):
         self.input_hotkey.setText(DEFAULT_HOTKEY_DISPLAY)
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         colors = get_colors("dark" if is_dark else "light")
         

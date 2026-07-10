@@ -30,6 +30,7 @@ class DataLoadWorker(QThread):
         self._cancelled = False
 
     def run(self) -> None:
+        """执行数据加载任务，完成后发射result_ready信号"""
         try:
             if not self._cancelled:
                 result = self._load_func()
@@ -41,6 +42,7 @@ class DataLoadWorker(QThread):
                 self.error_occurred.emit(str(e))
 
     def cancel(self) -> None:
+        """取消数据加载任务"""
         self._cancelled = True
 
 
@@ -72,6 +74,7 @@ class MultiDataLoader(QObject):
         self._tasks[key] = load_func
 
     def start(self) -> None:
+        """启动所有数据加载任务"""
         self._results = {}
         self._errors = {}
         self._workers = []

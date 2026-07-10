@@ -33,6 +33,7 @@ class DonutChartWidget(QWidget):
         self.setMouseTracking(True)
 
     def set_data(self, data: list, is_dark: bool = False) -> None:
+        """设置数据并更新显示"""
         self.data = data
         self._is_dark = is_dark
         self._hover_index = -1
@@ -112,6 +113,7 @@ class DonutChartWidget(QWidget):
         self.update()
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         if not self.data:
             return
 
@@ -191,6 +193,7 @@ class LineChartWidget(QWidget):
         self.setMouseTracking(True)
 
     def set_data(self, data: list, is_dark: bool = False) -> None:
+        """设置数据并更新显示"""
         self.data = data
         self._is_dark = is_dark
         self._hover_index = -1
@@ -238,6 +241,7 @@ class LineChartWidget(QWidget):
         self.update()
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         if not self.data:
             return
 
@@ -352,6 +356,7 @@ class BarChartWidget(QWidget):
         self.setMouseTracking(True)
 
     def set_data(self, data: list, is_dark: bool = False) -> None:
+        """设置数据并更新显示"""
         self.data = data
         self._is_dark = is_dark
         self._hover_index = -1
@@ -393,6 +398,7 @@ class BarChartWidget(QWidget):
         self.update()
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         if not self.data:
             return
 
@@ -477,6 +483,7 @@ class InsightsPage(QWidget):
         self._setup_ui()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QScrollArea.NoFrame)
@@ -666,6 +673,7 @@ class InsightsPage(QWidget):
             self.legend_container.addWidget(label)
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         self.donut_chart._is_dark = is_dark
         self.line_chart._is_dark = is_dark

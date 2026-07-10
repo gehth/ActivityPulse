@@ -431,10 +431,12 @@ class SkeletonWidget(QWidget):
         self._timer.start(50)
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         self.update()
 
     def _animate(self) -> None:
+        """执行动画帧更新"""
         step = 0.02
         if self._increasing:
             self._opacity += step
@@ -449,6 +451,7 @@ class SkeletonWidget(QWidget):
         self.update()
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         from PyQt5.QtGui import QPainter, QColor, QBrush
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -484,10 +487,12 @@ class SkeletonWidget(QWidget):
 
 
     def hideEvent(self, event) -> None:
+        """隐藏事件重写"""
         self._timer.stop()
         super().hideEvent(event)
 
     def showEvent(self, event) -> None:
+        """显示事件重写"""
         self._timer.start(50)
         super().showEvent(event)
 
@@ -508,6 +513,7 @@ class HoverButton(QPushButton):
         self.setCursor(Qt.PointingHandCursor)
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         self._update_shadow(False)
 
@@ -526,10 +532,12 @@ class HoverButton(QPushButton):
         self._card_shadow = shadow  # 防止GC回收
 
     def enterEvent(self, event) -> None:
+        """鼠标进入事件重写"""
         self._update_shadow(True)
         super().enterEvent(event)
 
     def leaveEvent(self, event) -> None:
+        """鼠标离开事件重写"""
         self._update_shadow(False)
         super().leaveEvent(event)
 
@@ -551,6 +559,7 @@ class RippleOverlay(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
 
     def add_ripple(self, x: int, y: int) -> None:
@@ -574,6 +583,7 @@ class RippleOverlay(QWidget):
             self._timer.stop()
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         if not self._ripples:
             return
         painter = QPainter(self)
@@ -613,6 +623,7 @@ class AnimatedCard(QFrame):
         self._scale_anim = None
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         self._ripple.set_theme(is_dark)
 
@@ -651,10 +662,12 @@ class EmptyStateWidget(QWidget):
         self._description = description
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         self.update()
 
     def set_content(self, icon: str = None, title: str = None, description: str = None) -> None:
+        """设置显示内容"""
         if icon:
             self._icon = icon
         if title:
@@ -664,6 +677,7 @@ class EmptyStateWidget(QWidget):
         self.update()
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         from PyQt5.QtGui import QPainter, QColor, QFont
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)

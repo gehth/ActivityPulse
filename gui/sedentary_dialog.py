@@ -39,6 +39,7 @@ class SedentaryDialog(QDialog):
         self._play_notification_sound()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         self.setWindowTitle("久坐提醒")
         self.setFixedSize(420, 380)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)

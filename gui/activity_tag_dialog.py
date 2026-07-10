@@ -91,12 +91,14 @@ class TagItemWidget(QFrame):
         self._apply_styles()
 
     def _confirm_delete(self) -> None:
+        """确认删除对话框"""
         reply = QMessageBox.question(self, "删除标签", "确定删除此标签？",
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             self.deleted.emit(self._tag_id)
 
     def _apply_styles(self) -> None:
+        """应用QSS样式表"""
         colors = get_colors("dark" if self._is_dark else "light")
         self.setStyleSheet(f"""
             QFrame#card {{
@@ -107,6 +109,7 @@ class TagItemWidget(QFrame):
         """)
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         self._apply_styles()
 
@@ -126,6 +129,7 @@ class AddTagDialog(QDialog):
         self._setup_ui()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         colors = get_colors("dark" if self._is_dark else "light")
         self.setStyleSheet(f"background-color: {colors['bg_card']};")
 
@@ -285,6 +289,7 @@ class AddTagDialog(QDialog):
         return color_row
 
     def _select_color(self, color, idx) -> None:
+        """选择标签颜色"""
         self._selected_color = color
         colors = get_colors("dark" if self._is_dark else "light")
         for i, btn in enumerate(self._color_btns):
@@ -301,6 +306,7 @@ class AddTagDialog(QDialog):
             """)
 
     def _on_add(self) -> None:
+        """添加按钮点击回调"""
         tag = self.tag_input.text().strip()
         if not tag:
             return
@@ -331,6 +337,7 @@ class ActivityTagDialog(QDialog):
         self._load_tags()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         colors = get_colors("dark" if self._is_dark else "light")
         self.setStyleSheet(f"background-color: {colors['bg_primary']};")
 
@@ -469,4 +476,5 @@ class ActivityTagDialog(QDialog):
             self.tags_changed.emit()
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark

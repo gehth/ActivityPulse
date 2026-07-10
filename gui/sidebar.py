@@ -25,6 +25,7 @@ class StatusIndicator(QWidget):
         self._breath_timer.setInterval(50)  # 50ms刷新
 
     def set_recording(self, recording: bool) -> None:
+        """设置录制状态指示"""
         self._recording = recording
         self.update()
         if recording:
@@ -50,6 +51,7 @@ class StatusIndicator(QWidget):
         self.update()
 
     def paintEvent(self, event) -> None:
+        """绘制事件重写"""
         from PyQt5.QtGui import QPainter, QBrush
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -95,6 +97,7 @@ class NavButton(QPushButton):
         self._update_text()
 
     def _update_text(self) -> None:
+        """更新显示文本"""
         if self._collapsed:
             self.setText(self.icon_text)
             self.setToolTip(self.label_text)
@@ -107,12 +110,14 @@ class NavButton(QPushButton):
         return self._active
 
     def set_active(self, active: bool) -> None:
+        """设置激活状态"""
         self._active = active
         self.setObjectName("nav_button_active" if active else "nav_button")
         self.style().unpolish(self)
         self.style().polish(self)
 
     def set_collapsed(self, collapsed: bool) -> None:
+        """设置折叠/展开状态"""
         self._collapsed = collapsed
         self._update_text()
         if collapsed:
@@ -139,6 +144,7 @@ class Sidebar(QFrame):
         self._setup_ui()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         self.setObjectName("sidebar")
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -264,6 +270,7 @@ class Sidebar(QFrame):
         return bottom_container
 
     def _on_nav_clicked(self, index: int) -> None:
+        """导航按钮点击回调"""
         for btn in self._nav_buttons:
             btn.set_active(btn.page_index == index)
         self.page_changed.emit(index)
@@ -274,11 +281,13 @@ class Sidebar(QFrame):
             btn.set_active(btn.page_index == index)
 
     def _on_toggle_monitor(self) -> None:
+        """切换监控状态回调"""
         self._monitoring = not self._monitoring
         self._update_monitor_ui()
         self.toggle_monitor.emit(self._monitoring)
 
     def _on_toggle_privacy(self) -> None:
+        """切换隐私模式回调"""
         self._privacy_mode = not self._privacy_mode
         if self._privacy_mode:
             self.btn_privacy.setText("🔓 退出隐私")
@@ -291,6 +300,7 @@ class Sidebar(QFrame):
         self.toggle_privacy.emit(self._privacy_mode)
 
     def _update_monitor_ui(self) -> None:
+        """更新监控状态UI"""
         if self._monitoring:
             self.status_indicator.set_recording(True)
             self.btn_toggle_monitor.setText("⏸ 暂停记录")
@@ -299,6 +309,7 @@ class Sidebar(QFrame):
             self.btn_toggle_monitor.setText("▶ 开始记录")
 
     def toggle_collapse(self) -> None:
+        """切换折叠/展开状态"""
         self._collapsed = not self._collapsed
         if self._collapsed:
             self.setObjectName("sidebar_collapsed")
@@ -330,6 +341,7 @@ class Sidebar(QFrame):
         self.style().polish(self)
 
     def set_monitoring(self, monitoring: bool) -> None:
+        """设置监控运行状态"""
         self._monitoring = monitoring
         self._update_monitor_ui()
 

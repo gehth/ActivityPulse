@@ -38,6 +38,7 @@ class DashboardPage(QWidget):
         self._setup_ui()
 
     def _setup_ui(self) -> None:
+        """初始化UI界面布局和组件"""
         # 骨架屏层
         self._skeleton = SkeletonWidget(self)
         self._skeleton.setGeometry(0, 0, self.width(), self.height())
@@ -390,6 +391,7 @@ class DashboardPage(QWidget):
         return result
 
     def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
         self.heatmap._is_dark = is_dark
         self.heatmap.update()
