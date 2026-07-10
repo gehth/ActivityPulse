@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 
-from gui.themes import HoverButton
+from gui.themes import get_colors, QSS_STYLES, HoverButton
 from utils.time_utils import format_minutes
 import random
 
@@ -34,6 +34,7 @@ class SedentaryDialog(QDialog):
     def __init__(self, continuous_minutes: int, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._is_dark = False
+        self._colors = get_colors(False)
         self._continuous_minutes = continuous_minutes
         self._setup_ui()
         self._play_notification_sound()
@@ -58,22 +59,23 @@ class SedentaryDialog(QDialog):
         """创建标题和时长信息"""
         header = QVBoxLayout()
         header.setSpacing(4)
+        c = self._colors
 
-        title = QLabel("⚠️ 久坐提醒")
-        title.setStyleSheet("font-size: 20px; font-weight: bold; color: #F59E0B;")
-        title.setAlignment(Qt.AlignCenter)
-        header.addWidget(title)
+        self._title_label = QLabel("⚠️ 久坐提醒")
+        self._title_label.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {c['warning']};")
+        self._title_label.setAlignment(Qt.AlignCenter)
+        header.addWidget(self._title_label)
 
         time_text = f"您已连续使用电脑 {format_minutes(self._continuous_minutes, fmt='long')}"
-        info = QLabel(time_text)
-        info.setStyleSheet("font-size: 15px; color: #374151;")
-        info.setAlignment(Qt.AlignCenter)
-        header.addWidget(info)
+        self._info_label = QLabel(time_text)
+        self._info_label.setStyleSheet(f"font-size: 15px; color: {c['text_primary']};")
+        self._info_label.setAlignment(Qt.AlignCenter)
+        header.addWidget(self._info_label)
 
-        warning = QLabel("长时间久坐可能影响健康，建议适当休息")
-        warning.setStyleSheet("font-size: 13px; color: #6B7280;")
-        warning.setAlignment(Qt.AlignCenter)
-        header.addWidget(warning)
+        self._warning_label = QLabel("长时间久坐可能影响健康，建议适当休息")
+        self._warning_label.setStyleSheet(QSS_STYLES["metric_title"].format(c=c))
+        self._warning_label.setAlignment(Qt.AlignCenter)
+        header.addWidget(self._warning_label)
 
         return header
 
@@ -81,16 +83,18 @@ class SedentaryDialog(QDialog):
         """创建分隔线"""
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
-        sep.setStyleSheet("color: #E5E7EB;")
+        sep.setStyleSheet(f"color: {self._colors['border']};")
         return sep
 
     def _add_suggestions(self, layout: QLayout) -> None:
         """添加随机休息建议"""
-        suggest_label = QLabel("💡 休息建议")
-        suggest_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #3B82F6;")
-        layout.addWidget(suggest_label)
+        c = self._colors
+        self._suggest_label = QLabel("💡 休息建议")
+        self._suggest_label.setStyleSheet(f"font-size: 14px; font-weight: bold; color: {c['primary']};")
+        layout.addWidget(self._suggest_label)
 
         suggestions = random.sample(REST_SUGGESTIONS, min(2, len(REST_SUGGESTIONS)))
+        self._suggestion_widgets = []
         for icon, name, desc in suggestions:
             row = QHBoxLayout()
             icon_label = QLabel(icon)
@@ -101,14 +105,15 @@ class SedentaryDialog(QDialog):
             text_layout = QVBoxLayout()
             text_layout.setSpacing(2)
             name_label = QLabel(name)
-            name_label.setStyleSheet("font-size: 13px; font-weight: bold; color: #111827;")
+            name_label.setStyleSheet(f"font-size: 13px; font-weight: bold; color: {c['text_primary']};")
             text_layout.addWidget(name_label)
             desc_label = QLabel(desc)
-            desc_label.setStyleSheet("font-size: 12px; color: #6B7280;")
+            desc_label.setStyleSheet(QSS_STYLES["secondary_text"].format(c=c))
             text_layout.addWidget(desc_label)
             row.addLayout(text_layout)
             row.addStretch()
             layout.addLayout(row)
+            self._suggestion_widgets.append((icon_label, name_label, desc_label))
 
     def _create_buttons(self) -> None:
         """创建操作按钮"""
@@ -142,5 +147,20 @@ class SedentaryDialog(QDialog):
     def set_theme(self, is_dark: bool) -> None:
         """更新主题"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
+        c = self._colors
+        # 重应用标签样式
+        if hasattr(self, '_title_label'):
+            self._title_label.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {c['warning']};")
+        if hasattr(self, '_info_label'):
+            self._info_label.setStyleSheet(f"font-size: 15px; color: {c['text_primary']};")
+        if hasattr(self, '_warning_label'):
+            self._warning_label.setStyleSheet(QSS_STYLES["metric_title"].format(c=c))
+        if hasattr(self, '_suggest_label'):
+            self._suggest_label.setStyleSheet(f"font-size: 14px; font-weight: bold; color: {c['primary']};")
+        if hasattr(self, '_suggestion_widgets'):
+            for icon_label, name_label, desc_label in self._suggestion_widgets:
+                name_label.setStyleSheet(f"font-size: 13px; font-weight: bold; color: {c['text_primary']};")
+                desc_label.setStyleSheet(QSS_STYLES["secondary_text"].format(c=c))
         self.btn_snooze.set_theme(is_dark)
         self.btn_ok.set_theme(is_dark)

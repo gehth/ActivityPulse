@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt, QDate, pyqtSignal, QThread
 from PyQt5.QtGui import QPixmap
 
 from database.db_manager import DatabaseManager
-from gui.themes import get_colors, EmptyStateWidget, apply_card_shadow, AnimatedCard, HoverButton
+from gui.themes import get_colors, QSS_STYLES, EmptyStateWidget, apply_card_shadow, AnimatedCard, HoverButton
 
 
 class ThumbnailLoadWorker(QThread):
@@ -64,6 +64,7 @@ class ScreenshotThumbnail(QFrame):
         self._index = index
         self._image_list = image_list or [file_path]
         self._is_dark = False
+        self._colors = get_colors(False)
         self.setObjectName("card")
         apply_card_shadow(self)
         self.setFixedSize(200, 170)
@@ -80,21 +81,21 @@ class ScreenshotThumbnail(QFrame):
         self.thumb_label = QLabel()
         self.thumb_label.setFixedSize(188, 106)
         self.thumb_label.setAlignment(Qt.AlignCenter)
-        self.thumb_label.setStyleSheet("background-color: #E5E7EB; border-radius: 4px;")
+        self.thumb_label.setStyleSheet(f"background-color: {self._colors['border']}; border-radius: 4px;")
         self._load_thumbnail()
         layout.addWidget(self.thumb_label)
 
         # 时间
         time_label = QLabel(self._timestamp.split(" ")[1][:8] if " " in self._timestamp else self._timestamp)
         time_label.setObjectName("metric_title")
-        time_label.setStyleSheet("font-size: 11px;")
+        time_label.setStyleSheet(QSS_STYLES["small_text"].format(c=self._colors))
         layout.addWidget(time_label)
 
         # 应用名
         if self._app_name:
             app_label = QLabel(self._app_name)
             app_label.setObjectName("section_desc")
-            app_label.setStyleSheet("font-size: 10px;")
+            app_label.setStyleSheet(f"font-size: 10px; color: {self._colors['text_muted']};")
             layout.addWidget(app_label)
 
     def _load_thumbnail(self) -> str:
@@ -123,7 +124,8 @@ class ScreenshotThumbnail(QFrame):
         # 3. 加载失败显示占位
         self.thumb_label.setText("📷")
         self.thumb_label.setStyleSheet(
-            "background-color: #E5E7EB; border-radius: 4px; font-size: 32px; color: #9CA3AF;"
+            f"background-color: {self._colors['border']}; border-radius: 4px; "
+            f"font-size: 32px; color: {self._colors['text_muted']};"
         )
 
     @classmethod
@@ -139,6 +141,12 @@ class ScreenshotThumbnail(QFrame):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
+        # 重新应用缩略图占位符样式（已加载图片的不需要更新）
+        if not self.thumb_label.pixmap():
+            self.thumb_label.setStyleSheet(
+                f"background-color: {self._colors['border']}; border-radius: 4px;"
+            )
 
 
 class ScreenshotsPage(QWidget):
@@ -422,7 +430,7 @@ class ScreenshotsPage(QWidget):
         colors = get_colors(is_dark)
         date_qss = f"""
             QDateEdit {{
-                background-color: {colors['surface']};
+                background-color: {colors['bg_card']};
                 color: {colors['text_primary']};
                 border: 1px solid {colors['border']};
                 border-radius: 6px;
@@ -435,10 +443,10 @@ class ScreenshotsPage(QWidget):
             }}
             QDateEdit QCalendarWidget QToolButton {{
                 color: {colors['text_primary']};
-                background-color: {colors['surface']};
+                background-color: {colors['bg_card']};
             }}
             QDateEdit QCalendarWidget QMenu {{
-                background-color: {colors['surface']};
+                background-color: {colors['bg_card']};
                 color: {colors['text_primary']};
             }}
         """
