@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 
-from gui.themes import get_colors, HoverButton
+from gui.themes import get_colors, HoverButton, QSS_STYLES
 
 # 告警类型图标和颜色
 ALERT_TYPE_CONFIG = {
@@ -45,11 +45,17 @@ class AlertCard(QFrame):
     dismissed = pyqtSignal(int)  # alert_id
     read_clicked = pyqtSignal(int)  # alert_id
 
-    def __init__(self, alert: dict, parent: QWidget=None) -> None:
+    def __init__(self, alert: dict, is_dark: bool = False, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.alert_id = alert.get("id", 0)
         self._alert = alert
-        self._is_dark = False
+        self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
+        # 存储需在暗色模式更新时重设样式的控件引用
+        self._desc_label = None
+        self._time_label = None
+        self._read_badge = None
+        self._dismiss_btn = None
         self._setup_ui()
 
     def _setup_ui(self) -> None:
@@ -82,10 +88,10 @@ class AlertCard(QFrame):
         # 描述
         desc = alert.get("description", "")
         if desc:
-            desc_label = QLabel(desc)
-            desc_label.setWordWrap(True)
-            desc_label.setStyleSheet("font-size: 12px; color: #4B5563; line-height: 1.4;")
-            layout.addWidget(desc_label)
+            self._desc_label = QLabel(desc)
+            self._desc_label.setWordWrap(True)
+            self._desc_label.setStyleSheet(QSS_STYLES["section_desc"].format(c=self._colors))
+            layout.addWidget(self._desc_label)
 
         layout.addLayout(self._create_bottom_layout(alert))
 
@@ -107,9 +113,12 @@ class AlertCard(QFrame):
         title_layout.addWidget(sev_label)
 
         if is_read:
-            read_badge = QLabel("已读")
-            read_badge.setStyleSheet("font-size: 11px; color: #9CA3AF; border: 1px solid #D1D5DB; border-radius: 3px; padding: 1px 4px;")
-            title_layout.addWidget(read_badge)
+            self._read_badge = QLabel("已读")
+            self._read_badge.setStyleSheet(
+                f"font-size: 11px; color: {self._colors['text_muted']}; "
+                f"border: 1px solid {self._colors['border']}; border-radius: 3px; padding: 1px 4px;"
+            )
+            title_layout.addWidget(self._read_badge)
 
         return title_layout
 
@@ -119,39 +128,37 @@ class AlertCard(QFrame):
 
         detected_at = alert.get("detected_at", "")
         if detected_at:
-            time_label = QLabel(f"🕐 {detected_at}")
-            time_label.setStyleSheet("font-size: 11px; color: #9CA3AF;")
-            bottom_layout.addWidget(time_label)
+            self._time_label = QLabel(f"🕐 {detected_at}")
+            self._time_label.setStyleSheet(QSS_STYLES["small_text"].format(c=self._colors))
+            bottom_layout.addWidget(self._time_label)
 
         bottom_layout.addStretch()
 
-        dismiss_btn = QPushButton("忽略")
-        dismiss_btn.setFixedSize(60, 26)
-        dismiss_btn.setStyleSheet("""
-            QPushButton {
-                background: transparent;
-                border: 1px solid #D1D5DB;
-                border-radius: 4px;
-                color: #6B7280;
-                font-size: 11px;
-            }
-            QPushButton:hover {
-                background: #F3F4F6;
-                border-color: #9CA3AF;
-            }
-        """)
-        dismiss_btn.clicked.connect(lambda: self.dismissed.emit(self.alert_id))
-        bottom_layout.addWidget(dismiss_btn)
+        self._dismiss_btn = QPushButton("忽略")
+        self._dismiss_btn.setFixedSize(60, 26)
+        self._dismiss_btn.setStyleSheet(self._get_dismiss_btn_style())
+        self._dismiss_btn.clicked.connect(lambda: self.dismissed.emit(self.alert_id))
+        bottom_layout.addWidget(self._dismiss_btn)
 
         return bottom_layout
+
+    def _get_dismiss_btn_style(self) -> str:
+        """生成忽略按钮的QSS样式"""
+        c = self._colors
+        return (
+            f"QPushButton {{ background: transparent; border: 1px solid {c['border']}; "
+            f"border-radius: 4px; color: {c['text_secondary']}; font-size: 11px; }} "
+            f"QPushButton:hover {{ background: {c['bg_sidebar_hover']}; border-color: {c['text_muted']}; }}"
+        )
 
     def set_dark_mode(self, is_dark: bool) -> None:
         """设置暗色模式"""
         self._is_dark = is_dark
-        # 暗色模式样式覆盖
+        self._colors = get_colors(is_dark)
+        # 重新应用卡片级别样式
+        severity = self._alert.get("severity", "warning")
+        sev_cfg = SEVERITY_CONFIG.get(severity, SEVERITY_CONFIG["warning"])
         if is_dark:
-            severity = self._alert.get("severity", "warning")
-            sev_cfg = SEVERITY_CONFIG.get(severity, SEVERITY_CONFIG["warning"])
             dark_bg = {
                 "info": "#1E3A5F",
                 "warning": "#3D2E0A",
@@ -171,16 +178,28 @@ class AlertCard(QFrame):
                     margin: 4px 0px;
                 }}
             """)
-            # 更新子控件颜色
-            for child in self.findChildren(QLabel):
-                style = child.styleSheet()
-                if "color: #4B5563" in style:
-                    style = style.replace("color: #4B5563", "color: #D1D5DB")
-                if "color: #9CA3AF" in style:
-                    pass  # 保持灰色
-                if "color: #6B7280" in style:
-                    style = style.replace("color: #6B7280", "color: #9CA3AF")
-                child.setStyleSheet(style)
+        else:
+            self.setStyleSheet(f"""
+                AlertCard {{
+                    background: {sev_cfg['bg']};
+                    border: 1px solid {sev_cfg['border']};
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin: 4px 0px;
+                }}
+            """)
+        # 重新应用子控件样式（使用主题色，无需字符串替换）
+        if self._desc_label:
+            self._desc_label.setStyleSheet(QSS_STYLES["section_desc"].format(c=self._colors))
+        if self._time_label:
+            self._time_label.setStyleSheet(QSS_STYLES["small_text"].format(c=self._colors))
+        if self._read_badge:
+            self._read_badge.setStyleSheet(
+                f"font-size: 11px; color: {self._colors['text_muted']}; "
+                f"border: 1px solid {self._colors['border']}; border-radius: 3px; padding: 1px 4px;"
+            )
+        if self._dismiss_btn:
+            self._dismiss_btn.setStyleSheet(self._get_dismiss_btn_style())
 
 
 class AnomalyAlertDialog(QDialog):
@@ -225,13 +244,14 @@ class AnomalyAlertDialog(QDialog):
 
     def _create_header(self) -> None:
         """创建标题行"""
+        colors = get_colors(self._is_dark)
         header_layout = QHBoxLayout()
         title = QLabel("🚨 异常行为告警中心")
-        title.setStyleSheet("font-size: 18px; font-weight: bold;")
+        title.setStyleSheet(QSS_STYLES["dialog_title"].format(c=colors))
         header_layout.addWidget(title)
 
         self._count_label = QLabel("")
-        self._count_label.setStyleSheet("font-size: 12px; color: #6B7280;")
+        self._count_label.setStyleSheet(QSS_STYLES["secondary_text"].format(c=colors))
         header_layout.addStretch()
         header_layout.addWidget(self._count_label)
         return header_layout
@@ -269,11 +289,13 @@ class AnomalyAlertDialog(QDialog):
 
     def _create_alert_list(self) -> None:
         """创建告警列表滚动区域"""
+        colors = get_colors(self._is_dark)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        scroll.setStyleSheet("""
-            QScrollArea { border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB; }
-        """)
+        scroll.setStyleSheet(
+            f"QScrollArea {{ border: 1px solid {colors['border']}; "
+            f"border-radius: 8px; background: {colors['bg_primary']}; }}"
+        )
 
         self._list_widget = QWidget()
         self._list_layout = QVBoxLayout(self._list_widget)
@@ -317,16 +339,16 @@ class AnomalyAlertDialog(QDialog):
         if not alerts:
             hint = QLabel("✅ 暂无异常告警，一切正常！")
             hint.setAlignment(Qt.AlignCenter)
-            hint.setStyleSheet("font-size: 14px; color: #9CA3AF; padding: 40px;")
+            colors = get_colors(self._is_dark)
+            hint.setStyleSheet(f"font-size: 14px; color: {colors['text_muted']}; padding: 40px;")
             hint.setProperty("empty_hint", True)
             # 插入到stretch之前
             self._list_layout.insertWidget(0, hint)
             return
 
         for alert in alerts:
-            card = AlertCard(alert)
+            card = AlertCard(alert, is_dark=self._is_dark)
             card.dismissed.connect(self._on_dismiss)
-            card.set_dark_mode(self._is_dark)
             # 插入到stretch之前
             idx = self._list_layout.count() - 1
             self._list_layout.insertWidget(idx, card)

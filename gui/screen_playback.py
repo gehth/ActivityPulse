@@ -18,6 +18,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 
+from gui.themes import get_colors, QSS_STYLES
+
 
 class ScreenPlaybackDialog(QDialog):
     """屏幕回放对话框"""
@@ -40,6 +42,7 @@ class ScreenPlaybackDialog(QDialog):
         self._speed_index = 2  # 默认1x (SPEED_OPTIONS[2]=1.0... 不对，index 1才是1.0)
         self._speed_index = 1  # 默认1x
         self._is_dark = False
+        self._colors = get_colors(False)
 
         # 播放定时器
         self._play_timer = QTimer(self)
@@ -98,19 +101,19 @@ class ScreenPlaybackDialog(QDialog):
 
         self._title_label = QLabel("🎬 屏幕回放")
         self._title_label.setObjectName("page_title")
-        self._title_label.setStyleSheet("font-size: 14px;")
+        self._title_label.setStyleSheet("font-size: 15px; font-weight: bold;")
         top_layout.addWidget(self._title_label)
 
         top_layout.addStretch()
 
         self._count_label = QLabel("")
         self._count_label.setObjectName("metric_title")
-        self._count_label.setStyleSheet("font-size: 12px;")
+        self._count_label.setStyleSheet("font-size: 12px; font-weight: 500;")
         top_layout.addWidget(self._count_label)
 
         self._time_label = QLabel("")
         self._time_label.setObjectName("metric_title")
-        self._time_label.setStyleSheet("font-size: 12px; margin-left: 16px;")
+        self._time_label.setStyleSheet("font-size: 12px; font-weight: 500; margin-left: 16px;")
         top_layout.addWidget(self._time_label)
 
         return top_bar
@@ -126,7 +129,7 @@ class ScreenPlaybackDialog(QDialog):
         self._image_label.setAlignment(Qt.AlignCenter)
         self._image_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._image_label.setMinimumSize(640, 360)
-        self._image_label.setStyleSheet("background-color: #111827;")
+        self._image_label.setStyleSheet("background-color: #F3F4F6;")  # 浅色默认，set_theme会覆盖
         image_layout.addWidget(self._image_label)
 
         # 应用名叠加层
@@ -140,7 +143,7 @@ class ScreenPlaybackDialog(QDialog):
                 padding: 4px 12px;
                 font-size: 12px;
             }
-        """)
+        """)  # overlay白色文字在半透明黑底上，暗色模式无需变更
         self._app_overlay.setParent(self._image_label)
         self._app_overlay.move(12, 12)
         self._app_overlay.hide()
@@ -163,7 +166,7 @@ class ScreenPlaybackDialog(QDialog):
         self._start_time_label = QLabel("--:--")
         self._start_time_label.setObjectName("section_desc")
         self._start_time_label.setFixedWidth(50)
-        self._start_time_label.setStyleSheet("font-size: 11px;")
+        self._start_time_label.setStyleSheet("font-size: 11px; font-weight: 400;")
         timeline_row.addWidget(self._start_time_label)
 
         self._timeline_slider = QSlider(Qt.Horizontal)
@@ -178,7 +181,7 @@ class ScreenPlaybackDialog(QDialog):
         self._end_time_label = QLabel("--:--")
         self._end_time_label.setObjectName("section_desc")
         self._end_time_label.setFixedWidth(50)
-        self._end_time_label.setStyleSheet("font-size: 11px;")
+        self._end_time_label.setStyleSheet("font-size: 11px; font-weight: 400;")
         timeline_row.addWidget(self._end_time_label)
 
         control_layout.addLayout(timeline_row)
@@ -224,7 +227,7 @@ class ScreenPlaybackDialog(QDialog):
         # 速度控制
         speed_label = QLabel("速度：")
         speed_label.setObjectName("metric_title")
-        speed_label.setStyleSheet("font-size: 12px;")
+        speed_label.setStyleSheet("font-size: 12px; font-weight: 500;")
         play_row.addWidget(speed_label)
 
         self._btn_speed_down = QPushButton("➖")
@@ -238,7 +241,7 @@ class ScreenPlaybackDialog(QDialog):
         self._speed_label.setFixedWidth(40)
         self._speed_label.setAlignment(Qt.AlignCenter)
         self._speed_label.setObjectName("metric_title")
-        self._speed_label.setStyleSheet("font-size: 13px; font-weight: bold;")
+        self._speed_label.setStyleSheet("font-size: 14px; font-weight: bold;")
         play_row.addWidget(self._speed_label)
 
         self._btn_speed_up = QPushButton("➕")
@@ -253,7 +256,7 @@ class ScreenPlaybackDialog(QDialog):
         # 进度信息
         self._progress_label = QLabel("")
         self._progress_label.setObjectName("section_desc")
-        self._progress_label.setStyleSheet("font-size: 11px;")
+        self._progress_label.setStyleSheet("font-size: 11px; font-weight: 400;")
         play_row.addWidget(self._progress_label)
 
         # 关闭按钮
@@ -269,7 +272,7 @@ class ScreenPlaybackDialog(QDialog):
         hint_label = QLabel("空格：播放/暂停  |  ←→：切换截图  |  ↑↓：调速  |  Home/End：首尾跳转")
         hint_label.setObjectName("section_desc")
         hint_label.setAlignment(Qt.AlignCenter)
-        hint_label.setStyleSheet("font-size: 10px; color: #9CA3AF;")
+        hint_label.setStyleSheet("font-size: 10px; color: #9CA3AF;")  # muted灰色，由set_theme统一覆盖
         control_layout.addWidget(hint_label)
 
         return control_frame
@@ -301,9 +304,10 @@ class ScreenPlaybackDialog(QDialog):
         """加载当前帧截图"""
         if not self._valid_screenshots:
             self._image_label.setText("📷 没有可播放的截图")
+            img_bg = "#111827" if self._is_dark else "#F3F4F6"
             self._image_label.setStyleSheet(
-                "font-size: 48px; color: #9CA3AF; background-color: #111827; "
-                "min-width: 640px; min-height: 360px;"
+                f"font-size: 48px; color: {self._colors['text_muted']}; "
+                f"background-color: {img_bg}; min-width: 640px; min-height: 360px;"
             )
             return
 
@@ -322,6 +326,7 @@ class ScreenPlaybackDialog(QDialog):
     def _display_frame_image(self, file_path: str, thumb_path: str) -> None:
         """加载并显示帧图片（带缓存）"""
         load_path = file_path if os.path.exists(file_path) else thumb_path
+        img_bg = "#111827" if self._is_dark else "#F3F4F6"
 
         if load_path and os.path.exists(load_path):
             # 检查缓存
@@ -343,16 +348,16 @@ class ScreenPlaybackDialog(QDialog):
                     Qt.KeepAspectRatio, Qt.SmoothTransformation
                 )
                 self._image_label.setPixmap(scaled)
-                self._image_label.setStyleSheet("background-color: #111827;")
+                self._image_label.setStyleSheet(f"background-color: {img_bg};")
             else:
                 self._image_label.setText("📷 无法加载图片")
                 self._image_label.setStyleSheet(
-                    "font-size: 32px; color: #9CA3AF; background-color: #111827;"
+                    f"font-size: 32px; color: {self._colors['text_muted']}; background-color: {img_bg};"
                 )
         else:
             self._image_label.setText("📷 文件不存在")
             self._image_label.setStyleSheet(
-                "font-size: 32px; color: #9CA3AF; background-color: #111827;"
+                f"font-size: 32px; color: {self._colors['text_muted']}; background-color: {img_bg};"
             )
 
     def _update_frame_info(self, app_name: str, timestamp: str) -> None:
@@ -539,17 +544,18 @@ class ScreenPlaybackDialog(QDialog):
     def set_theme(self, is_dark: bool) -> None:
         """设置深色/浅色主题"""
         self._is_dark = is_dark
-        colors = self._get_colors(is_dark)
+        self._colors = get_colors(is_dark)
+        colors = self._colors
 
         # 图片区域背景
         img_bg = "#111827" if is_dark else "#F3F4F6"
         self._image_label.setStyleSheet(f"background-color: {img_bg};")
 
         # 控制栏样式
-        toolbar_bg = colors.get('surface', '#1F2937' if is_dark else '#FFFFFF')
-        toolbar_border = colors.get('border', '#374151' if is_dark else '#E5E7EB')
-        text_color = colors.get('text_primary', '#F9FAFB' if is_dark else '#111827')
-        text_secondary = colors.get('text_secondary', '#9CA3AF')
+        toolbar_bg = colors['bg_card']
+        toolbar_border = colors['border']
+        text_color = colors['text_primary']
+        text_secondary = colors['text_secondary']
 
         control_qss = f"""
             QFrame#toolbar {{
@@ -571,25 +577,25 @@ class ScreenPlaybackDialog(QDialog):
                 border-radius: 3px;
             }}
             QSlider#timeline_slider::handle:horizontal {{
-                background: #3B82F6;
+                background: {colors['primary']};
                 width: 16px;
                 height: 16px;
                 margin: -5px 0;
                 border-radius: 8px;
             }}
             QSlider#timeline_slider::sub-page:horizontal {{
-                background: #3B82F6;
+                background: {colors['primary']};
                 border-radius: 3px;
             }}
             QPushButton#btn_primary {{
-                background-color: #3B82F6;
+                background-color: {colors['primary']};
                 color: white;
                 border: none;
                 border-radius: 22px;
                 font-size: 18px;
             }}
             QPushButton#btn_primary:hover {{
-                background-color: #2563EB;
+                background-color: {colors['primary_hover']};
             }}
             QPushButton#btn_outline {{
                 background-color: transparent;
@@ -608,18 +614,3 @@ class ScreenPlaybackDialog(QDialog):
         """
         self.setStyleSheet(control_qss)
 
-    def _get_colors(self, is_dark: bool) -> dict:
-        """获取主题颜色"""
-        if is_dark:
-            return {
-                'surface': '#1F2937',
-                'border': '#374151',
-                'text_primary': '#F9FAFB',
-                'text_secondary': '#9CA3AF',
-            }
-        return {
-            'surface': '#FFFFFF',
-            'border': '#E5E7EB',
-            'text_primary': '#111827',
-            'text_secondary': '#6B7280',
-        }

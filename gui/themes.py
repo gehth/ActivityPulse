@@ -53,6 +53,7 @@ COLORS = {
 
 QSS_STYLES = {
     # 排版
+    "dialog_title": "font-size: 18px; font-weight: bold; color: {c[text_primary]};",
     "section_title": "font-size: 15px; font-weight: bold; color: {c[text_primary]};",
     "section_desc": "font-size: 12px; color: {c[text_muted]};",
     "metric_title": "font-size: 13px; color: {c[text_secondary]};",
