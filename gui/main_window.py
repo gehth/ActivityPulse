@@ -17,7 +17,7 @@ from database.db_manager import DatabaseManager
 from monitors.app_monitor import AppMonitor
 from monitors.input_monitor import InputMonitor
 from monitors.screen_monitor import ScreenMonitor
-from gui.themes import get_theme_qss
+from gui.themes import get_theme_qss, get_colors
 from gui.components.toolbar_builder import create_toolbar
 from gui.components.tray_manager import TrayManager
 from gui.components.check_manager import CheckManager
@@ -284,11 +284,6 @@ class MainWindow(QMainWindow):
         # 隐私遮罩层
         self.privacy_overlay = QWidget(self._content_stack)
         self.privacy_overlay.setObjectName("privacy_overlay")
-        self.privacy_overlay.setStyleSheet("""
-            #privacy_overlay {
-                background-color: rgba(239, 68, 68, 0.08);
-            }
-        """)
         self.privacy_overlay.hide()
 
         return self._content_stack
@@ -766,6 +761,13 @@ class MainWindow(QMainWindow):
         qss = get_theme_qss(self.current_theme)
         self.setStyleSheet(qss)
         is_dark = self.current_theme == "dark"
+        # 隐私遮罩使用danger色的8%透明度
+        c = get_colors(is_dark)
+        danger_hex = c['danger'].lstrip('#')
+        r, g, b = int(danger_hex[:2], 16), int(danger_hex[2:4], 16), int(danger_hex[4:6], 16)
+        self.privacy_overlay.setStyleSheet(
+            f"#privacy_overlay {{ background-color: rgba({r}, {g}, {b}, 0.08); }}"
+        )
         self.sidebar.set_theme(is_dark)
         self.btn_theme.set_theme(is_dark)
         self.dashboard_page.set_theme(is_dark)

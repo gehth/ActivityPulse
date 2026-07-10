@@ -18,6 +18,7 @@ CHART_COLORS = [
     "#3B82F6", "#10B981", "#F59E0B", "#EF4444",
     "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16",
 ]
+OTHER_COLOR = "#6B7280"  # "其他"分类颜色
 
 
 class DonutChartWidget(QWidget):
@@ -657,7 +658,7 @@ class InsightsPage(QWidget):
                     ))
 
         if other_minutes > 0:
-            chart_data.append(("其他(含敏感)", other_minutes, "#6B7280"))
+            chart_data.append(("其他(含敏感)", other_minutes, OTHER_COLOR))
 
         self.donut_chart.set_data(chart_data, self._is_dark)
 

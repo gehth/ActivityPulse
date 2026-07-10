@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt
 import json
 
 from database.db_manager import DatabaseManager
-from gui.themes import EmptyStateWidget, apply_card_shadow, AnimatedCard, HoverButton
+from gui.themes import EmptyStateWidget, apply_card_shadow, AnimatedCard, HoverButton, get_colors
 
 # 应用分类映射（从timeline_page移到公共位置避免循环导入）
 APP_CATEGORIES = {
@@ -464,8 +464,9 @@ class CategoriesPage(QWidget):
                 self.app_table.selectRow(row)
                 self.app_table.scrollToItem(item)
                 # 闪烁高亮效果
+                c = get_colors(self._is_dark)
                 self.app_table.setStyleSheet(
-                    self.app_table.styleSheet() + 
-                    f"\nQTableWidget::item:selected {{ background-color: #3B82F6; }}"
+                    self.app_table.styleSheet() +
+                    f"\nQTableWidget::item:selected {{ background-color: {c['primary']}; }}"
                 )
                 break

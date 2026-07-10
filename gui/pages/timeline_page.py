@@ -56,6 +56,7 @@ class TimelineWidget(QWidget):
         self.blocks = []
         self.idle_blocks = []  # 空闲时段色块
         self._is_dark = False
+        self._colors = get_colors(False)
         self.hovered_block = None
         self.setMouseTracking(True)
         self.setMinimumHeight(500)
@@ -67,6 +68,7 @@ class TimelineWidget(QWidget):
         self.blocks = blocks
         self.idle_blocks = idle_blocks or []
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self.update()
 
     def paintEvent(self, event: QPaintEvent) -> None:
@@ -129,7 +131,7 @@ class TimelineWidget(QWidget):
                     tx = tag_start_x - ti * (tag_size + tag_gap)
                     if tx < int(x) + 4:
                         break
-                    tag_color = QColor(tag_info.get("color", "#3B82F6"))
+                    tag_color = QColor(tag_info.get("color", self._colors["primary"]))
                     painter.setBrush(QBrush(tag_color))
                     painter.setPen(Qt.NoPen)
                     painter.drawEllipse(tx, tag_y, tag_size, tag_size)
@@ -180,13 +182,13 @@ class TimelineWidget(QWidget):
         current_hour = now.hour + now.minute / 60
         if 0 <= current_hour <= 24:
             x_now = margin_left + current_hour * hour_width
-            pen = QPen(QColor("#EF4444"))
+            pen = QPen(QColor(colors["danger"]))
             pen.setStyle(Qt.DashLine)
             pen.setWidth(2)
             painter.setPen(pen)
             painter.drawLine(int(x_now), margin_top, int(x_now), self.height())
             # 时间标签
-            painter.setPen(QColor("#EF4444"))
+            painter.setPen(QColor(colors["danger"]))
             painter.setFont(QFont("Consolas", 8))
             painter.drawText(int(x_now - 20), margin_top - 5, 40, 14,
                            Qt.AlignCenter, f"{now.hour:02d}:{now.minute:02d}")
@@ -223,7 +225,7 @@ class TimelineWidget(QWidget):
             if found.tags:
                 tag_texts = []
                 for t in found.tags:
-                    tag_texts.append(f"<span style='color:{t.get('color','#3B82F6')}'>●</span> {t.get('tag','')}")
+                    tag_texts.append(f"<span style='color:{t.get('color',self._colors['primary'])}'>●</span> {t.get('tag','')}")
                 tooltip += f"<br>标签: {' '.join(tag_texts)}"
             QToolTip.showText(event.globalPos(), tooltip)
         else:
@@ -425,7 +427,8 @@ class TimelinePage(QWidget):
 
         # 标签图例
         tag_legend = QLabel("● 活动标签")
-        tag_legend.setStyleSheet("color: #3B82F6; font-size: 12px; font-weight: bold;")
+        tag_legend.setStyleSheet(f"color: {get_colors(False)['primary']}; font-size: 12px; font-weight: bold;")
+        self._tag_legend = tag_legend
         legend_layout.addWidget(tag_legend)
         main_layout.addWidget(legend_card)
 
@@ -569,7 +572,7 @@ class TimelinePage(QWidget):
                     block.tags.append({
                         "tag": tag.get("tag", ""),
                         "note": tag.get("note", ""),
-                        "color": tag.get("color", "#3B82F6"),
+                        "color": tag.get("color", self._colors["primary"]),
                         "start_time": tag_start,
                         "end_time": tag_end,
                     })
@@ -591,8 +594,14 @@ class TimelinePage(QWidget):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        c = get_colors(is_dark)
+        self._colors = c
         self.timeline_widget._is_dark = is_dark
+        self.timeline_widget._colors = c
         self.timeline_widget.update()
+        # 更新标签图例颜色
+        if hasattr(self, '_tag_legend'):
+            self._tag_legend.setStyleSheet(f"color: {c['primary']}; font-size: 12px; font-weight: bold;")
 
     def _on_mark_sensitive(self, app_name: str) -> None:
         """标记/取消敏感应用"""

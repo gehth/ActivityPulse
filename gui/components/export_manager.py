@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from PyQt5.QtGui import QTextDocument
 from PyQt5.QtPrintSupport import QPrinter
 from utils.time_utils import format_duration
+from gui.themes import get_colors
 
 
 class ExportManager:
@@ -182,25 +183,28 @@ class ExportManager:
         scroll_count = data["scroll_count"]
         input_count = sum(input_counts.values()) if isinstance(input_counts, dict) else 0
 
+        # PDF始终使用浅色主题（打印友好）
+        c = get_colors(False)
+
         html = f"""
             <html><head><style>
-                body {{ font-family: "Microsoft YaHei", sans-serif; padding: 40px; color: #111827; }}
-                h1 {{ color: #3B82F6; font-size: 24px; }}
-                h2 {{ color: #374151; border-bottom: 2px solid #E5E7EB; padding-bottom: 8px; font-size: 18px; }}
-                h3 {{ color: #6B7280; font-size: 14px; }}
+                body {{ font-family: "Microsoft YaHei", sans-serif; padding: 40px; color: {c['text_primary']}; }}
+                h1 {{ color: {c['primary']}; font-size: 24px; }}
+                h2 {{ color: {c['text_secondary']}; border-bottom: 2px solid {c['border']}; padding-bottom: 8px; font-size: 18px; }}
+                h3 {{ color: {c['text_secondary']}; font-size: 14px; }}
                 table {{ border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13px; }}
-                th {{ background: #F3F4F6; padding: 8px 12px; text-align: left; border: 1px solid #E5E7EB; font-weight: bold; }}
-                td {{ padding: 8px 12px; border: 1px solid #E5E7EB; }}
+                th {{ background: {c['bg_sidebar_hover']}; padding: 8px 12px; text-align: left; border: 1px solid {c['border']}; font-weight: bold; }}
+                td {{ padding: 8px 12px; border: 1px solid {c['border']}; }}
                 .metrics {{ display: flex; gap: 30px; margin: 16px 0; }}
-                .metric-card {{ background: #F9FAFB; border-radius: 8px; padding: 16px 24px; border: 1px solid #E5E7EB; }}
-                .metric-value {{ font-size: 28px; font-weight: bold; color: #111827; }}
-                .metric-label {{ font-size: 12px; color: #6B7280; margin-top: 4px; }}
-                .footer {{ color: #9CA3AF; font-size: 11px; margin-top: 30px; border-top: 1px solid #E5E7EB; padding-top: 12px; }}
-                .bar {{ height: 8px; border-radius: 4px; background: #E5E7EB; }}
+                .metric-card {{ background: {c['bg_primary']}; border-radius: 8px; padding: 16px 24px; border: 1px solid {c['border']}; }}
+                .metric-value {{ font-size: 28px; font-weight: bold; color: {c['text_primary']}; }}
+                .metric-label {{ font-size: 12px; color: {c['text_secondary']}; margin-top: 4px; }}
+                .footer {{ color: {c['text_muted']}; font-size: 11px; margin-top: 30px; border-top: 1px solid {c['border']}; padding-top: 12px; }}
+                .bar {{ height: 8px; border-radius: 4px; background: {c['border']}; }}
                 .bar-fill {{ height: 8px; border-radius: 4px; }}
             </style></head><body>
             <h1>📊 行为记录报告</h1>
-            <p style="color:#6B7280;">报告日期: {date_label} | 生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+            <p style="color:{c['text_secondary']};">报告日期: {date_label} | 生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
 
             <h2>概览</h2>
             <div class="metrics">
