@@ -12,7 +12,7 @@ from gui.themes import HoverButton
 class StatusIndicator(QWidget):
     """带呼吸动画的状态指示灯"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.setFixedHeight(24)
         self._recording = False
@@ -24,7 +24,7 @@ class StatusIndicator(QWidget):
         self._breath_timer.timeout.connect(self._breath_tick)
         self._breath_timer.setInterval(50)  # 50ms刷新
 
-    def set_recording(self, recording: bool):
+    def set_recording(self, recording: bool) -> None:
         self._recording = recording
         self.update()
         if recording:
@@ -34,7 +34,7 @@ class StatusIndicator(QWidget):
             self._opacity = 1.0
             self.update()
 
-    def _breath_tick(self):
+    def _breath_tick(self) -> None:
         """呼吸动画步进"""
         step = 0.03
         if self._breathing_in:
@@ -49,7 +49,7 @@ class StatusIndicator(QWidget):
                 self._breathing_in = True
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         from PyQt5.QtGui import QPainter, QBrush
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -80,7 +80,7 @@ class StatusIndicator(QWidget):
 class NavButton(QPushButton):
     """侧边栏导航按钮"""
 
-    def __init__(self, icon_text: str, label: str, page_index: int):
+    def __init__(self, icon_text: str, label: str, page_index: int) -> None:
         super().__init__()
         self.page_index = page_index
         self.icon_text = icon_text
@@ -94,7 +94,7 @@ class NavButton(QPushButton):
         self.setFixedHeight(42)
         self._update_text()
 
-    def _update_text(self):
+    def _update_text(self) -> None:
         if self._collapsed:
             self.setText(self.icon_text)
             self.setToolTip(self.label_text)
@@ -106,13 +106,13 @@ class NavButton(QPushButton):
     def active(self) -> bool:
         return self._active
 
-    def set_active(self, active: bool):
+    def set_active(self, active: bool) -> None:
         self._active = active
         self.setObjectName("nav_button_active" if active else "nav_button")
         self.style().unpolish(self)
         self.style().polish(self)
 
-    def set_collapsed(self, collapsed: bool):
+    def set_collapsed(self, collapsed: bool) -> None:
         self._collapsed = collapsed
         self._update_text()
         if collapsed:
@@ -130,7 +130,7 @@ class Sidebar(QFrame):
     settings_clicked = pyqtSignal()
     alert_clicked = pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self._collapsed = False
         self._monitoring = False
@@ -138,7 +138,7 @@ class Sidebar(QFrame):
         self._nav_buttons = []
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         self.setObjectName("sidebar")
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -154,7 +154,7 @@ class Sidebar(QFrame):
 
         layout.addWidget(self._create_bottom_area())
 
-    def _create_brand_area(self):
+    def _create_brand_area(self) -> None:
         """创建品牌区"""
         brand_layout = QHBoxLayout()
         brand_layout.setContentsMargins(16, 20, 16, 16)
@@ -179,7 +179,7 @@ class Sidebar(QFrame):
         brand_container.setLayout(brand_layout)
         return brand_container
 
-    def _create_nav_area(self):
+    def _create_nav_area(self) -> None:
         """创建导航按钮区"""
         nav_container = QWidget()
         nav_layout = QVBoxLayout(nav_container)
@@ -205,7 +205,7 @@ class Sidebar(QFrame):
         nav_layout.addStretch()
         return nav_container
 
-    def _create_bottom_area(self):
+    def _create_bottom_area(self) -> None:
         """创建底部操作区"""
         bottom_container = QWidget()
         bottom_container.setObjectName("sidebar_bottom")
@@ -263,22 +263,22 @@ class Sidebar(QFrame):
 
         return bottom_container
 
-    def _on_nav_clicked(self, index: int):
+    def _on_nav_clicked(self, index: int) -> None:
         for btn in self._nav_buttons:
             btn.set_active(btn.page_index == index)
         self.page_changed.emit(index)
 
-    def _set_active(self, index: int):
+    def _set_active(self, index: int) -> None:
         """程序化设置活动页面（不触发信号，用于跳转）"""
         for btn in self._nav_buttons:
             btn.set_active(btn.page_index == index)
 
-    def _on_toggle_monitor(self):
+    def _on_toggle_monitor(self) -> None:
         self._monitoring = not self._monitoring
         self._update_monitor_ui()
         self.toggle_monitor.emit(self._monitoring)
 
-    def _on_toggle_privacy(self):
+    def _on_toggle_privacy(self) -> None:
         self._privacy_mode = not self._privacy_mode
         if self._privacy_mode:
             self.btn_privacy.setText("🔓 退出隐私")
@@ -290,7 +290,7 @@ class Sidebar(QFrame):
         self.btn_privacy.style().polish(self.btn_privacy)
         self.toggle_privacy.emit(self._privacy_mode)
 
-    def _update_monitor_ui(self):
+    def _update_monitor_ui(self) -> None:
         if self._monitoring:
             self.status_indicator.set_recording(True)
             self.btn_toggle_monitor.setText("⏸ 暂停记录")
@@ -298,7 +298,7 @@ class Sidebar(QFrame):
             self.status_indicator.set_recording(False)
             self.btn_toggle_monitor.setText("▶ 开始记录")
 
-    def toggle_collapse(self):
+    def toggle_collapse(self) -> None:
         self._collapsed = not self._collapsed
         if self._collapsed:
             self.setObjectName("sidebar_collapsed")
@@ -329,11 +329,11 @@ class Sidebar(QFrame):
         self.style().unpolish(self)
         self.style().polish(self)
 
-    def set_monitoring(self, monitoring: bool):
+    def set_monitoring(self, monitoring: bool) -> None:
         self._monitoring = monitoring
         self._update_monitor_ui()
 
-    def update_anomaly_badge(self, count: int):
+    def update_anomaly_badge(self, count: int) -> None:
         """更新告警badge数量"""
         if count > 0:
             self._alert_badge.setText(str(count) if count < 100 else "99+")
@@ -341,7 +341,7 @@ class Sidebar(QFrame):
         else:
             self._alert_badge.hide()
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """主题切换时更新HoverButton阴影"""
         for btn in [self.btn_collapse, self.btn_toggle_monitor,
                      self.btn_privacy, self.btn_settings]:

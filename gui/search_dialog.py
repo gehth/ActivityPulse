@@ -18,7 +18,7 @@ class SearchDialog(QDialog):
     # 双击记录时发送信号: (date_str, app_name)
     navigate_to_record = pyqtSignal(str, str)
 
-    def __init__(self, db: DatabaseManager, parent=None):
+    def __init__(self, db: DatabaseManager, parent=None) -> None:
         super().__init__(parent)
         self.db = db
         self.setWindowTitle("搜索记录")
@@ -27,7 +27,7 @@ class SearchDialog(QDialog):
         self._setup_ui()
         self._apply_styles()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 16, 20, 16)
         layout.setSpacing(12)
@@ -66,7 +66,7 @@ class SearchDialog(QDialog):
         hint.setAlignment(Qt.AlignCenter)
         layout.addWidget(hint)
 
-    def _create_search_bar(self):
+    def _create_search_bar(self) -> None:
         """创建搜索栏"""
         search_bar = QHBoxLayout()
         search_bar.setSpacing(8)
@@ -85,7 +85,7 @@ class SearchDialog(QDialog):
 
         return search_bar
 
-    def _create_filter_bar(self):
+    def _create_filter_bar(self) -> None:
         """创建筛选栏"""
         filter_bar = QHBoxLayout()
         filter_bar.setSpacing(8)
@@ -135,7 +135,7 @@ class SearchDialog(QDialog):
 
         return filter_bar
 
-    def _apply_styles(self):
+    def _apply_styles(self) -> None:
         self._is_dark = False
         self._light_qss = """
             SearchDialog {
@@ -333,22 +333,22 @@ class SearchDialog(QDialog):
         """
         self.setStyleSheet(self._light_qss)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
         self.setStyleSheet(self._dark_qss if is_dark else self._light_qss)
 
-    def _set_date_range(self, days: int):
+    def _set_date_range(self, days: int) -> None:
         """设置快捷日期范围"""
         self.date_end.setDate(QDate.currentDate())
         self.date_start.setDate(QDate.currentDate().addDays(-days + 1))
 
-    def _set_all_dates(self):
+    def _set_all_dates(self) -> None:
         """设置全部日期范围（近1年）"""
         self.date_start.setDate(QDate.currentDate().addYears(-1))
         self.date_end.setDate(QDate.currentDate())
 
-    def _do_search(self):
+    def _do_search(self) -> None:
         """执行搜索"""
         keyword = self.search_input.text().strip()
         if not keyword:
@@ -368,7 +368,7 @@ class SearchDialog(QDialog):
 
         self._display_results(results, keyword)
 
-    def _display_results(self, results: list, keyword: str):
+    def _display_results(self, results: list, keyword: str) -> None:
         """显示搜索结果"""
         self.result_table.setRowCount(len(results))
 
@@ -420,7 +420,7 @@ class SearchDialog(QDialog):
         if results:
             self.result_table.selectRow(0)
 
-    def _highlight_keyword(self, item: QTableWidgetItem, keyword: str):
+    def _highlight_keyword(self, item: QTableWidgetItem, keyword: str) -> str:
         """高亮关键词匹配部分"""
         text = item.text()
         if keyword.lower() in text.lower():
@@ -437,7 +437,7 @@ class SearchDialog(QDialog):
         else:
             return format_duration(seconds, fmt="long")
 
-    def _on_double_click(self, index):
+    def _on_double_click(self, index) -> None:
         """双击记录跳转"""
         row = index.row()
         item = self.result_table.item(row, 0)
@@ -449,7 +449,7 @@ class SearchDialog(QDialog):
                 self.navigate_to_record.emit(date_str, app_name)
                 self.accept()
 
-    def show_and_focus(self):
+    def show_and_focus(self) -> None:
         """显示对话框并聚焦搜索框"""
         self.show()
         self.search_input.setFocus()

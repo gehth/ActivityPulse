@@ -19,7 +19,7 @@ class ImageViewerDialog(QDialog):
     - ESC关闭
     """
 
-    def __init__(self, image_path: str, image_list: list = None, current_index: int = 0, parent=None):
+    def __init__(self, image_path: str, image_list: list = None, current_index: int = 0, parent=None) -> None:
         """
         Args:
             image_path: 当前图片路径
@@ -46,7 +46,7 @@ class ImageViewerDialog(QDialog):
         self._setup_ui()
         self._load_image(image_path)
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         """构建UI"""
         layout = QVBoxLayout(self)
         layout.setSpacing(0)
@@ -56,7 +56,7 @@ class ImageViewerDialog(QDialog):
         layout.addWidget(self._create_image_area())
         layout.addWidget(self._create_status_bar())
 
-    def _create_toolbar(self):
+    def _create_toolbar(self) -> None:
         """创建顶部工具栏"""
         toolbar = QWidget()
         toolbar.setFixedHeight(48)
@@ -120,7 +120,7 @@ class ImageViewerDialog(QDialog):
 
         return toolbar
 
-    def _create_image_area(self):
+    def _create_image_area(self) -> None:
         """创建图片显示区域"""
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(False)
@@ -136,7 +136,7 @@ class ImageViewerDialog(QDialog):
 
         return self.scroll_area
 
-    def _create_status_bar(self):
+    def _create_status_bar(self) -> None:
         """创建底部状态栏"""
         self.status_label = QLabel("")
         self.status_label.setFixedHeight(28)
@@ -145,7 +145,7 @@ class ImageViewerDialog(QDialog):
         self.status_label.setStyleSheet("font-size: 11px; padding: 4px;")
         return self.status_label
 
-    def _load_image(self, image_path: str):
+    def _load_image(self, image_path: str) -> None:
         """加载图片"""
         self._current_path = image_path
         self._original_pixmap = QPixmap(image_path)
@@ -178,7 +178,7 @@ class ImageViewerDialog(QDialog):
             self.btn_prev.setEnabled(self._current_index > 0)
             self.btn_next.setEnabled(self._current_index < len(self._image_list) - 1)
 
-    def _update_display(self):
+    def _update_display(self) -> None:
         """根据当前缩放比例更新显示"""
         if not hasattr(self, '_original_pixmap') or self._original_pixmap.isNull():
             return
@@ -194,7 +194,7 @@ class ImageViewerDialog(QDialog):
         self.image_label.resize(scaled.size())
         self.zoom_label.setText(f"{int(self._scale * 100)}%")
 
-    def _fit_to_window(self):
+    def _fit_to_window(self) -> None:
         """适应窗口大小"""
         if not hasattr(self, '_original_pixmap') or self._original_pixmap.isNull():
             return
@@ -213,29 +213,29 @@ class ImageViewerDialog(QDialog):
         self._scale = max(self._scale, self._min_scale)
         self._update_display()
 
-    def _zoom_in(self):
+    def _zoom_in(self) -> None:
         """放大"""
         self._scale = min(self._scale * 1.25, self._max_scale)
         self._update_display()
 
-    def _zoom_out(self):
+    def _zoom_out(self) -> None:
         """缩小"""
         self._scale = max(self._scale / 1.25, self._min_scale)
         self._update_display()
 
-    def _show_prev(self):
+    def _show_prev(self) -> None:
         """显示上一张"""
         if self._current_index > 0:
             self._current_index -= 1
             self._load_image(self._image_list[self._current_index])
 
-    def _show_next(self):
+    def _show_next(self) -> None:
         """显示下一张"""
         if self._current_index < len(self._image_list) - 1:
             self._current_index += 1
             self._load_image(self._image_list[self._current_index])
 
-    def wheelEvent(self, event):
+    def wheelEvent(self, event) -> None:
         """鼠标滚轮缩放"""
         delta = event.angleDelta().y()
         if delta > 0:
@@ -243,13 +243,13 @@ class ImageViewerDialog(QDialog):
         else:
             self._zoom_out()
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event) -> None:
         """鼠标按下 - 开始拖拽"""
         if event.button() == Qt.LeftButton:
             self._drag_start = event.pos()
             self.image_label.setCursor(QCursor(Qt.ClosedHandCursor))
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event) -> None:
         """鼠标移动 - 拖拽平移"""
         if self._drag_start and event.buttons() & Qt.LeftButton:
             delta = event.pos() - self._drag_start
@@ -259,13 +259,13 @@ class ImageViewerDialog(QDialog):
             h_bar.setValue(h_bar.value() - delta.x())
             v_bar.setValue(v_bar.value() - delta.y())
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event) -> None:
         """鼠标释放 - 结束拖拽"""
         if event.button() == Qt.LeftButton:
             self._drag_start = None
             self.image_label.setCursor(QCursor(Qt.OpenHandCursor))
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event) -> None:
         """键盘事件"""
         if event.key() == Qt.Key_Escape:
             self.close()
@@ -282,7 +282,7 @@ class ImageViewerDialog(QDialog):
         else:
             super().keyPressEvent(event)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
         colors = get_colors("dark" if is_dark else "light")

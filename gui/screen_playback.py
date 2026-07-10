@@ -25,7 +25,7 @@ class ScreenPlaybackDialog(QDialog):
     # 播放速度选项
     SPEED_OPTIONS = [0.5, 1.0, 2.0, 4.0, 8.0, 16.0]
 
-    def __init__(self, screenshots: list, db_manager=None, parent=None):
+    def __init__(self, screenshots: list, db_manager=None, parent=None) -> None:
         """
         Args:
             screenshots: 截图记录列表，每项含file_path/thumbnail_path/app_name/timestamp
@@ -67,7 +67,7 @@ class ScreenPlaybackDialog(QDialog):
         self._setup_ui()
         self._load_current_frame()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         """构建UI"""
         layout = QVBoxLayout(self)
         layout.setSpacing(0)
@@ -88,7 +88,7 @@ class ScreenPlaybackDialog(QDialog):
             self._start_time_label.setText(self._format_time(first_ts))
             self._end_time_label.setText(self._format_time(last_ts))
 
-    def _create_top_bar(self):
+    def _create_top_bar(self) -> None:
         """创建顶部信息栏"""
         top_bar = QFrame()
         top_bar.setObjectName("toolbar")
@@ -115,7 +115,7 @@ class ScreenPlaybackDialog(QDialog):
 
         return top_bar
 
-    def _create_image_area(self):
+    def _create_image_area(self) -> None:
         """创建中间图片显示区"""
         self._image_container = QWidget()
         self._image_container.setObjectName("playback_image_area")
@@ -147,7 +147,7 @@ class ScreenPlaybackDialog(QDialog):
 
         return self._image_container
 
-    def _create_control_bar(self):
+    def _create_control_bar(self) -> None:
         """创建底部控制栏"""
         control_frame = QFrame()
         control_frame.setObjectName("toolbar")
@@ -297,7 +297,7 @@ class ScreenPlaybackDialog(QDialog):
         base_ms = 1000
         return max(50, int(base_ms / speed))
 
-    def _load_current_frame(self):
+    def _load_current_frame(self) -> None:
         """加载当前帧截图"""
         if not self._valid_screenshots:
             self._image_label.setText("📷 没有可播放的截图")
@@ -319,7 +319,7 @@ class ScreenPlaybackDialog(QDialog):
         # 更新界面信息
         self._update_frame_info(app_name, timestamp)
 
-    def _display_frame_image(self, file_path, thumb_path):
+    def _display_frame_image(self, file_path, thumb_path) -> None:
         """加载并显示帧图片（带缓存）"""
         load_path = file_path if os.path.exists(file_path) else thumb_path
 
@@ -355,7 +355,7 @@ class ScreenPlaybackDialog(QDialog):
                 "font-size: 32px; color: #9CA3AF; background-color: #111827;"
             )
 
-    def _update_frame_info(self, app_name, timestamp):
+    def _update_frame_info(self, app_name, timestamp) -> None:
         """更新帧信息（应用名、时间、进度、滑块、按钮）"""
         # 更新应用名叠加层
         if app_name:
@@ -381,7 +381,7 @@ class ScreenPlaybackDialog(QDialog):
         self._btn_prev.setEnabled(self._current_index > 0)
         self._btn_next.setEnabled(self._current_index < total - 1)
 
-    def _update_speed_display(self):
+    def _update_speed_display(self) -> None:
         """更新速度显示"""
         speed = self.SPEED_OPTIONS[self._speed_index]
         if speed == int(speed):
@@ -392,7 +392,7 @@ class ScreenPlaybackDialog(QDialog):
         self._btn_speed_down.setEnabled(self._speed_index > 0)
         self._btn_speed_up.setEnabled(self._speed_index < len(self.SPEED_OPTIONS) - 1)
 
-    def _update_count_display(self):
+    def _update_count_display(self) -> None:
         """更新截图计数"""
         total = len(self._valid_screenshots)
         all_total = len(self._screenshots)
@@ -403,14 +403,14 @@ class ScreenPlaybackDialog(QDialog):
 
     # === 播放控制 ===
 
-    def _toggle_play(self):
+    def _toggle_play(self) -> None:
         """切换播放/暂停"""
         if self._is_playing:
             self._pause_playback()
         else:
             self._start_playback()
 
-    def _start_playback(self):
+    def _start_playback(self) -> None:
         """开始播放"""
         if not self._valid_screenshots:
             return
@@ -426,20 +426,20 @@ class ScreenPlaybackDialog(QDialog):
         interval = self._get_play_interval()
         self._play_timer.start(interval)
 
-    def _pause_playback(self):
+    def _pause_playback(self) -> None:
         """暂停播放"""
         self._is_playing = False
         self._btn_play.setText("▶")
         self._btn_play.setToolTip("播放 (空格)")
         self._play_timer.stop()
 
-    def _stop_playback(self):
+    def _stop_playback(self) -> None:
         """停止播放并回到开头"""
         self._pause_playback()
         self._current_index = 0
         self._load_current_frame()
 
-    def _on_play_tick(self):
+    def _on_play_tick(self) -> None:
         """播放定时器回调"""
         if self._current_index < len(self._valid_screenshots) - 1:
             self._current_index += 1
@@ -448,19 +448,19 @@ class ScreenPlaybackDialog(QDialog):
             # 播放完毕，暂停
             self._pause_playback()
 
-    def _show_prev(self):
+    def _show_prev(self) -> None:
         """显示上一张"""
         if self._current_index > 0:
             self._current_index -= 1
             self._load_current_frame()
 
-    def _show_next(self):
+    def _show_next(self) -> None:
         """显示下一张"""
         if self._current_index < len(self._valid_screenshots) - 1:
             self._current_index += 1
             self._load_current_frame()
 
-    def _speed_up(self):
+    def _speed_up(self) -> None:
         """加速"""
         if self._speed_index < len(self.SPEED_OPTIONS) - 1:
             self._speed_index += 1
@@ -468,7 +468,7 @@ class ScreenPlaybackDialog(QDialog):
             if self._is_playing:
                 self._play_timer.setInterval(self._get_play_interval())
 
-    def _speed_down(self):
+    def _speed_down(self) -> None:
         """减速"""
         if self._speed_index > 0:
             self._speed_index -= 1
@@ -476,19 +476,19 @@ class ScreenPlaybackDialog(QDialog):
             if self._is_playing:
                 self._play_timer.setInterval(self._get_play_interval())
 
-    def _on_slider_changed(self, value: int):
+    def _on_slider_changed(self, value: int) -> None:
         """时间轴滑块变化"""
         if 0 <= value < len(self._valid_screenshots):
             self._current_index = value
             self._load_current_frame()
 
-    def _on_close(self):
+    def _on_close(self) -> None:
         """关闭对话框"""
         self._pause_playback()
         self._pixmap_cache.clear()
         self.accept()
 
-    def reject(self):
+    def reject(self) -> None:
         """ESC关闭"""
         self._pause_playback()
         self._pixmap_cache.clear()
@@ -496,7 +496,7 @@ class ScreenPlaybackDialog(QDialog):
 
     # === 键盘控制 ===
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event) -> None:
         """键盘快捷键"""
         key = event.key()
         if key == Qt.Key_Space:
@@ -522,7 +522,7 @@ class ScreenPlaybackDialog(QDialog):
 
     # === 窗口事件 ===
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event) -> None:
         """窗口大小变化时重新加载当前帧"""
         super().resizeEvent(event)
         # 延迟重新加载，避免频繁刷新
@@ -536,7 +536,7 @@ class ScreenPlaybackDialog(QDialog):
 
     # === 主题 ===
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """设置深色/浅色主题"""
         self._is_dark = is_dark
         colors = self._get_colors(is_dark)

@@ -11,7 +11,7 @@ import re
 class MetricCard(AnimatedCard):
     """指标卡片 - 带数字动画过渡 + ripple点击反馈"""
 
-    def __init__(self, title: str, value: str = "0", change: str = ""):
+    def __init__(self, title: str, value: str = "0", change: str = "") -> None:
         super().__init__()
         self.setObjectName("metric_card")
         apply_card_shadow(self)
@@ -41,7 +41,7 @@ class MetricCard(AnimatedCard):
         self._anim_phase = "accel"  # accel / overshoot / settle
         self._anim_overshoot = 0.0
 
-    def set_value(self, value: str, change: str = "", is_up: bool = True):
+    def set_value(self, value: str, change: str = "", is_up: bool = True) -> None:
         # 解析数字部分做动画
         match = re.match(r'([^\d]*)(\d+\.?\d*)(.*)', value)
         if match:
@@ -66,7 +66,7 @@ class MetricCard(AnimatedCard):
         else:
             self.change_label.setText("")
 
-    def _anim_tick(self):
+    def _anim_tick(self) -> None:
         """数字递增动画步进 - 三阶段缓动：加速→轻微回弹→稳定"""
         diff = self._anim_target - self._anim_current
 
@@ -98,7 +98,7 @@ class MetricCard(AnimatedCard):
 class HeatmapWidget(QWidget):
     """活跃热力图 - 类GitHub贡献图，hover显示时长"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.setMinimumHeight(140)
         self.setMouseTracking(True)
@@ -112,13 +112,13 @@ class HeatmapWidget(QWidget):
         self._margin_left = 40
         self._margin_top = 25
 
-    def set_data(self, data: dict, raw_seconds: dict = None, is_dark: bool = False):
+    def set_data(self, data: dict, raw_seconds: dict = None, is_dark: bool = False) -> None:
         self.data = data
         self.raw_seconds = raw_seconds or {}
         self._is_dark = is_dark
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
@@ -156,7 +156,7 @@ class HeatmapWidget(QWidget):
 
         painter.end()
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event) -> None:
         """hover显示时长tooltip"""
         mx, my = event.x(), event.y()
         cell_size = self._cell_size
@@ -183,7 +183,7 @@ class HeatmapWidget(QWidget):
                     return
         QToolTip.hideText()
 
-    def sizeHint(self):
+    def sizeHint(self) -> "QSize":
         return self.minimumSizeHint()
 
 
@@ -193,7 +193,7 @@ class GoalProgressCard(AnimatedCard):
     goal_changed = pyqtSignal(int)  # 目标分钟数变更
     goal_achieved = pyqtSignal()  # 目标达成通知
 
-    def __init__(self, db_manager=None, parent=None):
+    def __init__(self, db_manager=None, parent=None) -> None:
         super().__init__()
         self.db = db_manager
         self._is_dark = False
@@ -254,7 +254,7 @@ class GoalProgressCard(AnimatedCard):
 
         self._apply_styles()
 
-    def _apply_styles(self):
+    def _apply_styles(self) -> None:
         colors = get_colors("dark" if self._is_dark else "light")
         self.goal_btn.setStyleSheet(f"""
             QPushButton {{
@@ -272,7 +272,7 @@ class GoalProgressCard(AnimatedCard):
             }}
         """)
 
-    def set_progress(self, current_seconds: float):
+    def set_progress(self, current_seconds: float) -> None:
         """设置当前进度（秒）"""
         was_achieved = self._target_progress >= 1.0
         self._current_minutes = int(current_seconds / 60)
@@ -284,7 +284,7 @@ class GoalProgressCard(AnimatedCard):
         if not was_achieved and self._target_progress >= 1.0:
             self.goal_achieved.emit()
 
-    def _update_labels(self):
+    def _update_labels(self) -> None:
         """更新文字标签"""
         cur_str = format_minutes(self._current_minutes)
         goal_str = format_minutes(self._goal_minutes)
@@ -300,7 +300,7 @@ class GoalProgressCard(AnimatedCard):
             colors = get_colors("dark" if self._is_dark else "light")
             self.percent_label.setStyleSheet(f"color: {colors['primary']}; font-size: 12px;")
 
-    def _anim_tick(self):
+    def _anim_tick(self) -> None:
         """环形进度动画步进"""
         diff = self._target_progress - self._anim_progress
         self._anim_progress += diff * 0.15
@@ -309,12 +309,12 @@ class GoalProgressCard(AnimatedCard):
             self._anim_timer.stop()
         self.ring_widget.update()
 
-    def _open_goal_dialog(self):
+    def _open_goal_dialog(self) -> None:
         """打开目标设置对话框"""
         colors = get_colors("dark" if self._is_dark else "light")
         dialog, spin, btn_box = self._build_goal_dialog(colors)
 
-        def on_accept():
+        def on_accept() -> None:
             new_val = spin.value()
             self._goal_minutes = new_val
             if self.db:
@@ -331,7 +331,7 @@ class GoalProgressCard(AnimatedCard):
         btn_box.rejected.connect(dialog.reject)
         dialog.exec_()
 
-    def _build_goal_dialog(self, colors):
+    def _build_goal_dialog(self, colors) -> None:
         """构建目标设置对话框UI，返回(dialog, spin_box, btn_box)"""
         dialog = QDialog(self)
         dialog.setWindowTitle("设置每日目标")
@@ -411,7 +411,7 @@ class GoalProgressCard(AnimatedCard):
 
         return dialog, spin, btn_box
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         super().set_theme(is_dark)
         self._apply_styles()
@@ -422,12 +422,12 @@ class GoalProgressCard(AnimatedCard):
 class GoalRingWidget(QWidget):
     """环形进度条绘制组件"""
 
-    def __init__(self, parent_card=None):
+    def __init__(self, parent_card=None) -> None:
         super().__init__(parent_card)
         self._card = parent_card
         self.setFixedSize(120, 120)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         if not self._card:
             return
         painter = QPainter(self)
@@ -478,7 +478,7 @@ class GoalRingWidget(QWidget):
 class IdleTimeCard(AnimatedCard):
     """空闲时间统计卡片 - 显示空闲时段汇总"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__()
         self._is_dark = False
         self._idle_periods = []
@@ -526,12 +526,12 @@ class IdleTimeCard(AnimatedCard):
 
         self._apply_styles()
 
-    def _apply_styles(self):
+    def _apply_styles(self) -> None:
         colors = get_colors("dark" if self._is_dark else "light")
         self.total_label.setStyleSheet(f"font-size: 13px; color: {colors['text_secondary']};")
         self.longest_label.setStyleSheet(f"font-size: 13px; color: {colors['text_secondary']};")
 
-    def set_idle_data(self, idle_summary: dict):
+    def set_idle_data(self, idle_summary: dict) -> None:
         """设置空闲时间数据"""
         self._idle_periods = idle_summary.get("idle_periods", [])
         total = idle_summary.get("total_idle_minutes", 0)
@@ -569,7 +569,7 @@ class IdleTimeCard(AnimatedCard):
         else:
             self.no_idle_label.show()
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         super().set_theme(is_dark)
         self._apply_styles()
@@ -586,7 +586,7 @@ class IdleTimeCard(AnimatedCard):
 class WeekCompareCard(AnimatedCard):
     """周对比卡片 - 本周 vs 上周对比柱状图"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__()
         self._is_dark = False
         self._this_week = []  # [{day: str, seconds: int}, ...]
@@ -639,7 +639,7 @@ class WeekCompareCard(AnimatedCard):
         self._summary_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self._summary_label)
 
-    def set_data(self, this_week: list, last_week: list):
+    def set_data(self, this_week: list, last_week: list) -> None:
         """设置周数据
 
         Args:
@@ -651,7 +651,7 @@ class WeekCompareCard(AnimatedCard):
         self._update_summary()
         self._bar_widget.update()
 
-    def _update_summary(self):
+    def _update_summary(self) -> None:
         """更新汇总文字"""
         this_total = sum(d.get("seconds", 0) for d in self._this_week)
         last_total = sum(d.get("seconds", 0) for d in self._last_week)
@@ -674,7 +674,7 @@ class WeekCompareCard(AnimatedCard):
         else:
             self._summary_label.setText(f"本周 {this_str}（上周无数据）")
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         super().set_theme(is_dark)
         # 更新图例颜色
@@ -707,12 +707,12 @@ class WeekCompareCard(AnimatedCard):
 class WeekBarWidget(QWidget):
     """周对比柱状图绘制组件"""
 
-    def __init__(self, parent_card=None):
+    def __init__(self, parent_card=None) -> None:
         super().__init__(parent_card)
         self._card = parent_card
         self.setFixedHeight(140)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         if not self._card:
             return
         painter = QPainter(self)
@@ -799,7 +799,7 @@ class WeekBarWidget(QWidget):
 class HourlyDistCard(AnimatedCard):
     """每小时活跃分布卡片 - 24小时柱状图"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__()
         self._is_dark = False
         self._hourly_data = []  # [{hour: int, total: int}, ...]
@@ -826,7 +826,7 @@ class HourlyDistCard(AnimatedCard):
         self._bar_widget = HourlyBarWidget(self)
         layout.addWidget(self._bar_widget)
 
-    def set_data(self, hourly_data: list):
+    def set_data(self, hourly_data: list) -> None:
         """设置每小时分布数据 [{hour: int, total: int}, ...]"""
         self._hourly_data = hourly_data
         # 计算峰值时段
@@ -839,7 +839,7 @@ class HourlyDistCard(AnimatedCard):
             self.peak_label.setText("")
         self._bar_widget.update()
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         super().set_theme(is_dark)
         self._bar_widget.update()
@@ -848,14 +848,14 @@ class HourlyDistCard(AnimatedCard):
 class HourlyBarWidget(QWidget):
     """每小时分布柱状图绘制组件"""
 
-    def __init__(self, parent_card=None):
+    def __init__(self, parent_card=None) -> None:
         super().__init__(parent_card)
         self._card = parent_card
         self._hover_hour = -1  # 当前hover的小时
         self.setFixedHeight(100)
         self.setMouseTracking(True)
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event) -> None:
         """鼠标移动时显示tooltip"""
         if not self._card or not self._card._hourly_data:
             QToolTip.hideText()
@@ -899,12 +899,12 @@ class HourlyBarWidget(QWidget):
                 QToolTip.hideText()
                 self.update()
 
-    def leaveEvent(self, event):
+    def leaveEvent(self, event) -> None:
         self._hover_hour = -1
         QToolTip.hideText()
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         if not self._card:
             return
         painter = QPainter(self)
@@ -984,7 +984,7 @@ class TopAppItem(QFrame):
     """Top应用条目 - 可点击跳转分类管理"""
     clicked = pyqtSignal(str)  # 发送应用名
 
-    def __init__(self, rank: int, name: str, duration: str, percentage: float, color: str = "#3B82F6", is_dark: bool = False):
+    def __init__(self, rank: int, name: str, duration: str, percentage: float, color: str = "#3B82F6", is_dark: bool = False) -> None:
         super().__init__()
         self._color = color
         self._is_dark = is_dark
@@ -1033,7 +1033,7 @@ class TopAppItem(QFrame):
         duration_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(duration_label)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """更新主题"""
         colors = get_colors("dark" if is_dark else "light")
         self.progress_bar.setStyleSheet(f"""
@@ -1046,7 +1046,7 @@ class TopAppItem(QFrame):
             }}
         """)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event) -> None:
         """点击时发出信号，跳转到分类管理"""
         if event.button() == Qt.LeftButton:
             self.clicked.emit(self._app_name)

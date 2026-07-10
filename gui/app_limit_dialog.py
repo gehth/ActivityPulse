@@ -18,7 +18,7 @@ class AppLimitDialog(QDialog):
     
     limits_changed = pyqtSignal()  # 限制变更信号
     
-    def __init__(self, db_manager: DatabaseManager, parent=None):
+    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
@@ -27,7 +27,7 @@ class AppLimitDialog(QDialog):
         self._setup_ui()
         self._load_limits()
     
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)
         layout.setSpacing(16)
         layout.setContentsMargins(24, 24, 24, 24)
@@ -53,7 +53,7 @@ class AppLimitDialog(QDialog):
         # 加载应用列表
         self._load_app_names()
 
-    def _create_list_group(self):
+    def _create_list_group(self) -> "QGroupBox":
         """创建当前限制列表"""
         list_group = QGroupBox("已设置的限制")
         list_group.setObjectName("card")
@@ -75,7 +75,7 @@ class AppLimitDialog(QDialog):
 
         return list_group
 
-    def _create_add_group(self):
+    def _create_add_group(self) -> "QGroupBox":
         """创建添加限制表单"""
         add_group = QGroupBox("添加限制")
         add_group.setObjectName("card")
@@ -124,7 +124,7 @@ class AppLimitDialog(QDialog):
 
         return add_group
     
-    def _load_app_names(self):
+    def _load_app_names(self) -> None:
         """加载已知应用名称到下拉框"""
         self.combo_app.clear()
         # 从app_usage获取所有已知应用
@@ -135,7 +135,7 @@ class AppLimitDialog(QDialog):
         except Exception:
             pass
     
-    def _load_limits(self):
+    def _load_limits(self) -> None:
         """加载已有限制列表"""
         self.table.setRowCount(0)
         limits = self.db.get_all_limits()
@@ -184,7 +184,7 @@ class AppLimitDialog(QDialog):
             
             self.table.setCellWidget(i, 3, btn_widget)
     
-    def _on_add_limit(self):
+    def _on_add_limit(self) -> None:
         """添加限制"""
         app_name = self.combo_app.currentText().strip()
         if not app_name:
@@ -210,7 +210,7 @@ class AppLimitDialog(QDialog):
         self.limits_changed.emit()
         self.statusBar().showMessage(f"已设置 {app_name} 每日限制 {limit_minutes} 分钟") if hasattr(self, 'statusBar') else None
     
-    def _on_toggle(self, app_name: str):
+    def _on_toggle(self, app_name: str) -> None:
         """切换启用/禁用"""
         limit_info = self.db.get_app_limit(app_name)
         if limit_info:
@@ -219,7 +219,7 @@ class AppLimitDialog(QDialog):
             self._load_limits()
             self.limits_changed.emit()
     
-    def _on_remove(self, app_name: str):
+    def _on_remove(self, app_name: str) -> None:
         """删除限制"""
         reply = QMessageBox.question(
             self, "确认删除",
@@ -231,7 +231,7 @@ class AppLimitDialog(QDialog):
             self._load_limits()
             self.limits_changed.emit()
     
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
         colors = get_colors(is_dark)

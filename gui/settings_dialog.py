@@ -21,11 +21,11 @@ class BackupWorker(QThread):
     finished = pyqtSignal(str)       # backup_path
     error = pyqtSignal(str)          # error_message
 
-    def __init__(self, output_dir: str):
+    def __init__(self, output_dir: str) -> None:
         super().__init__()
         self.output_dir = output_dir
 
-    def run(self):
+    def run(self) -> None:
         try:
             path = create_backup(self.output_dir, self.progress.emit)
             self.finished.emit(path)
@@ -39,11 +39,11 @@ class RestoreWorker(QThread):
     finished = pyqtSignal(dict)      # result dict
     error = pyqtSignal(str)          # error_message
 
-    def __init__(self, backup_path: str):
+    def __init__(self, backup_path: str) -> None:
         super().__init__()
         self.backup_path = backup_path
 
-    def run(self):
+    def run(self) -> None:
         try:
             result = restore_backup(self.backup_path, self.progress.emit)
             self.finished.emit(result)
@@ -54,7 +54,7 @@ class RestoreWorker(QThread):
 class SettingsDialog(QDialog):
     """设置对话框"""
 
-    def __init__(self, db_manager: DatabaseManager, parent=None):
+    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
@@ -63,7 +63,7 @@ class SettingsDialog(QDialog):
         self._setup_ui()
         self._load_settings()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)
         layout.setSpacing(16)
         layout.setContentsMargins(24, 24, 24, 24)
@@ -92,7 +92,7 @@ class SettingsDialog(QDialog):
 
         layout.addLayout(btn_layout)
 
-    def _create_monitor_group(self):
+    def _create_monitor_group(self) -> None:
         """创建监控设置分组"""
         group = QGroupBox("监控设置")
         group.setObjectName("card")
@@ -134,7 +134,7 @@ class SettingsDialog(QDialog):
 
         return group
 
-    def _create_screenshot_group(self):
+    def _create_screenshot_group(self) -> None:
         """创建截图设置分组"""
         group = QGroupBox("截图设置")
         group.setObjectName("card")
@@ -167,7 +167,7 @@ class SettingsDialog(QDialog):
 
         return group
 
-    def _create_data_group(self):
+    def _create_data_group(self) -> None:
         """创建数据管理分组"""
         group = QGroupBox("数据管理")
         group.setObjectName("card")
@@ -226,7 +226,7 @@ class SettingsDialog(QDialog):
 
         return group
 
-    def _create_startup_group(self):
+    def _create_startup_group(self) -> None:
         """创建启动设置分组"""
         group = QGroupBox("启动设置")
         group.setObjectName("card")
@@ -244,7 +244,7 @@ class SettingsDialog(QDialog):
 
         return group
 
-    def _create_reminder_group(self):
+    def _create_reminder_group(self) -> None:
         """创建提醒设置分组"""
         group = QGroupBox("提醒设置")
         group.setObjectName("card")
@@ -269,7 +269,7 @@ class SettingsDialog(QDialog):
 
         return group
 
-    def _create_report_group(self):
+    def _create_report_group(self) -> None:
         """创建报告设置分组"""
         group = QGroupBox("报告设置")
         group.setObjectName("card")
@@ -328,7 +328,7 @@ class SettingsDialog(QDialog):
 
         return group
 
-    def _create_hotkey_group(self):
+    def _create_hotkey_group(self) -> None:
         """创建快捷键设置分组"""
         group = QGroupBox("快捷键设置")
         group.setObjectName("card")
@@ -371,7 +371,7 @@ class SettingsDialog(QDialog):
 
         return group
 
-    def _create_anomaly_group(self):
+    def _create_anomaly_group(self) -> None:
         """创建异常告警设置分组"""
         group = QGroupBox("异常告警设置")
         group.setObjectName("card")
@@ -504,7 +504,7 @@ class SettingsDialog(QDialog):
 
         return group
 
-    def _load_settings(self):
+    def _load_settings(self) -> None:
         """从数据库加载设置"""
         self.spin_app_interval.setValue(int(self.db.get_config("app_interval", "5")))
         self.spin_input_interval.setValue(int(self.db.get_config("input_interval", "2")))
@@ -544,7 +544,7 @@ class SettingsDialog(QDialog):
         self.cb_anomaly_notification.setChecked(self.db.get_config("anomaly_notification_enabled", "1") == "1")
         self.cb_anomaly_popup.setChecked(self.db.get_config("anomaly_popup_enabled", "0") == "1")
 
-    def _save_settings(self):
+    def _save_settings(self) -> None:
         """保存设置到数据库"""
         self.db.save_config("app_interval", str(self.spin_app_interval.value()))
         self.db.save_config("input_interval", str(self.spin_input_interval.value()))
@@ -603,7 +603,7 @@ class SettingsDialog(QDialog):
         QMessageBox.information(self, "设置", "设置已保存，部分设置将在重启后生效")
         self.accept()
 
-    def _clean_old_data(self):
+    def _clean_old_data(self) -> None:
         """清理过期数据"""
         retention_days = self.spin_retention.value()
         if retention_days == 0:
@@ -623,7 +623,7 @@ class SettingsDialog(QDialog):
             except Exception as e:
                 QMessageBox.critical(self, "错误", f"清理失败: {e}")
 
-    def _on_backup(self):
+    def _on_backup(self) -> None:
         """创建数据备份"""
         output_dir = QFileDialog.getExistingDirectory(self, "选择备份保存位置", os.path.expanduser("~"))
         if not output_dir:
@@ -644,12 +644,12 @@ class SettingsDialog(QDialog):
         self._backup_worker.error.connect(self._on_backup_error)
         self._backup_worker.start()
 
-    def _on_backup_progress(self, percent: int, message: str):
+    def _on_backup_progress(self, percent: int, message: str) -> None:
         """备份进度更新"""
         self.backup_progress.setValue(percent)
         self.backup_status.setText(message)
 
-    def _on_backup_done(self, backup_path: str):
+    def _on_backup_done(self, backup_path: str) -> None:
         """备份完成"""
         self.backup_progress.setValue(100)
         size_mb = os.path.getsize(backup_path) / (1024 * 1024)
@@ -657,13 +657,13 @@ class SettingsDialog(QDialog):
         QMessageBox.information(self, "备份完成",
             f"数据已成功备份到：\n{backup_path}\n\n大小: {size_mb:.1f}MB")
 
-    def _on_backup_error(self, error_msg: str):
+    def _on_backup_error(self, error_msg: str) -> None:
         """备份失败"""
         self.backup_progress.setVisible(False)
         self.backup_status.setText(f"备份失败: {error_msg}")
         QMessageBox.critical(self, "备份失败", f"备份数据时出错：\n{error_msg}")
 
-    def _on_restore(self):
+    def _on_restore(self) -> None:
         """从备份恢复数据"""
         backup_path, _ = QFileDialog.getOpenFileName(
             self, "选择备份文件", os.path.expanduser("~"),
@@ -703,7 +703,7 @@ class SettingsDialog(QDialog):
         self._restore_worker.error.connect(self._on_backup_error)
         self._restore_worker.start()
 
-    def _on_restore_done(self, result: dict):
+    def _on_restore_done(self, result: dict) -> None:
         """恢复完成"""
         self.backup_progress.setValue(100)
         db_status = "✅ 数据库已恢复" if result["db_restored"] else "❌ 数据库恢复失败"
@@ -715,11 +715,11 @@ class SettingsDialog(QDialog):
             f"截图: {result['screenshots_restored']} 个已恢复\n\n"
             f"请重启应用以加载恢复的数据。")
 
-    def _on_reset_hotkey(self):
+    def _on_reset_hotkey(self) -> None:
         """重置快捷键为默认值"""
         self.input_hotkey.setText(DEFAULT_HOTKEY_DISPLAY)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         colors = get_colors("dark" if is_dark else "light")
         

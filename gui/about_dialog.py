@@ -14,14 +14,14 @@ class AboutDialog(QDialog):
     # 版本号常量，与main_window.APP_VERSION保持同步
     APP_VERSION = "1.0"
 
-    def __init__(self, parent=None, version: str = None):
+    def __init__(self, parent=None, version: str = None) -> None:
         super().__init__(parent)
         self._version = version or self.APP_VERSION
         self.setWindowTitle("关于")
         self.setFixedSize(420, 340)
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)
         layout.setSpacing(16)
         layout.setContentsMargins(32, 28, 32, 24)

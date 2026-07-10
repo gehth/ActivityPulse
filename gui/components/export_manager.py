@@ -11,7 +11,7 @@ from utils.time_utils import format_duration
 class ExportManager:
     """导出管理器 - 处理CSV和PDF导出"""
 
-    def __init__(self, db, parent, app_version: str, callbacks: dict):
+    def __init__(self, db, parent, app_version: str, callbacks: dict) -> None:
         """
         Args:
             db: DatabaseManager 实例
@@ -26,7 +26,7 @@ class ExportManager:
         self._app_version = app_version
         self.callbacks = callbacks
 
-    def export_csv(self):
+    def export_csv(self) -> bool:
         """导出CSV - 支持日期范围，含分类信息"""
         start_date, end_date, is_range = self.callbacks["get_date_range"]()
         if is_range:
@@ -77,7 +77,7 @@ class ExportManager:
             except Exception as e:
                 QMessageBox.critical(self.parent, "错误", f"导出失败: {e}")
 
-    def export_pdf(self):
+    def export_pdf(self) -> bool:
         """导出PDF报告 - 支持日期范围，含分类统计和操作详情"""
         start_date, end_date, is_range = self.callbacks["get_date_range"]()
         if is_range:
@@ -140,7 +140,7 @@ class ExportManager:
         except Exception as e:
             QMessageBox.critical(self.parent, "错误", f"PDF导出失败: {e}")
 
-    def _fetch_pdf_data(self, start_date, end_date, is_range):
+    def _fetch_pdf_data(self, start_date, end_date, is_range) -> dict:
         """获取PDF报告所需数据"""
         if is_range:
             app_summary = self.db.get_app_usage_summary_range(start_date, end_date)
@@ -152,7 +152,7 @@ class ExportManager:
             input_counts = self.db.get_input_event_count(end_date)
         return app_summary, total_seconds, input_counts
 
-    def _build_category_rows(self, cat_stats, cat_names, cat_colors, total_seconds):
+    def _build_category_rows(self, cat_stats, cat_names, cat_colors, total_seconds) -> None:
         """构建分类统计HTML表格行"""
         cat_rows = ""
         sorted_cats = sorted(cat_stats.items(), key=lambda x: -x[1]["seconds"])
@@ -169,7 +169,7 @@ class ExportManager:
                 </tr>"""
         return cat_rows
 
-    def _build_pdf_html(self, data: dict):
+    def _build_pdf_html(self, data: dict) -> None:
         """构建PDF报告HTML内容"""
         date_label = data["date_label"]
         duration_str = data["duration_str"]

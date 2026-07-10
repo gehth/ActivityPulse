@@ -31,14 +31,14 @@ class SedentaryDialog(QDialog):
 
     snoozed = pyqtSignal()  # 暂停15分钟
 
-    def __init__(self, continuous_minutes: int, parent=None):
+    def __init__(self, continuous_minutes: int, parent=None) -> None:
         super().__init__(parent)
         self._is_dark = False
         self._continuous_minutes = continuous_minutes
         self._setup_ui()
         self._play_notification_sound()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         self.setWindowTitle("久坐提醒")
         self.setFixedSize(420, 380)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
@@ -53,7 +53,7 @@ class SedentaryDialog(QDialog):
         layout.addStretch()
         layout.addLayout(self._create_buttons())
 
-    def _create_header(self):
+    def _create_header(self) -> None:
         """创建标题和时长信息"""
         header = QVBoxLayout()
         header.setSpacing(4)
@@ -76,14 +76,14 @@ class SedentaryDialog(QDialog):
 
         return header
 
-    def _create_separator(self):
+    def _create_separator(self) -> None:
         """创建分隔线"""
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
         sep.setStyleSheet("color: #E5E7EB;")
         return sep
 
-    def _add_suggestions(self, layout):
+    def _add_suggestions(self, layout) -> None:
         """添加随机休息建议"""
         suggest_label = QLabel("💡 休息建议")
         suggest_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #3B82F6;")
@@ -109,7 +109,7 @@ class SedentaryDialog(QDialog):
             row.addStretch()
             layout.addLayout(row)
 
-    def _create_buttons(self):
+    def _create_buttons(self) -> None:
         """创建操作按钮"""
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(12)
@@ -125,12 +125,12 @@ class SedentaryDialog(QDialog):
 
         return btn_layout
 
-    def _on_snooze(self):
+    def _on_snooze(self) -> None:
         """暂停提醒15分钟"""
         self.snoozed.emit()
         self.accept()
 
-    def _play_notification_sound(self):
+    def _play_notification_sound(self) -> None:
         """播放系统提示音"""
         try:
             from PyQt5.QtWidgets import QApplication
@@ -138,7 +138,7 @@ class SedentaryDialog(QDialog):
         except Exception:
             pass
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """更新主题"""
         self._is_dark = is_dark
         self.btn_snooze.set_theme(is_dark)

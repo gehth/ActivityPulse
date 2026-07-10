@@ -33,7 +33,7 @@ class TagItemWidget(QFrame):
     deleted = pyqtSignal(int)  # tag_id
     edited = pyqtSignal(int)  # tag_id
 
-    def __init__(self, tag_data: dict, is_dark: bool = False, parent=None):
+    def __init__(self, tag_data: dict, is_dark: bool = False, parent=None) -> None:
         super().__init__(parent)
         self._is_dark = is_dark
         self._tag_id = tag_data.get("id", 0)
@@ -90,13 +90,13 @@ class TagItemWidget(QFrame):
 
         self._apply_styles()
 
-    def _confirm_delete(self):
+    def _confirm_delete(self) -> None:
         reply = QMessageBox.question(self, "删除标签", "确定删除此标签？",
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             self.deleted.emit(self._tag_id)
 
-    def _apply_styles(self):
+    def _apply_styles(self) -> None:
         colors = get_colors("dark" if self._is_dark else "light")
         self.setStyleSheet(f"""
             QFrame#card {{
@@ -106,7 +106,7 @@ class TagItemWidget(QFrame):
             }}
         """)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         self._apply_styles()
 
@@ -116,7 +116,7 @@ class AddTagDialog(QDialog):
 
     tag_added = pyqtSignal(dict)  # {tag, note, start_time, end_time, color}
 
-    def __init__(self, date: str, is_dark: bool = False, parent=None):
+    def __init__(self, date: str, is_dark: bool = False, parent=None) -> None:
         super().__init__(parent)
         self._is_dark = is_dark
         self._date = date
@@ -125,7 +125,7 @@ class AddTagDialog(QDialog):
         self.setFixedSize(360, 400)
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         colors = get_colors("dark" if self._is_dark else "light")
         self.setStyleSheet(f"background-color: {colors['bg_card']};")
 
@@ -198,7 +198,7 @@ class AddTagDialog(QDialog):
         btn_add.clicked.connect(self._on_add)
         layout.addWidget(btn_add)
 
-    def _create_preset_tags(self, colors):
+    def _create_preset_tags(self, colors) -> None:
         """创建快捷标签行"""
         preset_row = QHBoxLayout()
         preset_row.setSpacing(4)
@@ -224,7 +224,7 @@ class AddTagDialog(QDialog):
             preset_row.addWidget(btn)
         return preset_row
 
-    def _create_time_range(self, colors):
+    def _create_time_range(self, colors) -> None:
         """创建时间范围选择行"""
         time_row = QHBoxLayout()
         self.start_time = QTimeEdit()
@@ -260,7 +260,7 @@ class AddTagDialog(QDialog):
         time_row.addWidget(self.end_time)
         return time_row
 
-    def _create_color_picker(self, colors):
+    def _create_color_picker(self, colors) -> None:
         """创建颜色选择行"""
         color_row = QHBoxLayout()
         color_row.setSpacing(6)
@@ -284,7 +284,7 @@ class AddTagDialog(QDialog):
             self._color_btns.append(btn)
         return color_row
 
-    def _select_color(self, color, idx):
+    def _select_color(self, color, idx) -> None:
         self._selected_color = color
         colors = get_colors("dark" if self._is_dark else "light")
         for i, btn in enumerate(self._color_btns):
@@ -300,7 +300,7 @@ class AddTagDialog(QDialog):
                 }}
             """)
 
-    def _on_add(self):
+    def _on_add(self) -> None:
         tag = self.tag_input.text().strip()
         if not tag:
             return
@@ -319,7 +319,7 @@ class ActivityTagDialog(QDialog):
 
     tags_changed = pyqtSignal()  # 标签变更信号
 
-    def __init__(self, db_manager: DatabaseManager, date: str, is_dark: bool = False, parent=None):
+    def __init__(self, db_manager: DatabaseManager, date: str, is_dark: bool = False, parent=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._date = date
@@ -330,7 +330,7 @@ class ActivityTagDialog(QDialog):
         self._setup_ui()
         self._load_tags()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         colors = get_colors("dark" if self._is_dark else "light")
         self.setStyleSheet(f"background-color: {colors['bg_primary']};")
 
@@ -402,7 +402,7 @@ class ActivityTagDialog(QDialog):
         btn_close.clicked.connect(self.accept)
         layout.addWidget(btn_close)
 
-    def _load_tags(self):
+    def _load_tags(self) -> None:
         """加载标签列表"""
         # 清空旧标签
         for w in self._tag_widgets:
@@ -424,13 +424,13 @@ class ActivityTagDialog(QDialog):
             self._tags_layout.insertWidget(self._tags_layout.count() - 1, item)
             self._tag_widgets.append(item)
 
-    def _open_add_dialog(self):
+    def _open_add_dialog(self) -> None:
         """打开添加标签对话框"""
         dialog = AddTagDialog(self._date, self._is_dark, self)
         dialog.tag_added.connect(self._on_tag_added)
         dialog.exec_()
 
-    def _on_tag_added(self, data: dict):
+    def _on_tag_added(self, data: dict) -> None:
         """添加标签回调"""
         self.db.add_activity_tag(
             date=self._date,
@@ -443,13 +443,13 @@ class ActivityTagDialog(QDialog):
         self._load_tags()
         self.tags_changed.emit()
 
-    def _on_delete_tag(self, tag_id: int):
+    def _on_delete_tag(self, tag_id: int) -> None:
         """删除标签回调"""
         self.db.delete_activity_tag(tag_id)
         self._load_tags()
         self.tags_changed.emit()
 
-    def _on_edit_tag(self, tag_id: int):
+    def _on_edit_tag(self, tag_id: int) -> None:
         """编辑标签回调"""
         tags = self.db.get_activity_tags(self._date)
         tag_data = None
@@ -468,5 +468,5 @@ class ActivityTagDialog(QDialog):
             self._load_tags()
             self.tags_changed.emit()
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark

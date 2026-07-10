@@ -35,7 +35,7 @@ class PomodoroWidget(QWidget):
     # 信号：模式切换
     mode_changed = pyqtSignal(str)  # "work" / "short_break" / "long_break"
 
-    def __init__(self, db: DatabaseManager, parent=None):
+    def __init__(self, db: DatabaseManager, parent=None) -> None:
         super().__init__(parent)
         self.db = db
         self._is_dark = False
@@ -70,14 +70,14 @@ class PomodoroWidget(QWidget):
         except Exception:
             return 0
 
-    def _save_today_count(self, count: int):
+    def _save_today_count(self, count: int) -> None:
         """保存今日完成次数"""
         try:
             self.db.save_config(f"pomodoro_count_{datetime.now().strftime('%Y-%m-%d')}", str(count))
         except Exception:
             pass
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         self.setFixedSize(280, 380)
         self.setObjectName("pomodoro_widget")
 
@@ -103,7 +103,7 @@ class PomodoroWidget(QWidget):
 
         self._apply_styles()
 
-    def _create_mode_bar(self):
+    def _create_mode_bar(self) -> None:
         """创建模式选择按钮组"""
         mode_bar = QHBoxLayout()
         mode_bar.setSpacing(4)
@@ -128,7 +128,7 @@ class PomodoroWidget(QWidget):
 
         return mode_bar
 
-    def _create_progress_area(self):
+    def _create_progress_area(self) -> None:
         """创建圆形进度区域"""
         self.progress_widget = QWidget()
         self.progress_widget.setFixedSize(180, 180)
@@ -148,7 +148,7 @@ class PomodoroWidget(QWidget):
 
         return self.progress_widget
 
-    def _create_controls(self):
+    def _create_controls(self) -> None:
         """创建控制按钮"""
         ctrl_bar = QHBoxLayout()
         ctrl_bar.setSpacing(8)
@@ -173,7 +173,7 @@ class PomodoroWidget(QWidget):
 
         return ctrl_bar
 
-    def _create_settings_panel(self):
+    def _create_settings_panel(self) -> None:
         """创建设置面板"""
         self.settings_frame = QFrame()
         self.settings_frame.setObjectName("pomodoro_settings")
@@ -214,11 +214,11 @@ class PomodoroWidget(QWidget):
         btn_save.clicked.connect(self._save_settings)
         settings_layout.addWidget(btn_save)
 
-    def _apply_styles(self):
+    def _apply_styles(self) -> None:
         """应用样式"""
         self.setStyleSheet(self._build_qss("light"))
 
-    def _apply_dark_styles(self):
+    def _apply_dark_styles(self) -> None:
         """应用暗色主题样式"""
         self.setStyleSheet(self._build_qss("dark"))
 
@@ -353,7 +353,7 @@ class PomodoroWidget(QWidget):
             }}
         """
 
-    def _switch_mode(self, mode: str):
+    def _switch_mode(self, mode: str) -> None:
         """切换模式"""
         if self._running:
             self._timer.stop()
@@ -365,7 +365,7 @@ class PomodoroWidget(QWidget):
         self._update_display()
         self.mode_changed.emit(mode)
 
-    def _update_mode_buttons(self):
+    def _update_mode_buttons(self) -> None:
         """更新模式按钮样式"""
         active_map = {
             "work": self.btn_work,
@@ -377,7 +377,7 @@ class PomodoroWidget(QWidget):
             btn.style().unpolish(btn)
             btn.style().polish(btn)
 
-    def _reset_timer_for_mode(self):
+    def _reset_timer_for_mode(self) -> None:
         """根据模式重置计时器"""
         if self._mode == "work":
             self._total_seconds = self.work_minutes * 60
@@ -387,7 +387,7 @@ class PomodoroWidget(QWidget):
             self._total_seconds = self.long_break_minutes * 60
         self._seconds_left = self._total_seconds
 
-    def _toggle_run(self):
+    def _toggle_run(self) -> None:
         """开始/暂停"""
         if self._running:
             self._timer.stop()
@@ -398,7 +398,7 @@ class PomodoroWidget(QWidget):
             self._running = True
             self.btn_start.setText("⏸ 暂停")
 
-    def _reset(self):
+    def _reset(self) -> None:
         """重置计时器"""
         self._timer.stop()
         self._running = False
@@ -406,7 +406,7 @@ class PomodoroWidget(QWidget):
         self._update_display()
         self.btn_start.setText("▶ 开始")
 
-    def _tick(self):
+    def _tick(self) -> None:
         """每秒更新"""
         if self._seconds_left > 0:
             self._seconds_left -= 1
@@ -416,7 +416,7 @@ class PomodoroWidget(QWidget):
             self._running = False
             self._on_complete()
 
-    def _on_complete(self):
+    def _on_complete(self) -> None:
         """计时完成"""
         if self._mode == "work":
             # 完成一个番茄钟
@@ -452,7 +452,7 @@ class PomodoroWidget(QWidget):
 
         self.btn_start.setText("▶ 开始")
 
-    def _play_sound(self):
+    def _play_sound(self) -> None:
         """播放提示音"""
         try:
             from PyQt5.QtWidgets import QApplication
@@ -460,7 +460,7 @@ class PomodoroWidget(QWidget):
         except Exception:
             pass
 
-    def _show_notification(self, title: str, message: str):
+    def _show_notification(self, title: str, message: str) -> None:
         """显示系统通知"""
         try:
             # 尝试使用系统托盘通知
@@ -470,7 +470,7 @@ class PomodoroWidget(QWidget):
         except Exception:
             pass
 
-    def _update_display(self):
+    def _update_display(self) -> None:
         """更新显示"""
         minutes = self._seconds_left // 60
         seconds = self._seconds_left % 60
@@ -478,7 +478,7 @@ class PomodoroWidget(QWidget):
         # 触发进度条重绘
         self.progress_widget.update()
 
-    def _toggle_settings(self):
+    def _toggle_settings(self) -> None:
         """切换设置面板"""
         if self.settings_frame.isVisible():
             self.settings_frame.hide()
@@ -489,7 +489,7 @@ class PomodoroWidget(QWidget):
             # 调整窗口大小以容纳设置
             self.setFixedSize(280, 520)
 
-    def _save_settings(self):
+    def _save_settings(self) -> None:
         """保存设置"""
         self.work_minutes = self.spin_work.value()
         self.short_break_minutes = self.spin_short.value()
@@ -520,7 +520,7 @@ class PomodoroWidget(QWidget):
 
     # ── 绘制圆形进度条 ──
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         """绘制圆形进度条"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -569,7 +569,7 @@ class PomodoroWidget(QWidget):
 
         painter.end()
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
         if is_dark:
@@ -584,7 +584,7 @@ class PomodoroDialog(QFrame):
 
     pomodoro_completed = pyqtSignal(int)
 
-    def __init__(self, db: DatabaseManager, parent=None):
+    def __init__(self, db: DatabaseManager, parent=None) -> None:
         super().__init__(parent)
         self.db = db
         self._is_dark = False
@@ -604,7 +604,7 @@ class PomodoroDialog(QFrame):
 
         self.hide()
 
-    def toggle_visibility(self):
+    def toggle_visibility(self) -> None:
         """切换可见性"""
         if self._visible:
             self.hide()
@@ -613,7 +613,7 @@ class PomodoroDialog(QFrame):
             self.show()
             self._visible = True
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
         self.pomodoro.set_theme(is_dark)

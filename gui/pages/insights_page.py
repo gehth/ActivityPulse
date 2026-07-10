@@ -23,7 +23,7 @@ CHART_COLORS = [
 class DonutChartWidget(QWidget):
     """环形图控件 - 支持hover tooltip"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.data = []  # [(name, value, color)]
         self.setFixedSize(220, 220)
@@ -32,14 +32,14 @@ class DonutChartWidget(QWidget):
         self._segments = []  # 存储每个扇区的角度范围 [(start_angle, span_angle)]
         self.setMouseTracking(True)
 
-    def set_data(self, data: list, is_dark: bool = False):
+    def set_data(self, data: list, is_dark: bool = False) -> None:
         self.data = data
         self._is_dark = is_dark
         self._hover_index = -1
         self._update_segments()
         self.update()
 
-    def _update_segments(self):
+    def _update_segments(self) -> None:
         """预计算每个扇区的角度范围（从12点方向顺时针，1/16度单位）"""
         self._segments = []
         total = sum(v for _, v, _ in self.data)
@@ -51,7 +51,7 @@ class DonutChartWidget(QWidget):
             self._segments.append((accumulated, accumulated + span))
             accumulated += span
 
-    def mouseMoveEvent(self, event: QMouseEvent):
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """鼠标移动时检测hover的扇区"""
         if not self.data or not self._segments:
             QToolTip.hideText()
@@ -105,13 +105,13 @@ class DonutChartWidget(QWidget):
         else:
             QToolTip.hideText()
 
-    def leaveEvent(self, event):
+    def leaveEvent(self, event) -> None:
         """鼠标离开时清除hover状态"""
         self._hover_index = -1
         QToolTip.hideText()
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         if not self.data:
             return
 
@@ -177,7 +177,7 @@ class DonutChartWidget(QWidget):
 class LineChartWidget(QWidget):
     """折线图控件 - 支持hover tooltip"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.data = []  # [(label, value)]
         self.setFixedHeight(200)
@@ -190,13 +190,13 @@ class LineChartWidget(QWidget):
         self._margin_bottom = 35
         self.setMouseTracking(True)
 
-    def set_data(self, data: list, is_dark: bool = False):
+    def set_data(self, data: list, is_dark: bool = False) -> None:
         self.data = data
         self._is_dark = is_dark
         self._hover_index = -1
         self.update()
 
-    def mouseMoveEvent(self, event: QMouseEvent):
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """鼠标移动时检测最近的数据点"""
         if not self.data or not self._points:
             QToolTip.hideText()
@@ -231,13 +231,13 @@ class LineChartWidget(QWidget):
         else:
             QToolTip.hideText()
 
-    def leaveEvent(self, event):
+    def leaveEvent(self, event) -> None:
         """鼠标离开时清除hover状态"""
         self._hover_index = -1
         QToolTip.hideText()
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         if not self.data:
             return
 
@@ -338,7 +338,7 @@ class LineChartWidget(QWidget):
 class BarChartWidget(QWidget):
     """柱状图控件 - 支持hover tooltip"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.data = []  # [(label, value)]
         self.setFixedHeight(200)
@@ -351,13 +351,13 @@ class BarChartWidget(QWidget):
         self._margin_bottom = 35
         self.setMouseTracking(True)
 
-    def set_data(self, data: list, is_dark: bool = False):
+    def set_data(self, data: list, is_dark: bool = False) -> None:
         self.data = data
         self._is_dark = is_dark
         self._hover_index = -1
         self.update()
 
-    def mouseMoveEvent(self, event: QMouseEvent):
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """鼠标移动时检测hover的柱子"""
         if not self.data or not self._bar_rects:
             QToolTip.hideText()
@@ -386,13 +386,13 @@ class BarChartWidget(QWidget):
         else:
             QToolTip.hideText()
 
-    def leaveEvent(self, event):
+    def leaveEvent(self, event) -> None:
         """鼠标离开时清除hover状态"""
         self._hover_index = -1
         QToolTip.hideText()
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         if not self.data:
             return
 
@@ -469,14 +469,14 @@ class BarChartWidget(QWidget):
 class InsightsPage(QWidget):
     """统计洞察页面"""
 
-    def __init__(self, db_manager: DatabaseManager, parent=None):
+    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
         self._loader = None  # 异步加载器
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QScrollArea.NoFrame)
@@ -510,7 +510,7 @@ class InsightsPage(QWidget):
         outer_layout.setContentsMargins(0, 0, 0, 0)
         outer_layout.addWidget(scroll)
 
-    def _create_top_charts(self):
+    def _create_top_charts(self) -> None:
         """创建上半部分图表区域（环形图+折线图）"""
         top_layout = QHBoxLayout()
         top_layout.setSpacing(16)
@@ -550,7 +550,7 @@ class InsightsPage(QWidget):
 
         return top_layout
 
-    def _create_bar_chart_card(self):
+    def _create_bar_chart_card(self) -> None:
         """创建柱状图卡片"""
         bar_card = AnimatedCard()
         bar_card.setObjectName("card")
@@ -563,7 +563,7 @@ class InsightsPage(QWidget):
         bar_layout.addWidget(self.bar_chart)
         return bar_card
 
-    def refresh(self, date: str = None, start_date: str = None, is_range: bool = False):
+    def refresh(self, date: str = None, start_date: str = None, is_range: bool = False) -> None:
         """异步刷新统计数据"""
         if date is None:
             date = QDate.currentDate().toString("yyyy-MM-dd")
@@ -594,7 +594,7 @@ class InsightsPage(QWidget):
         self._loader.all_done.connect(self._on_data_loaded)
         self._loader.start()
 
-    def _on_data_loaded(self, results: dict):
+    def _on_data_loaded(self, results: dict) -> None:
         """异步数据加载完成，更新图表"""
         ctx = getattr(self, '_refresh_ctx', {})
         is_range = ctx.get("is_range", False)
@@ -631,7 +631,7 @@ class InsightsPage(QWidget):
             self.empty_state.show()
             self.empty_state.set_theme(self._is_dark)
 
-    def _update_donut(self, app_summary: list, sensitive_apps: set):
+    def _update_donut(self, app_summary: list, sensitive_apps: set) -> None:
         """更新环形图"""
         chart_data = []
         other_minutes = 0
@@ -665,7 +665,7 @@ class InsightsPage(QWidget):
             label.setStyleSheet(f"color: {color};")
             self.legend_container.addWidget(label)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         self.donut_chart._is_dark = is_dark
         self.line_chart._is_dark = is_dark

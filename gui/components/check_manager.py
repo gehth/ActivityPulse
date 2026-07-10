@@ -21,7 +21,7 @@ class CheckManager:
     管理久坐提醒、应用限制检查、异常行为检测和自动报告。
     """
 
-    def __init__(self, db, tray_icon, app_monitor, input_monitor, callbacks: dict):
+    def __init__(self, db, tray_icon, app_monitor, input_monitor, callbacks: dict) -> None:
         """
         Args:
             db: DatabaseManager实例
@@ -54,13 +54,13 @@ class CheckManager:
         from utils.anomaly_detector import AnomalyDetector
         self._anomaly_detector = AnomalyDetector(db)
 
-    def _show_status(self, message: str):
+    def _show_status(self, message: str) -> None:
         """通过回调显示状态栏消息"""
         show_status = self._callbacks.get("show_status")
         if show_status:
             show_status(message)
 
-    def check_sedentary(self):
+    def check_sedentary(self) -> None:
         """久坐提醒检查 - 每分钟调用，支持暂停15分钟"""
         is_monitoring = self._callbacks.get("is_monitoring")
         if is_monitoring and not is_monitoring():
@@ -111,12 +111,12 @@ class CheckManager:
             # 用户不在电脑前，重置提醒状态
             self._sedentary_notified = False
 
-    def _on_sedentary_snooze(self):
+    def _on_sedentary_snooze(self) -> None:
         """久坐提醒暂停15分钟"""
         self._snooze_until = datetime.now() + timedelta(minutes=15)
         self._show_status("久坐提醒已暂停15分钟")
 
-    def check_app_limits(self):
+    def check_app_limits(self) -> None:
         """检查应用使用限制，超限时发送通知"""
         try:
             # 每日重置已通知记录
@@ -147,7 +147,7 @@ class CheckManager:
         except Exception as e:
             logging.exception("应用限制检查失败")
 
-    def check_anomaly(self):
+    def check_anomaly(self) -> None:
         """定时检查异常行为并通知"""
         try:
             # 执行异常检测
@@ -187,7 +187,7 @@ class CheckManager:
         except Exception as e:
             logging.exception("异常行为检测失败")
 
-    def check_auto_report(self):
+    def check_auto_report(self) -> None:
         """检查并发送自动报告（每日/每周）"""
         try:
             # 检查每日报告

@@ -73,7 +73,7 @@ class ScreenMonitor:
             logger.warning(f"截图失败: {e}")
             return ""
 
-    def _grab_all_monitors(self):
+    def _grab_all_monitors(self) -> object:
         """截取所有显示器的拼接截图
 
         Returns:

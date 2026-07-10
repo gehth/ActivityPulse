@@ -45,14 +45,14 @@ class AlertCard(QFrame):
     dismissed = pyqtSignal(int)  # alert_id
     read_clicked = pyqtSignal(int)  # alert_id
 
-    def __init__(self, alert: dict, parent=None):
+    def __init__(self, alert: dict, parent=None) -> None:
         super().__init__(parent)
         self.alert_id = alert.get("id", 0)
         self._alert = alert
         self._is_dark = False
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         alert = self._alert
         alert_type = alert.get("alert_type", "unknown")
         severity = alert.get("severity", "warning")
@@ -88,7 +88,7 @@ class AlertCard(QFrame):
 
         layout.addLayout(self._create_bottom_layout(alert))
 
-    def _create_title_layout(self, alert, type_cfg, sev_cfg, is_read):
+    def _create_title_layout(self, alert, type_cfg, sev_cfg, is_read) -> None:
         """创建标题行（类型图标+标题+严重程度+已读标记）"""
         title_layout = QHBoxLayout()
 
@@ -112,7 +112,7 @@ class AlertCard(QFrame):
 
         return title_layout
 
-    def _create_bottom_layout(self, alert):
+    def _create_bottom_layout(self, alert) -> None:
         """创建底部信息行（检测时间+忽略按钮）"""
         bottom_layout = QHBoxLayout()
 
@@ -144,7 +144,7 @@ class AlertCard(QFrame):
 
         return bottom_layout
 
-    def set_dark_mode(self, is_dark: bool):
+    def set_dark_mode(self, is_dark: bool) -> None:
         """设置暗色模式"""
         self._is_dark = is_dark
         # 暗色模式样式覆盖
@@ -194,7 +194,7 @@ class AnomalyAlertDialog(QDialog):
 
     alerts_changed = pyqtSignal()  # 告警状态变更信号
 
-    def __init__(self, db, parent=None):
+    def __init__(self, db, parent=None) -> None:
         super().__init__(parent)
         self.db = db
         self._is_dark = False
@@ -202,7 +202,7 @@ class AnomalyAlertDialog(QDialog):
         self._setup_ui()
         self._load_alerts()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         self.setWindowTitle("异常行为告警中心")
         self.setMinimumSize(520, 480)
         self.resize(560, 560)
@@ -221,7 +221,7 @@ class AnomalyAlertDialog(QDialog):
         close_btn.clicked.connect(self.accept)
         main_layout.addWidget(close_btn, 0, Qt.AlignRight)
 
-    def _create_header(self):
+    def _create_header(self) -> None:
         """创建标题行"""
         header_layout = QHBoxLayout()
         title = QLabel("🚨 异常行为告警中心")
@@ -234,7 +234,7 @@ class AnomalyAlertDialog(QDialog):
         header_layout.addWidget(self._count_label)
         return header_layout
 
-    def _create_action_bar(self):
+    def _create_action_bar(self) -> None:
         """创建操作按钮行（全部已读+刷新+筛选）"""
         btn_layout = QHBoxLayout()
 
@@ -265,7 +265,7 @@ class AnomalyAlertDialog(QDialog):
 
         return btn_layout
 
-    def _create_alert_list(self):
+    def _create_alert_list(self) -> None:
         """创建告警列表滚动区域"""
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -282,14 +282,14 @@ class AnomalyAlertDialog(QDialog):
         scroll.setWidget(self._list_widget)
         return scroll
 
-    def _set_filter(self, filter_type: str):
+    def _set_filter(self, filter_type: str) -> None:
         """设置筛选模式"""
         self._filter_all_btn.setChecked(filter_type == "all")
         self._filter_unread_btn.setChecked(filter_type == "unread")
         self._current_filter = filter_type
         self._load_alerts()
 
-    def _load_alerts(self):
+    def _load_alerts(self) -> None:
         """加载告警列表"""
         # 清空现有卡片
         for card in self._cards:
@@ -330,19 +330,19 @@ class AnomalyAlertDialog(QDialog):
             self._list_layout.insertWidget(idx, card)
             self._cards.append(card)
 
-    def _on_dismiss(self, alert_id: int):
+    def _on_dismiss(self, alert_id: int) -> None:
         """忽略告警"""
         self.db.dismiss_alert(alert_id)
         self._load_alerts()
         self.alerts_changed.emit()
 
-    def _mark_all_read(self):
+    def _mark_all_read(self) -> None:
         """全部标记已读"""
         self.db.mark_all_alerts_read()
         self._load_alerts()
         self.alerts_changed.emit()
 
-    def set_dark_mode(self, is_dark: bool):
+    def set_dark_mode(self, is_dark: bool) -> None:
         """设置暗色模式"""
         self._is_dark = is_dark
         colors = get_colors(is_dark)

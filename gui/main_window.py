@@ -45,7 +45,7 @@ APP_NAME = "行为记录"
 class MainWindow(QMainWindow):
     """主窗口"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle(f"{APP_NAME} v{APP_VERSION}")
         self.setMinimumSize(900, 600)
@@ -72,7 +72,7 @@ class MainWindow(QMainWindow):
         # 初始化后续设置
         self._init_post_setup()
 
-    def _init_monitors(self):
+    def _init_monitors(self) -> None:
         """从配置读取参数并初始化监控器"""
         app_interval = float(self.db.get_config("app_interval", "5"))
         input_interval = float(self.db.get_config("input_interval", "2"))
@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
         self.screen_monitor = ScreenMonitor(self.db, interval=screenshot_interval)
         self.screenshot_enabled = screenshot_enabled
 
-    def _init_managers(self):
+    def _init_managers(self) -> None:
         """初始化托盘、检测、导出管理器"""
         self._tray_manager = TrayManager(
             main_window=self,
@@ -125,7 +125,7 @@ class MainWindow(QMainWindow):
             }
         )
 
-    def _init_post_setup(self):
+    def _init_post_setup(self) -> None:
         """初始化定时器、快捷键、主题及启动后任务"""
         self._setup_timer()
         self._setup_hotkey()
@@ -164,12 +164,12 @@ class MainWindow(QMainWindow):
         if retention_days > 0:
             QTimer.singleShot(2000, lambda: self._auto_cleanup(retention_days))
 
-    def _auto_start_monitoring(self):
+    def _auto_start_monitoring(self) -> None:
         """自动开始记录"""
         self._start_monitoring()
         self.sidebar.set_monitoring(True)
 
-    def _auto_cleanup(self, retention_days: int):
+    def _auto_cleanup(self, retention_days: int) -> None:
         """启动时自动清理过期数据"""
         try:
             stats = self.db.cleanup_old_data(retention_days)
@@ -181,7 +181,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logging.exception("自动清理失败")
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         central = QWidget()
         self.setCentralWidget(central)
         main_layout = QHBoxLayout(central)
@@ -227,7 +227,7 @@ class MainWindow(QMainWindow):
         self._pomodoro_visible = False
         self._pomodoro_widget.pomodoro_completed.connect(self._on_pomodoro_completed)
 
-    def _setup_toolbar(self, parent_layout):
+    def _setup_toolbar(self, parent_layout) -> None:
         """创建顶部工具栏"""
         toolbar, tb_widgets = create_toolbar({
             "on_time_range_changed": self._on_time_range_changed,
@@ -251,7 +251,7 @@ class MainWindow(QMainWindow):
         self.btn_theme = tb_widgets.btn_theme
         parent_layout.addWidget(toolbar)
 
-    def _create_content_stack(self):
+    def _create_content_stack(self) -> None:
         """创建页面容器（含隐私遮罩层）"""
         self._content_stack = QFrame()
         self._content_stack.setObjectName("content_stack")
@@ -297,7 +297,7 @@ class MainWindow(QMainWindow):
 
 
 
-    def _setup_timer(self):
+    def _setup_timer(self) -> None:
         """设置定时刷新"""
         self.refresh_timer = QTimer(self)
         self.refresh_timer.timeout.connect(self._auto_refresh)
@@ -321,7 +321,7 @@ class MainWindow(QMainWindow):
         anomaly_interval = int(self.db.get_config("anomaly_check_interval", "300")) * 1000
         self._anomaly_check_timer.start(anomaly_interval)
 
-    def _setup_hotkey(self):
+    def _setup_hotkey(self) -> None:
         """设置全局快捷键 - 从配置加载多组快捷键"""
         hotkey_str = self.db.get_config("global_hotkey", DEFAULT_HOTKEY)
         self._hotkey_manager = GlobalHotkeyManager(
@@ -345,7 +345,7 @@ class MainWindow(QMainWindow):
         display = GlobalHotkeyManager.hotkey_to_display(hotkey_str)
         self.statusBar().showMessage(f"{APP_NAME} v{APP_VERSION} 就绪 | 快捷键: {display}")
 
-    def _get_hotkey_callback(self, action: str):
+    def _get_hotkey_callback(self, action: str) -> object:
         """获取快捷键动作对应的回调函数"""
         callbacks = {
             "toggle_pause": self._toggle_pause,
@@ -354,7 +354,7 @@ class MainWindow(QMainWindow):
         }
         return callbacks.get(action)
 
-    def _toggle_pause(self):
+    def _toggle_pause(self) -> None:
         """暂停/恢复记录快捷键回调"""
         if hasattr(self, '_monitor_paused') and self._monitor_paused:
             # 恢复监控
@@ -370,20 +370,20 @@ class MainWindow(QMainWindow):
                 self._monitor_paused = True
                 self.statusBar().showMessage("⏸ 监控已暂停（快捷键恢复）")
 
-    def _toggle_privacy(self):
+    def _toggle_privacy(self) -> None:
         """隐私模式切换快捷键回调"""
         if hasattr(self, 'privacy_mode') and self.privacy_mode:
             self._on_toggle_privacy(False)
         else:
             self._on_toggle_privacy(True)
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event) -> None:
         """窗口大小改变时更新引导页位置"""
         super().resizeEvent(event)
         if hasattr(self, '_welcome_page') and self._welcome_page and self._welcome_page.isVisible():
             self._welcome_page.setGeometry(self.rect())
 
-    def _check_first_run(self):
+    def _check_first_run(self) -> None:
         """检查是否首次启动，如果是则显示引导页"""
         # 检查是否已有数据（有app_usage记录则非首次）
         has_data = self.db.get_config("first_run_done", "0") == "1"
@@ -403,7 +403,7 @@ class MainWindow(QMainWindow):
             self._welcome_page.raise_()
             self._welcome_page.show()
 
-    def _on_welcome_done(self, settings: dict):
+    def _on_welcome_done(self, settings: dict) -> None:
         """引导页完成 - 保存快速设置"""
         # 保存设置
         self.db.save_config("auto_monitor", "1" if settings.get("auto_monitor", True) else "0")
@@ -433,14 +433,14 @@ class MainWindow(QMainWindow):
 
         self.statusBar().showMessage("设置已保存，欢迎使用行为记录！")
 
-    def _toggle_window(self):
+    def _toggle_window(self) -> None:
         """切换主窗口显示/隐藏（全局热键回调）"""
         if self.isVisible():
             self.hide()
         else:
             self._show_window()
 
-    def _on_page_changed(self, index: int):
+    def _on_page_changed(self, index: int) -> None:
         """页面切换 - 带滑动+淡入动画"""
         old_index = self.page_stack.currentIndex()
         direction = 1 if index > old_index else -1  # 右滑或左滑
@@ -483,7 +483,7 @@ class MainWindow(QMainWindow):
 
         self._refresh_current_page()
 
-    def _navigate_to_categories(self, app_name: str):
+    def _navigate_to_categories(self, app_name: str) -> None:
         """从仪表盘Top5跳转到分类管理页"""
         # 切换到分类管理页(index=3)
         self.sidebar._set_active(3)
@@ -491,14 +491,14 @@ class MainWindow(QMainWindow):
         # 高亮对应应用
         self.categories_page.highlight_app(app_name)
 
-    def _on_toggle_monitor(self, monitoring: bool):
+    def _on_toggle_monitor(self, monitoring: bool) -> None:
         """切换监控状态"""
         if monitoring:
             self._start_monitoring()
         else:
             self._stop_monitoring()
 
-    def _start_monitoring(self):
+    def _start_monitoring(self) -> None:
         try:
             self.app_monitor.start()
             self.input_monitor.start()
@@ -510,7 +510,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "错误", f"启动监控失败: {e}")
 
-    def _stop_monitoring(self):
+    def _stop_monitoring(self) -> None:
         try:
             self.app_monitor.stop()
             self.input_monitor.stop()
@@ -521,7 +521,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "错误", f"停止监控失败: {e}")
 
-    def _on_toggle_privacy(self, enabled: bool):
+    def _on_toggle_privacy(self, enabled: bool) -> None:
         """切换隐私模式 - 实际暂停/恢复监控"""
         self.privacy_mode = enabled
         if enabled:
@@ -541,7 +541,7 @@ class MainWindow(QMainWindow):
             self.sidebar.set_monitoring(True)
             self.statusBar().showMessage("隐私模式已关闭，监控已恢复")
 
-    def eventFilter(self, obj, event):
+    def eventFilter(self, obj, event) -> bool:
         """事件过滤器 - 调整隐私遮罩位置"""
         try:
             if obj is self._content_stack and event.type() == event.Resize:
@@ -550,7 +550,7 @@ class MainWindow(QMainWindow):
             pass
         return super().eventFilter(obj, event)
 
-    def _on_settings(self):
+    def _on_settings(self) -> None:
         """打开设置"""
         dialog = SettingsDialog(self.db, self)
         dialog.setStyleSheet(self.styleSheet())
@@ -558,14 +558,14 @@ class MainWindow(QMainWindow):
         if dialog.exec_() == SettingsDialog.Accepted:
             self.statusBar().showMessage("设置已更新")
 
-    def _open_search(self):
+    def _open_search(self) -> None:
         """打开搜索对话框"""
         dialog = SearchDialog(self.db, self)
         dialog.set_theme(self.current_theme == "dark")
         dialog.navigate_to_record.connect(self._on_search_navigate)
         dialog.show_and_focus()
 
-    def _on_search_navigate(self, date_str: str, app_name: str):
+    def _on_search_navigate(self, date_str: str, app_name: str) -> None:
         """搜索结果跳转 - 切换到时间轴页并定位到对应日期"""
         # 设置日期
         self.date_edit.setDate(QDate.fromString(date_str, "yyyy-MM-dd"))
@@ -575,7 +575,7 @@ class MainWindow(QMainWindow):
         self._on_page_changed(1)
         self.statusBar().showMessage(f"已跳转到 {date_str} - {app_name}")
 
-    def _toggle_pomodoro(self):
+    def _toggle_pomodoro(self) -> None:
         """切换番茄钟面板"""
         if self._pomodoro_visible:
             self._pomodoro_widget.hide()
@@ -590,11 +590,11 @@ class MainWindow(QMainWindow):
             self._pomodoro_widget.raise_()
             self._pomodoro_visible = True
 
-    def _on_pomodoro_completed(self, count: int):
+    def _on_pomodoro_completed(self, count: int) -> None:
         """番茄钟完成回调"""
         self.statusBar().showMessage(f"🍅 番茄钟完成！今日已完成 {count} 个专注时段")
 
-    def _on_daily_goal_achieved(self):
+    def _on_daily_goal_achieved(self) -> None:
         """每日目标达成通知"""
         self.statusBar().showMessage("🎉 恭喜！今日专注目标已达成！")
         # 系统托盘通知
@@ -608,7 +608,7 @@ class MainWindow(QMainWindow):
         from PyQt5.QtWidgets import QApplication
         QApplication.beep()
 
-    def _open_tags(self):
+    def _open_tags(self) -> None:
         """打开活动标签管理对话框"""
         _, end_date, _ = self._get_date_range()
         dialog = ActivityTagDialog(self.db, end_date, self._is_dark, self)
@@ -616,7 +616,7 @@ class MainWindow(QMainWindow):
         dialog.tags_changed.connect(self._refresh_current_page)
         dialog.exec_()
 
-    def _show_window(self):
+    def _show_window(self) -> None:
         """显示主窗口"""
         self.show()
         self.activateWindow()
@@ -624,13 +624,13 @@ class MainWindow(QMainWindow):
 
 
 
-    def _show_about(self):
+    def _show_about(self) -> None:
         """显示关于对话框"""
         dialog = AboutDialog(self, version=APP_VERSION)
         dialog.setStyleSheet(self.styleSheet())
         dialog.exec_()
 
-    def _on_time_range_changed(self, text: str):
+    def _on_time_range_changed(self, text: str) -> None:
         """时间范围变更"""
         self._time_range_mode = text
         is_custom = text == "自定义"
@@ -658,7 +658,7 @@ class MainWindow(QMainWindow):
 
         self._refresh_current_page()
 
-    def _get_date_range(self):
+    def _get_date_range(self) -> tuple:
         """获取当前日期范围 (start_date, end_date, is_range)"""
         if self._time_range_mode == "自定义":
             start_date = self.date_start_edit.date().toString("yyyy-MM-dd")
@@ -674,7 +674,7 @@ class MainWindow(QMainWindow):
         else:
             return end_date, end_date, False
 
-    def _refresh_current_page(self):
+    def _refresh_current_page(self) -> None:
         """刷新当前页面"""
         start_date, end_date, is_range = self._get_date_range()
         index = self.page_stack.currentIndex()
@@ -692,12 +692,12 @@ class MainWindow(QMainWindow):
             self.screenshots_page.date_end.setDate(QDate.fromString(end_date, "yyyy-MM-dd"))
             self.screenshots_page.refresh()
 
-    def _auto_refresh(self):
+    def _auto_refresh(self) -> None:
         """自动刷新"""
         if self.is_monitoring:
             self._refresh_current_page()
 
-    def _show_sedentary_dialog(self, minutes: int, snooze_callback):
+    def _show_sedentary_dialog(self, minutes: int, snooze_callback) -> None:
         """显示久坐提醒对话框（CheckManager回调）"""
         dialog = SedentaryDialog(minutes, self)
         dialog.snoozed.connect(snooze_callback)
@@ -709,7 +709,7 @@ class MainWindow(QMainWindow):
 
 
 
-    def _show_anomaly_alerts(self):
+    def _show_anomaly_alerts(self) -> None:
         """显示异常告警中心对话框"""
         try:
             dialog = AnomalyAlertDialog(self.db, self)
@@ -719,7 +719,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logging.exception("显示告警对话框失败")
 
-    def _open_playback(self):
+    def _open_playback(self) -> None:
         """打开屏幕回放对话框"""
         try:
             start_date, end_date, _ = self._get_date_range()
@@ -738,7 +738,7 @@ class MainWindow(QMainWindow):
             logging.exception("打开屏幕回放失败")
             QMessageBox.warning(self, "屏幕回放", f"打开回放失败: {e}")
 
-    def _update_anomaly_badge(self):
+    def _update_anomaly_badge(self) -> None:
         """更新侧边栏告警badge"""
         try:
             unread = self.db.get_unread_alert_count()
@@ -747,7 +747,7 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
 
-    def _toggle_theme(self):
+    def _toggle_theme(self) -> None:
         """切换主题"""
         if self.current_theme == "light":
             self.current_theme = "dark"
@@ -757,7 +757,7 @@ class MainWindow(QMainWindow):
             self.btn_theme.setText("🌙 深色")
         self._apply_theme()
 
-    def _apply_theme(self):
+    def _apply_theme(self) -> None:
         """应用主题"""
         qss = get_theme_qss(self.current_theme)
         self.setStyleSheet(qss)
@@ -771,7 +771,7 @@ class MainWindow(QMainWindow):
         self.screenshots_page.set_theme(is_dark)
         self._pomodoro_widget.set_theme(is_dark)
 
-    def _quit_app(self):
+    def _quit_app(self) -> None:
         """退出应用"""
         if self.is_monitoring:
             self._stop_monitoring()
@@ -780,7 +780,7 @@ class MainWindow(QMainWindow):
         self.tray_icon.hide()
         QApplication.instance().quit()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event) -> None:
         """关闭事件 - 最小化到托盘"""
         event.ignore()
         self.hide()

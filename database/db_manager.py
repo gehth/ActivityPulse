@@ -32,7 +32,7 @@ class DatabaseManager(
     每个线程获取独立连接（通过thread local），写操作通过全局锁串行化。
     """
 
-    def __init__(self, db_path: str = None):
+    def __init__(self, db_path: str = None) -> None:
         if db_path is None:
             db_dir = os.path.join(os.path.expanduser("~"), ".computer_monitor")
             os.makedirs(db_dir, exist_ok=True)

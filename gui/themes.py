@@ -400,7 +400,7 @@ def get_colors(theme: str = "light") -> dict:
     return COLORS.get(theme, COLORS["light"])
 
 
-def apply_card_shadow(widget, is_dark: bool = False, blur: int = 16, offset: int = 2):
+def apply_card_shadow(widget, is_dark: bool = False, blur: int = 16, offset: int = 2) -> None:
     """为卡片/组件添加投影阴影效果"""
     shadow = QGraphicsDropShadowEffect(widget)
     shadow.setBlurRadius(blur)
@@ -418,7 +418,7 @@ def apply_card_shadow(widget, is_dark: bool = False, blur: int = 16, offset: int
 class SkeletonWidget(QWidget):
     """骨架屏占位组件 - 显示加载中的占位效果"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self._is_dark = False
         self._opacity = 0.0
@@ -430,11 +430,11 @@ class SkeletonWidget(QWidget):
         self._timer.timeout.connect(self._animate)
         self._timer.start(50)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         self.update()
 
-    def _animate(self):
+    def _animate(self) -> None:
         step = 0.02
         if self._increasing:
             self._opacity += step
@@ -448,7 +448,7 @@ class SkeletonWidget(QWidget):
                 self._increasing = True
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         from PyQt5.QtGui import QPainter, QColor, QBrush
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -483,11 +483,11 @@ class SkeletonWidget(QWidget):
         painter.end()
 
 
-    def hideEvent(self, event):
+    def hideEvent(self, event) -> None:
         self._timer.stop()
         super().hideEvent(event)
 
-    def showEvent(self, event):
+    def showEvent(self, event) -> None:
         self._timer.start(50)
         super().showEvent(event)
 
@@ -499,7 +499,7 @@ class HoverButton(QPushButton):
     配合QSS padding-top:6px实现上浮视觉，动画过渡平滑。
     """
 
-    def __init__(self, text: str = "", parent=None):
+    def __init__(self, text: str = "", parent=None) -> None:
         super().__init__(text, parent)
         self._is_dark = False
         self._hover_shadow = None
@@ -507,11 +507,11 @@ class HoverButton(QPushButton):
         self._anim = None
         self.setCursor(Qt.PointingHandCursor)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         self._update_shadow(False)
 
-    def _update_shadow(self, hover: bool):
+    def _update_shadow(self, hover: bool) -> None:
         """更新阴影效果"""
         shadow = QGraphicsDropShadowEffect(self)
         if hover:
@@ -525,11 +525,11 @@ class HoverButton(QPushButton):
         self.setGraphicsEffect(shadow)
         self._card_shadow = shadow  # 防止GC回收
 
-    def enterEvent(self, event):
+    def enterEvent(self, event) -> None:
         self._update_shadow(True)
         super().enterEvent(event)
 
-    def leaveEvent(self, event):
+    def leaveEvent(self, event) -> None:
         self._update_shadow(False)
         super().leaveEvent(event)
 
@@ -540,7 +540,7 @@ class RippleOverlay(QWidget):
     点击时在鼠标位置产生扩散的水波纹动画，模拟Material Design ripple。
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self._ripples = []  # [(cx, cy, radius, max_radius, opacity), ...]
         self._is_dark = False
@@ -550,17 +550,17 @@ class RippleOverlay(QWidget):
         self.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
 
-    def add_ripple(self, x: int, y: int):
+    def add_ripple(self, x: int, y: int) -> None:
         """在(x,y)位置添加一个ripple"""
         max_radius = max(self.width(), self.height()) * 1.2
         self._ripples.append([x, y, 0.0, max_radius, 0.3])
         if not self._timer.isActive():
             self._timer.start()
 
-    def _tick(self):
+    def _tick(self) -> None:
         """动画帧"""
         alive = []
         for r in self._ripples:
@@ -573,7 +573,7 @@ class RippleOverlay(QWidget):
         if not alive:
             self._timer.stop()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         if not self._ripples:
             return
         painter = QPainter(self)
@@ -592,7 +592,7 @@ class RippleOverlay(QWidget):
                                 int(radius * 2), int(radius * 2))
         painter.end()
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event) -> None:
         """跟随父组件大小"""
         if self.parent():
             self.setGeometry(0, 0, self.parent().width(), self.parent().height())
@@ -606,17 +606,17 @@ class AnimatedCard(QFrame):
     用于替代普通QFrame卡片，提升交互质感。
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self._ripple = RippleOverlay(self)
         self._is_dark = False
         self._scale_anim = None
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         self._ripple.set_theme(is_dark)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event) -> None:
         """点击时触发ripple + 缩放动画"""
         if event.button() == Qt.LeftButton:
             self._ripple.add_ripple(event.x(), event.y())
@@ -633,7 +633,7 @@ class AnimatedCard(QFrame):
             self._scale_anim.start()
         super().mousePressEvent(event)
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event) -> None:
         """ripple层跟随卡片大小"""
         self._ripple.setGeometry(0, 0, self.width(), self.height())
         super().resizeEvent(event)
@@ -643,18 +643,18 @@ class EmptyStateWidget(QWidget):
     """空数据状态组件 - 无数据时显示引导文案"""
 
     def __init__(self, icon: str = "📭", title: str = "暂无数据",
-                 description: str = "开始使用后，数据将自动出现在这里", parent=None):
+                 description: str = "开始使用后，数据将自动出现在这里", parent=None) -> None:
         super().__init__(parent)
         self._is_dark = False
         self._icon = icon
         self._title = title
         self._description = description
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         self.update()
 
-    def set_content(self, icon: str = None, title: str = None, description: str = None):
+    def set_content(self, icon: str = None, title: str = None, description: str = None) -> None:
         if icon:
             self._icon = icon
         if title:
@@ -663,7 +663,7 @@ class EmptyStateWidget(QWidget):
             self._description = description
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         from PyQt5.QtGui import QPainter, QColor, QFont
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)

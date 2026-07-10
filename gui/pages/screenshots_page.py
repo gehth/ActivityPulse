@@ -17,13 +17,13 @@ class ThumbnailLoadWorker(QThread):
     """异步缩略图加载Worker"""
     loaded = pyqtSignal(str, QPixmap)  # (path, pixmap)
 
-    def __init__(self, paths: list, size: tuple = (188, 106), parent=None):
+    def __init__(self, paths: list, size: tuple = (188, 106), parent=None) -> None:
         super().__init__(parent)
         self._paths = paths
         self._size = size
         self._cancelled = False
 
-    def run(self):
+    def run(self) -> None:
         for path in self._paths:
             if self._cancelled:
                 break
@@ -39,7 +39,7 @@ class ThumbnailLoadWorker(QThread):
                 except Exception:
                     pass
 
-    def cancel(self):
+    def cancel(self) -> None:
         self._cancelled = True
 
 
@@ -53,7 +53,7 @@ class ScreenshotThumbnail(QFrame):
     clicked = pyqtSignal(str, list, int)  # (file_path, image_list, index)
 
     def __init__(self, file_path: str, thumbnail_path: str, timestamp: str,
-                 app_name: str = "", index: int = 0, image_list: list = None, parent=None):
+                 app_name: str = "", index: int = 0, image_list: list = None, parent=None) -> None:
         super().__init__(parent)
         self._file_path = file_path
         self._thumbnail_path = thumbnail_path
@@ -68,7 +68,7 @@ class ScreenshotThumbnail(QFrame):
         self.setCursor(Qt.PointingHandCursor)
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)
         layout.setContentsMargins(6, 6, 6, 6)
         layout.setSpacing(4)
@@ -94,7 +94,7 @@ class ScreenshotThumbnail(QFrame):
             app_label.setStyleSheet("font-size: 10px;")
             layout.addWidget(app_label)
 
-    def _load_thumbnail(self):
+    def _load_thumbnail(self) -> str:
         """异步加载缩略图（优先使用缓存）"""
         thumb_path = self._thumbnail_path or self._file_path
 
@@ -124,16 +124,16 @@ class ScreenshotThumbnail(QFrame):
         )
 
     @classmethod
-    def clear_cache(cls):
+    def clear_cache(cls) -> None:
         """清空缩略图缓存"""
         cls._pixmap_cache.clear()
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event) -> None:
         """点击缩略图 - 发送点击信号"""
         if event.button() == Qt.LeftButton:
             self.clicked.emit(self._file_path, self._image_list, self._index)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
 
 
@@ -142,7 +142,7 @@ class ScreenshotsPage(QWidget):
 
     PAGE_SIZE = 20  # 每页显示数量
 
-    def __init__(self, db_manager: DatabaseManager, parent=None):
+    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
@@ -151,7 +151,7 @@ class ScreenshotsPage(QWidget):
         self._total_pages = 1
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QScrollArea.NoFrame)
@@ -183,7 +183,7 @@ class ScreenshotsPage(QWidget):
         outer_layout.setContentsMargins(0, 0, 0, 0)
         outer_layout.addWidget(scroll)
 
-    def _create_header(self):
+    def _create_header(self) -> None:
         """创建标题行"""
         header_layout = QHBoxLayout()
         title = QLabel("截图浏览")
@@ -212,7 +212,7 @@ class ScreenshotsPage(QWidget):
         vbox.addWidget(desc)
         return vbox
 
-    def _create_date_filter_card(self):
+    def _create_date_filter_card(self) -> None:
         """创建日期范围筛选卡片"""
         date_card = AnimatedCard()
         date_card.setObjectName("card")
@@ -265,7 +265,7 @@ class ScreenshotsPage(QWidget):
 
         return date_card
 
-    def _create_grid_area(self):
+    def _create_grid_area(self) -> None:
         """创建截图网格区域"""
         self.grid_card = AnimatedCard()
         self.grid_card.setObjectName("card")
@@ -275,7 +275,7 @@ class ScreenshotsPage(QWidget):
 
         return self.grid_card
 
-    def _create_page_bar(self):
+    def _create_page_bar(self) -> None:
         """创建分页控件"""
         self._page_bar = QFrame()
         self._page_bar.setObjectName("card")
@@ -311,38 +311,38 @@ class ScreenshotsPage(QWidget):
         self._page_bar.hide()
         return self._page_bar
 
-    def _on_query(self):
+    def _on_query(self) -> None:
         """查询按钮点击"""
         self._current_page = 1
         self.refresh()
 
-    def _on_today(self):
+    def _on_today(self) -> None:
         """快捷：今天"""
         self.date_start.setDate(QDate.currentDate())
         self.date_end.setDate(QDate.currentDate())
         self._current_page = 1
         self.refresh()
 
-    def _on_recent7(self):
+    def _on_recent7(self) -> None:
         """快捷：近7天"""
         self.date_start.setDate(QDate.currentDate().addDays(-6))
         self.date_end.setDate(QDate.currentDate())
         self._current_page = 1
         self.refresh()
 
-    def _on_prev_page(self):
+    def _on_prev_page(self) -> None:
         """上一页"""
         if self._current_page > 1:
             self._current_page -= 1
             self.refresh()
 
-    def _on_next_page(self):
+    def _on_next_page(self) -> None:
         """下一页"""
         if self._current_page < self._total_pages:
             self._current_page += 1
             self.refresh()
 
-    def refresh(self):
+    def refresh(self) -> None:
         """刷新截图列表（使用日期范围+分页）"""
         start_date = self.date_start.date().toString("yyyy-MM-dd")
         end_date = self.date_end.date().toString("yyyy-MM-dd")
@@ -393,7 +393,7 @@ class ScreenshotsPage(QWidget):
         # 更新分页控件
         self._update_page_bar()
 
-    def _update_page_bar(self):
+    def _update_page_bar(self) -> None:
         """更新分页控件状态"""
         if self._total_pages <= 1:
             self._page_bar.hide()
@@ -404,7 +404,7 @@ class ScreenshotsPage(QWidget):
         self.btn_next.setEnabled(self._current_page < self._total_pages)
         self.page_label.setText(f"{self._current_page} / {self._total_pages}")
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """更新主题"""
         self._is_dark = is_dark
         # 更新已有缩略图的主题
@@ -446,7 +446,7 @@ class ScreenshotsPage(QWidget):
             if hasattr(btn, 'set_theme'):
                 btn.set_theme(is_dark)
 
-    def _on_thumbnail_clicked(self, file_path: str, image_list: list, index: int):
+    def _on_thumbnail_clicked(self, file_path: str, image_list: list, index: int) -> None:
         """缩略图点击 - 打开大图查看器"""
         from gui.image_viewer import ImageViewerDialog
         if not os.path.exists(file_path):
@@ -456,7 +456,7 @@ class ScreenshotsPage(QWidget):
         viewer.set_theme(self._is_dark)
         viewer.exec_()
 
-    def _open_playback(self):
+    def _open_playback(self) -> None:
         """打开屏幕回放对话框"""
         from gui.screen_playback import ScreenPlaybackDialog
 
@@ -477,7 +477,7 @@ class ScreenshotsPage(QWidget):
         dialog.set_theme(self._is_dark)
         dialog.exec_()
 
-    def _open_screenshot_dir(self):
+    def _open_screenshot_dir(self) -> None:
         """打开截图保存目录"""
         screenshot_dir = os.path.join(
             os.path.expanduser("~"), ".computer_monitor", "screenshots"

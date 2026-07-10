@@ -17,7 +17,7 @@ class TrayManager:
     管理托盘图标、菜单和动态信息更新。
     """
 
-    def __init__(self, main_window, db, app_monitor, callbacks: dict):
+    def __init__(self, main_window, db, app_monitor, callbacks: dict) -> None:
         """
         Args:
             main_window: 主窗口实例（用于setWindowIcon等）
@@ -54,7 +54,7 @@ class TrayManager:
         self._tray_info_timer.timeout.connect(self.update_tray_info)
         self._tray_info_timer.start(10000)  # 每10秒更新
 
-    def _build_tray_menu(self, main_window, callbacks):
+    def _build_tray_menu(self, main_window, callbacks) -> None:
         """构建托盘右键菜单"""
         menu = QMenu()
 
@@ -96,14 +96,14 @@ class TrayManager:
 
         return menu
 
-    def _on_tray_activated(self, reason):
+    def _on_tray_activated(self, reason) -> None:
         """托盘图标激活（双击打开主窗口）"""
         if reason == QSystemTrayIcon.DoubleClick:
             callback = self._callbacks.get("on_show_window")
             if callback:
                 callback()
 
-    def update_tray_info(self):
+    def update_tray_info(self) -> None:
         """更新托盘菜单中的动态信息"""
         try:
             # 今日记录时长

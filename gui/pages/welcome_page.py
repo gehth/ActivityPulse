@@ -18,12 +18,12 @@ class WelcomePage(QWidget):
 
     start_clicked = pyqtSignal(dict)  # 快速设置参数 {"auto_monitor": bool, "screenshot": bool, ...}
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self._is_dark = False
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)
         layout.setContentsMargins(60, 40, 60, 40)
         layout.setSpacing(24)
@@ -48,7 +48,7 @@ class WelcomePage(QWidget):
 
         layout.addStretch(1)
 
-    def _create_header(self):
+    def _create_header(self) -> None:
         """创建欢迎标题区域"""
         vbox = QVBoxLayout()
 
@@ -66,7 +66,7 @@ class WelcomePage(QWidget):
 
         return vbox
 
-    def _create_features_section(self):
+    def _create_features_section(self) -> None:
         """创建功能介绍卡片区域"""
         features_layout = QHBoxLayout()
         features_layout.setSpacing(16)
@@ -105,7 +105,7 @@ class WelcomePage(QWidget):
 
         return features_layout
 
-    def _create_settings_card(self):
+    def _create_settings_card(self) -> None:
         """创建快速设置卡片"""
         settings_card = QFrame()
         settings_card.setObjectName("card")
@@ -150,7 +150,7 @@ class WelcomePage(QWidget):
 
         return settings_card
 
-    def _create_start_button(self):
+    def _create_start_button(self) -> None:
         """创建开始按钮区域"""
         vbox = QVBoxLayout()
 
@@ -181,7 +181,7 @@ class WelcomePage(QWidget):
 
         return vbox
 
-    def _on_start(self):
+    def _on_start(self) -> None:
         """点击开始使用"""
         settings = {
             "auto_monitor": self.cb_auto_monitor.isChecked(),
@@ -191,7 +191,7 @@ class WelcomePage(QWidget):
         }
         self.start_clicked.emit(settings)
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         """更新主题"""
         self._is_dark = is_dark
         self.btn_start.set_theme(is_dark)

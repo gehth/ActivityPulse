@@ -53,7 +53,7 @@ PRESET_CATEGORIES = [
 class CategoryTag(QFrame):
     """分类标签"""
 
-    def __init__(self, name: str, color: str):
+    def __init__(self, name: str, color: str) -> None:
         super().__init__()
         self.setStyleSheet(f"""
             QFrame {{
@@ -79,7 +79,7 @@ class CategoryTag(QFrame):
 class CategoriesPage(QWidget):
     """分类管理页面"""
 
-    def __init__(self, db_manager: DatabaseManager, parent=None):
+    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
@@ -91,7 +91,7 @@ class CategoriesPage(QWidget):
         self._load_custom_categories()
         self._setup_ui()
 
-    def _load_custom_categories(self):
+    def _load_custom_categories(self) -> None:
         """从数据库加载自定义分类"""
         saved = self.db.get_config("custom_categories")
         if saved:
@@ -100,11 +100,11 @@ class CategoriesPage(QWidget):
             except (json.JSONDecodeError, TypeError):
                 self._custom_categories = []
 
-    def _save_custom_categories(self):
+    def _save_custom_categories(self) -> None:
         """保存自定义分类到数据库"""
         self.db.save_config("custom_categories", json.dumps(self._custom_categories, ensure_ascii=False))
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QScrollArea.NoFrame)
@@ -138,7 +138,7 @@ class CategoriesPage(QWidget):
         outer_layout.setContentsMargins(0, 0, 0, 0)
         outer_layout.addWidget(scroll)
 
-    def _create_category_card(self):
+    def _create_category_card(self) -> None:
         """创建预设分类卡片"""
         cat_card = AnimatedCard()
         cat_card.setObjectName("card")
@@ -167,7 +167,7 @@ class CategoriesPage(QWidget):
 
         return cat_card
 
-    def _create_table_card(self):
+    def _create_table_card(self) -> None:
         """创建应用分类管理表格卡片"""
         table_card = AnimatedCard()
         table_card.setObjectName("card")
@@ -231,7 +231,7 @@ class CategoriesPage(QWidget):
 
         return table_card
 
-    def _rebuild_category_tags(self):
+    def _rebuild_category_tags(self) -> None:
         """重建分类标签"""
         # 清除旧标签
         while self._tags_layout.count():
@@ -255,14 +255,14 @@ class CategoriesPage(QWidget):
 
         self._tags_layout.addStretch()
 
-    def _get_all_categories(self):
+    def _get_all_categories(self) -> list:
         """获取所有分类（预设+自定义）"""
         all_cats = list(PRESET_CATEGORIES)
         for name, color, key in self._custom_categories:
             all_cats.append((name, color, key))
         return all_cats
 
-    def refresh(self, date: str = None, start_date: str = None, is_range: bool = False):
+    def refresh(self, date: str = None, start_date: str = None, is_range: bool = False) -> None:
         """刷新分类管理数据"""
         # 从数据库加载应用设置
         app_settings = self.db.get_app_settings()
@@ -281,7 +281,7 @@ class CategoriesPage(QWidget):
         # 应用筛选并填充表格
         self._apply_filter()
 
-    def _update_category_filter(self):
+    def _update_category_filter(self) -> None:
         """更新分类筛选下拉选项"""
         current_index = self.category_filter.currentIndex()
         self.category_filter.blockSignals(True)
@@ -294,11 +294,11 @@ class CategoriesPage(QWidget):
             self.category_filter.setCurrentIndex(current_index)
         self.category_filter.blockSignals(False)
 
-    def _on_filter_changed(self):
+    def _on_filter_changed(self) -> None:
         """搜索或分类筛选变化"""
         self._apply_filter()
 
-    def _apply_filter(self):
+    def _apply_filter(self) -> None:
         """根据搜索文本和分类筛选应用表格"""
         if not hasattr(self, '_all_app_summary'):
             return
@@ -336,7 +336,7 @@ class CategoriesPage(QWidget):
         self._populate_filtered_table(filtered)
         self._update_filter_status(len(self._all_app_summary), len(filtered), search_text, filter_cat_key)
 
-    def _populate_filtered_table(self, filtered):
+    def _populate_filtered_table(self, filtered) -> None:
         """填充筛选后的应用表格"""
         all_cats = self._get_all_categories()
         cat_keys = [c[2] for c in all_cats]
@@ -381,7 +381,7 @@ class CategoriesPage(QWidget):
             )
             self.app_table.setCellWidget(row, 3, sensitive_cb)
 
-    def _update_filter_status(self, total, shown, search_text, filter_cat_key):
+    def _update_filter_status(self, total, shown, search_text, filter_cat_key) -> None:
         """更新筛选状态标签和空状态显示"""
         if search_text or filter_cat_key:
             self.filter_count_label.setText(f"显示 {shown}/{total} 个应用")
@@ -396,7 +396,7 @@ class CategoriesPage(QWidget):
             self.empty_state.show()
             self.empty_state.set_theme(self._is_dark)
 
-    def _on_category_changed(self, app_name: str, categories: list, index: int):
+    def _on_category_changed(self, app_name: str, categories: list, index: int) -> None:
         """自定义分类变更"""
         if 0 <= index < len(categories):
             _, _, key = categories[index]
@@ -405,7 +405,7 @@ class CategoriesPage(QWidget):
             is_sensitive = app_name in self._sensitive_apps
             self.db.save_app_setting(app_name, custom_category=key, is_sensitive=is_sensitive)
 
-    def _on_sensitive_changed(self, app_name: str, state: int):
+    def _on_sensitive_changed(self, app_name: str, state: int) -> None:
         """敏感标记变更"""
         if state:
             self._sensitive_apps.add(app_name)
@@ -415,7 +415,7 @@ class CategoriesPage(QWidget):
         custom_cat = self._app_categories.get(app_name)
         self.db.save_app_setting(app_name, custom_category=custom_cat, is_sensitive=bool(state))
 
-    def _add_category(self):
+    def _add_category(self) -> None:
         """添加自定义分类"""
         name = self.new_category_input.text().strip()
         if not name:
@@ -439,10 +439,10 @@ class CategoriesPage(QWidget):
         self.new_category_input.clear()
         QMessageBox.information(self, "提示", f"分类 \"{name}\" 已添加")
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
 
-    def _on_open_limit_dialog(self):
+    def _on_open_limit_dialog(self) -> None:
         """打开应用使用限制设置对话框"""
         from gui.app_limit_dialog import AppLimitDialog
         dialog = AppLimitDialog(self.db, self)
@@ -451,7 +451,7 @@ class CategoriesPage(QWidget):
         dialog.limits_changed.connect(self.refresh)
         dialog.exec_()
 
-    def highlight_app(self, app_name: str):
+    def highlight_app(self, app_name: str) -> None:
         """高亮指定应用行（从仪表盘Top5跳转过来）"""
         # 刷新数据确保最新
         self.refresh()

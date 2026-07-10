@@ -30,14 +30,14 @@ class DashboardPage(QWidget):
     # 点击Top5应用时发出，请求跳转到分类管理页
     navigate_to_categories = pyqtSignal(str)  # 应用名
 
-    def __init__(self, db_manager: DatabaseManager, parent=None):
+    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
         self._loader = None  # 异步加载器
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         # 骨架屏层
         self._skeleton = SkeletonWidget(self)
         self._skeleton.setGeometry(0, 0, self.width(), self.height())
@@ -99,7 +99,7 @@ class DashboardPage(QWidget):
         outer_layout.setContentsMargins(0, 0, 0, 0)
         outer_layout.addWidget(scroll)
 
-    def _create_metrics_row(self):
+    def _create_metrics_row(self) -> None:
         """创建顶部指标卡行"""
         metrics_layout = QHBoxLayout()
         metrics_layout.setSpacing(16)
@@ -118,7 +118,7 @@ class DashboardPage(QWidget):
         metrics_layout.addWidget(self.card_screenshots)
         return metrics_layout
 
-    def _create_heatmap_card(self):
+    def _create_heatmap_card(self) -> None:
         """创建活跃热力图卡片"""
         heatmap_card = AnimatedCard()
         heatmap_card.setObjectName("card")
@@ -138,7 +138,7 @@ class DashboardPage(QWidget):
         heatmap_layout.addWidget(self.heatmap)
         return heatmap_card
 
-    def _create_top5_card(self):
+    def _create_top5_card(self) -> None:
         """创建今日Top5应用卡片"""
         top5_card = AnimatedCard()
         top5_card.setObjectName("card")
@@ -156,7 +156,7 @@ class DashboardPage(QWidget):
         top5_layout.addLayout(self.top5_container)
         return top5_card
 
-    def refresh(self, date: str = None, start_date: str = None, is_range: bool = False):
+    def refresh(self, date: str = None, start_date: str = None, is_range: bool = False) -> None:
         """异步刷新仪表盘数据"""
         if date is None:
             date = QDate.currentDate().toString("yyyy-MM-dd")
@@ -207,7 +207,7 @@ class DashboardPage(QWidget):
         self._loader.all_done.connect(self._on_refresh_done)
         self._loader.start()
 
-    def _on_refresh_done(self, results: dict):
+    def _on_refresh_done(self, results: dict) -> None:
         """异步数据加载完成，更新UI"""
         ctx = getattr(self, '_refresh_ctx', {})
         is_range = ctx.get("is_range", False)
@@ -233,7 +233,7 @@ class DashboardPage(QWidget):
         # 隐藏骨架屏
         self._skeleton.hide()
 
-    def _update_metric_cards(self, results, is_range):
+    def _update_metric_cards(self, results, is_range) -> None:
         """更新指标卡片（专注时长、应用数、操作数、截图数）"""
         app_summary = results.get("app_summary") or []
         prev_seconds = results.get("prev_seconds") or 0
@@ -269,7 +269,7 @@ class DashboardPage(QWidget):
         # 每日目标进度
         self.goal_card.set_progress(total_seconds)
 
-    def _update_charts_and_details(self, results, is_range, start_date, date):
+    def _update_charts_and_details(self, results, is_range, start_date, date) -> None:
         """更新图表和详情区域（空闲、周对比、热力图、Top5等）"""
         app_summary = results.get("app_summary") or []
         heatmap_rows = results.get("heatmap") or []
@@ -298,7 +298,7 @@ class DashboardPage(QWidget):
             self.top5_title_label.setText("今日 Top 5 应用")
         self._update_top5(app_summary, sensitive_apps)
 
-    def _update_heatmap(self, rows: list):
+    def _update_heatmap(self, rows: list) -> None:
         """更新热力图数据"""
         max_seconds = 1
         for row in rows:
@@ -319,7 +319,7 @@ class DashboardPage(QWidget):
 
         self.heatmap.set_data(data, raw_seconds=raw_seconds, is_dark=self._is_dark)
 
-    def _update_top5(self, app_summary: list, sensitive_apps: set):
+    def _update_top5(self, app_summary: list, sensitive_apps: set) -> None:
         """更新 Top 5 应用"""
         while self.top5_container.count():
             item = self.top5_container.takeAt(0)
@@ -356,12 +356,12 @@ class DashboardPage(QWidget):
             top_item.clicked.connect(self.navigate_to_categories.emit)
             self.top5_container.addWidget(top_item)
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event) -> None:
         """窗口大小变化时调整骨架屏位置"""
         super().resizeEvent(event)
         self._skeleton.setGeometry(0, 0, self.width(), self.height())
 
-    def _on_goal_changed(self, new_minutes: int):
+    def _on_goal_changed(self, new_minutes: int) -> None:
         """每日目标变更回调"""
         # 目标变更后，如果已有数据则重新计算进度
         # 这里不需要额外操作，因为goal_card内部已更新
@@ -389,7 +389,7 @@ class DashboardPage(QWidget):
             result.append({"day": day_names[i], "seconds": int(total or 0)})
         return result
 
-    def set_theme(self, is_dark: bool):
+    def set_theme(self, is_dark: bool) -> None:
         self._is_dark = is_dark
         self.heatmap._is_dark = is_dark
         self.heatmap.update()
