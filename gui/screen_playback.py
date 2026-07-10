@@ -25,7 +25,7 @@ class ScreenPlaybackDialog(QDialog):
     # 播放速度选项
     SPEED_OPTIONS = [0.5, 1.0, 2.0, 4.0, 8.0, 16.0]
 
-    def __init__(self, screenshots: list, db_manager=None, parent=None) -> None:
+    def __init__(self, screenshots: list, db_manager: DatabaseManager=None, parent: QWidget=None) -> None:
         """
         Args:
             screenshots: 截图记录列表，每项含file_path/thumbnail_path/app_name/timestamp
@@ -319,7 +319,7 @@ class ScreenPlaybackDialog(QDialog):
         # 更新界面信息
         self._update_frame_info(app_name, timestamp)
 
-    def _display_frame_image(self, file_path, thumb_path) -> None:
+    def _display_frame_image(self, file_path: str, thumb_path: str) -> None:
         """加载并显示帧图片（带缓存）"""
         load_path = file_path if os.path.exists(file_path) else thumb_path
 
@@ -355,7 +355,7 @@ class ScreenPlaybackDialog(QDialog):
                 "font-size: 32px; color: #9CA3AF; background-color: #111827;"
             )
 
-    def _update_frame_info(self, app_name, timestamp) -> None:
+    def _update_frame_info(self, app_name: str, timestamp: str) -> None:
         """更新帧信息（应用名、时间、进度、滑块、按钮）"""
         # 更新应用名叠加层
         if app_name:
@@ -496,7 +496,7 @@ class ScreenPlaybackDialog(QDialog):
 
     # === 键盘控制 ===
 
-    def keyPressEvent(self, event) -> None:
+    def keyPressEvent(self, event: QKeyEvent) -> None:
         """键盘快捷键"""
         key = event.key()
         if key == Qt.Key_Space:
@@ -522,7 +522,7 @@ class ScreenPlaybackDialog(QDialog):
 
     # === 窗口事件 ===
 
-    def resizeEvent(self, event) -> None:
+    def resizeEvent(self, event: QResizeEvent) -> None:
         """窗口大小变化时重新加载当前帧"""
         super().resizeEvent(event)
         # 延迟重新加载，避免频繁刷新

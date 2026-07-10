@@ -18,7 +18,7 @@ class WelcomePage(QWidget):
 
     start_clicked = pyqtSignal(dict)  # 快速设置参数 {"auto_monitor": bool, "screenshot": bool, ...}
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._is_dark = False
         self._setup_ui()

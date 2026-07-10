@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from utils.time_utils import format_duration
 
 
-def generate_daily_report(db, date: str = None) -> dict:
+def generate_daily_report(db: DatabaseManager, date: str = None) -> dict:
     """生成每日报告数据
     
     Args:
@@ -61,7 +61,7 @@ def generate_daily_report(db, date: str = None) -> dict:
     }
 
 
-def generate_weekly_report(db, end_date: str = None) -> dict:
+def generate_weekly_report(db: DatabaseManager, end_date: str = None) -> dict:
     """生成每周报告数据
     
     Args:
@@ -119,7 +119,7 @@ def generate_weekly_report(db, end_date: str = None) -> dict:
     }
 
 
-def _build_daily_data(trend_data, end_date) -> dict:
+def _build_daily_data(trend_data: list, end_date: str) -> dict:
     """从趋势数据构建每日详情列表"""
     daily_data = []
     for item in trend_data:
@@ -216,7 +216,7 @@ def format_weekly_notification(report: dict) -> tuple:
     return title, message
 
 
-def should_send_daily_report(db, current_hour: int = None) -> bool:
+def should_send_daily_report(db: DatabaseManager, current_hour: int = None) -> bool:
     """检查是否应该发送每日报告
     
     Args:
@@ -248,7 +248,7 @@ def should_send_daily_report(db, current_hour: int = None) -> bool:
     return True
 
 
-def should_send_weekly_report(db, current_weekday: int = None, current_hour: int = None) -> bool:
+def should_send_weekly_report(db: DatabaseManager, current_weekday: int = None, current_hour: int = None) -> bool:
     """检查是否应该发送每周报告
     
     Args:
@@ -287,13 +287,13 @@ def should_send_weekly_report(db, current_weekday: int = None, current_hour: int
     return True
 
 
-def mark_daily_report_sent(db) -> None:
+def mark_daily_report_sent(db: DatabaseManager) -> None:
     """标记今日每日报告已发送"""
     today = datetime.now().strftime("%Y-%m-%d")
     db.save_config("daily_report_last_sent", today)
 
 
-def mark_weekly_report_sent(db) -> None:
+def mark_weekly_report_sent(db: DatabaseManager) -> None:
     """标记本周周报已发送"""
     now = datetime.now()
     monday = (now - timedelta(days=now.weekday())).strftime("%Y-%m-%d")

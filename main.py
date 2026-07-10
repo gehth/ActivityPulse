@@ -49,7 +49,7 @@ def setup_logging() -> str:
     return log_file
 
 
-def global_exception_handler(exc_type, exc_value, exc_tb) -> None:
+def global_exception_handler(exc_type: type, exc_value: Exception, exc_tb: object) -> None:
     """全局异常处理器 - 捕获未处理异常并记录到日志"""
     # 记录到日志
     logging.critical("未捕获的异常", exc_info=(exc_type, exc_value, exc_tb))

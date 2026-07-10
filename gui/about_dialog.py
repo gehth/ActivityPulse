@@ -14,7 +14,7 @@ class AboutDialog(QDialog):
     # 版本号常量，与main_window.APP_VERSION保持同步
     APP_VERSION = "1.0"
 
-    def __init__(self, parent=None, version: str = None) -> None:
+    def __init__(self, parent: QWidget=None, version: str = None) -> None:
         super().__init__(parent)
         self._version = version or self.APP_VERSION
         self.setWindowTitle("关于")

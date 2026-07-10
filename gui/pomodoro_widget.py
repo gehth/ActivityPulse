@@ -35,7 +35,7 @@ class PomodoroWidget(QWidget):
     # 信号：模式切换
     mode_changed = pyqtSignal(str)  # "work" / "short_break" / "long_break"
 
-    def __init__(self, db: DatabaseManager, parent=None) -> None:
+    def __init__(self, db: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db
         self._is_dark = False
@@ -521,7 +521,7 @@ class PomodoroWidget(QWidget):
 
     # ── 绘制圆形进度条 ──
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """绘制圆形进度条"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -585,7 +585,7 @@ class PomodoroDialog(QFrame):
 
     pomodoro_completed = pyqtSignal(int)
 
-    def __init__(self, db: DatabaseManager, parent=None) -> None:
+    def __init__(self, db: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db
         self._is_dark = False

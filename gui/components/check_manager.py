@@ -21,7 +21,7 @@ class CheckManager:
     管理久坐提醒、应用限制检查、异常行为检测和自动报告。
     """
 
-    def __init__(self, db, tray_icon, app_monitor, input_monitor, callbacks: dict) -> None:
+    def __init__(self, db: DatabaseManager, tray_icon, app_monitor, input_monitor, callbacks: dict) -> None:
         """
         Args:
             db: DatabaseManager实例

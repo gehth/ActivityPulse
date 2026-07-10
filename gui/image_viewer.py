@@ -19,7 +19,7 @@ class ImageViewerDialog(QDialog):
     - ESC关闭
     """
 
-    def __init__(self, image_path: str, image_list: list = None, current_index: int = 0, parent=None) -> None:
+    def __init__(self, image_path: str, image_list: list = None, current_index: int = 0, parent: QWidget=None) -> None:
         """
         Args:
             image_path: 当前图片路径
@@ -235,7 +235,7 @@ class ImageViewerDialog(QDialog):
             self._current_index += 1
             self._load_image(self._image_list[self._current_index])
 
-    def wheelEvent(self, event) -> None:
+    def wheelEvent(self, event: QEvent) -> None:
         """鼠标滚轮缩放"""
         delta = event.angleDelta().y()
         if delta > 0:
@@ -243,13 +243,13 @@ class ImageViewerDialog(QDialog):
         else:
             self._zoom_out()
 
-    def mousePressEvent(self, event) -> None:
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         """鼠标按下 - 开始拖拽"""
         if event.button() == Qt.LeftButton:
             self._drag_start = event.pos()
             self.image_label.setCursor(QCursor(Qt.ClosedHandCursor))
 
-    def mouseMoveEvent(self, event) -> None:
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """鼠标移动 - 拖拽平移"""
         if self._drag_start and event.buttons() & Qt.LeftButton:
             delta = event.pos() - self._drag_start
@@ -259,13 +259,13 @@ class ImageViewerDialog(QDialog):
             h_bar.setValue(h_bar.value() - delta.x())
             v_bar.setValue(v_bar.value() - delta.y())
 
-    def mouseReleaseEvent(self, event) -> None:
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         """鼠标释放 - 结束拖拽"""
         if event.button() == Qt.LeftButton:
             self._drag_start = None
             self.image_label.setCursor(QCursor(Qt.OpenHandCursor))
 
-    def keyPressEvent(self, event) -> None:
+    def keyPressEvent(self, event: QKeyEvent) -> None:
         """键盘事件"""
         if event.key() == Qt.Key_Escape:
             self.close()

@@ -11,7 +11,7 @@ from utils.time_utils import format_duration
 class ExportManager:
     """导出管理器 - 处理CSV和PDF导出"""
 
-    def __init__(self, db, parent, app_version: str, callbacks: dict) -> None:
+    def __init__(self, db: DatabaseManager, parent: QWidget, app_version: str, callbacks: dict) -> None:
         """
         Args:
             db: DatabaseManager 实例
@@ -140,7 +140,7 @@ class ExportManager:
         except Exception as e:
             QMessageBox.critical(self.parent, "错误", f"PDF导出失败: {e}")
 
-    def _fetch_pdf_data(self, start_date, end_date, is_range) -> dict:
+    def _fetch_pdf_data(self, start_date: str, end_date: str, is_range: bool) -> dict:
         """获取PDF报告所需数据"""
         if is_range:
             app_summary = self.db.get_app_usage_summary_range(start_date, end_date)

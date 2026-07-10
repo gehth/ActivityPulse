@@ -31,7 +31,7 @@ class SedentaryDialog(QDialog):
 
     snoozed = pyqtSignal()  # 暂停15分钟
 
-    def __init__(self, continuous_minutes: int, parent=None) -> None:
+    def __init__(self, continuous_minutes: int, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._is_dark = False
         self._continuous_minutes = continuous_minutes
@@ -84,7 +84,7 @@ class SedentaryDialog(QDialog):
         sep.setStyleSheet("color: #E5E7EB;")
         return sep
 
-    def _add_suggestions(self, layout) -> None:
+    def _add_suggestions(self, layout: QLayout) -> None:
         """添加随机休息建议"""
         suggest_label = QLabel("💡 休息建议")
         suggest_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #3B82F6;")

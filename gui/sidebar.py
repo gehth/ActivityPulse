@@ -12,7 +12,7 @@ from gui.themes import HoverButton
 class StatusIndicator(QWidget):
     """带呼吸动画的状态指示灯"""
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.setFixedHeight(24)
         self._recording = False
@@ -50,7 +50,7 @@ class StatusIndicator(QWidget):
                 self._breathing_in = True
         self.update()
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """绘制事件重写"""
         from PyQt5.QtGui import QPainter, QBrush
         painter = QPainter(self)
@@ -135,7 +135,7 @@ class Sidebar(QFrame):
     settings_clicked = pyqtSignal()
     alert_clicked = pyqtSignal()
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._collapsed = False
         self._monitoring = False

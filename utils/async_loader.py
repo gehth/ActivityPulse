@@ -19,7 +19,7 @@ class DataLoadWorker(QThread):
     result_ready = pyqtSignal(object)  # 查询结果
     error_occurred = pyqtSignal(str)   # 错误信息
 
-    def __init__(self, load_func, parent=None) -> None:
+    def __init__(self, load_func: Callable, parent: QWidget=None) -> None:
         """
         Args:
             load_func: 无参可调用对象，返回查询结果。
@@ -62,14 +62,14 @@ class MultiDataLoader(QObject):
     partial_done = pyqtSignal(str, object)  # (key, result)
     error_occurred = pyqtSignal(str, str)   # (key, error_msg)
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._tasks = {}  # {key: load_func}
         self._results = {}
         self._errors = {}
         self._workers = []
 
-    def add(self, key: str, load_func) -> None:
+    def add(self, key: str, load_func: Callable) -> None:
         """添加一个数据加载任务"""
         self._tasks[key] = load_func
 
@@ -86,7 +86,7 @@ class MultiDataLoader(QObject):
             self._workers.append(worker)
             worker.start()
 
-    def _on_result(self, key: str, result) -> None:
+    def _on_result(self, key: str, result: object) -> None:
         """单个任务完成"""
         self._results[key] = result
         self.partial_done.emit(key, result)

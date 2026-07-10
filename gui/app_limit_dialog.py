@@ -18,7 +18,7 @@ class AppLimitDialog(QDialog):
     
     limits_changed = pyqtSignal()  # 限制变更信号
     
-    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
+    def __init__(self, db_manager: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False

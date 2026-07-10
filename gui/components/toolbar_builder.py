@@ -144,7 +144,7 @@ def _create_action_buttons(callbacks: dict) -> list:
     return buttons
 
 
-def _make_btn(text: str, object_name: str, callback) -> QPushButton:
+def _make_btn(text: str, object_name: str, callback: Callable) -> QPushButton:
     """创建一个带样式的按钮"""
     btn = QPushButton(text)
     btn.setObjectName(object_name)

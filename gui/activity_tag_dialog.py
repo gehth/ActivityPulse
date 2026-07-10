@@ -33,7 +33,7 @@ class TagItemWidget(QFrame):
     deleted = pyqtSignal(int)  # tag_id
     edited = pyqtSignal(int)  # tag_id
 
-    def __init__(self, tag_data: dict, is_dark: bool = False, parent=None) -> None:
+    def __init__(self, tag_data: dict, is_dark: bool = False, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._is_dark = is_dark
         self._tag_id = tag_data.get("id", 0)
@@ -119,7 +119,7 @@ class AddTagDialog(QDialog):
 
     tag_added = pyqtSignal(dict)  # {tag, note, start_time, end_time, color}
 
-    def __init__(self, date: str, is_dark: bool = False, parent=None) -> None:
+    def __init__(self, date: str, is_dark: bool = False, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._is_dark = is_dark
         self._date = date
@@ -202,7 +202,7 @@ class AddTagDialog(QDialog):
         btn_add.clicked.connect(self._on_add)
         layout.addWidget(btn_add)
 
-    def _create_preset_tags(self, colors) -> None:
+    def _create_preset_tags(self, colors: dict) -> None:
         """创建快捷标签行"""
         preset_row = QHBoxLayout()
         preset_row.setSpacing(4)
@@ -228,7 +228,7 @@ class AddTagDialog(QDialog):
             preset_row.addWidget(btn)
         return preset_row
 
-    def _create_time_range(self, colors) -> None:
+    def _create_time_range(self, colors: dict) -> None:
         """创建时间范围选择行"""
         time_row = QHBoxLayout()
         self.start_time = QTimeEdit()
@@ -264,7 +264,7 @@ class AddTagDialog(QDialog):
         time_row.addWidget(self.end_time)
         return time_row
 
-    def _create_color_picker(self, colors) -> None:
+    def _create_color_picker(self, colors: dict) -> None:
         """创建颜色选择行"""
         color_row = QHBoxLayout()
         color_row.setSpacing(6)
@@ -325,7 +325,7 @@ class ActivityTagDialog(QDialog):
 
     tags_changed = pyqtSignal()  # 标签变更信号
 
-    def __init__(self, db_manager: DatabaseManager, date: str, is_dark: bool = False, parent=None) -> None:
+    def __init__(self, db_manager: DatabaseManager, date: str, is_dark: bool = False, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._date = date

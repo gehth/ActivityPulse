@@ -30,7 +30,7 @@ class DashboardPage(QWidget):
     # 点击Top5应用时发出，请求跳转到分类管理页
     navigate_to_categories = pyqtSignal(str)  # 应用名
 
-    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
+    def __init__(self, db_manager: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
@@ -234,7 +234,7 @@ class DashboardPage(QWidget):
         # 隐藏骨架屏
         self._skeleton.hide()
 
-    def _update_metric_cards(self, results, is_range) -> None:
+    def _update_metric_cards(self, results: dict, is_range: bool) -> None:
         """更新指标卡片（专注时长、应用数、操作数、截图数）"""
         app_summary = results.get("app_summary") or []
         prev_seconds = results.get("prev_seconds") or 0
@@ -270,7 +270,7 @@ class DashboardPage(QWidget):
         # 每日目标进度
         self.goal_card.set_progress(total_seconds)
 
-    def _update_charts_and_details(self, results, is_range, start_date, date) -> None:
+    def _update_charts_and_details(self, results: dict, is_range: bool, start_date: str, date: str) -> None:
         """更新图表和详情区域（空闲、周对比、热力图、Top5等）"""
         app_summary = results.get("app_summary") or []
         heatmap_rows = results.get("heatmap") or []
@@ -357,7 +357,7 @@ class DashboardPage(QWidget):
             top_item.clicked.connect(self.navigate_to_categories.emit)
             self.top5_container.addWidget(top_item)
 
-    def resizeEvent(self, event) -> None:
+    def resizeEvent(self, event: QResizeEvent) -> None:
         """窗口大小变化时调整骨架屏位置"""
         super().resizeEvent(event)
         self._skeleton.setGeometry(0, 0, self.width(), self.height())

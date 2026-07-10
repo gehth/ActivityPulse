@@ -76,7 +76,7 @@ def create_backup(output_dir: str, progress_callback: Optional[Callable[[int, st
     return backup_path
 
 
-def _backup_database_to_zip(zf, progress_callback=None) -> None:
+def _backup_database_to_zip(zf: ZipFile, progress_callback: Optional[Callable[[int, str], None]]=None) -> None:
     """将数据库备份到zip文件中（使用SQLite backup API确保一致性）"""
     if progress_callback:
         progress_callback(15, "正在备份数据库...")
@@ -94,7 +94,7 @@ def _backup_database_to_zip(zf, progress_callback=None) -> None:
             os.remove(temp_db)
 
 
-def _backup_screenshots_to_zip(zf, screenshot_files, total_files, progress_callback=None) -> None:
+def _backup_screenshots_to_zip(zf: ZipFile, screenshot_files: list, total_files: int, progress_callback: Optional[Callable[[int, str], None]]=None) -> None:
     """将截图文件备份到zip文件中"""
     if not screenshot_files:
         return
@@ -165,7 +165,7 @@ def restore_backup(backup_path: str, progress_callback: Optional[Callable[[int, 
     return result
 
 
-def _restore_database(zf) -> bool:
+def _restore_database(zf: ZipFile) -> bool:
     """从zip文件恢复数据库，返回是否成功"""
     temp_db = os.path.join(tempfile.gettempdir(), "monitor_restore.db")
     try:
@@ -199,7 +199,7 @@ def _restore_database(zf) -> bool:
             os.remove(temp_db)
 
 
-def _restore_screenshots(zf, screenshot_entries: list, progress_callback) -> int:
+def _restore_screenshots(zf: ZipFile, screenshot_entries: list, progress_callback: Optional[Callable[[int, str], None]]) -> int:
     """从zip文件恢复截图，返回恢复数量"""
     if progress_callback:
         progress_callback(30, f"正在恢复截图 ({len(screenshot_entries)} 个文件)...")

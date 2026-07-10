@@ -18,7 +18,7 @@ class SearchDialog(QDialog):
     # 双击记录时发送信号: (date_str, app_name)
     navigate_to_record = pyqtSignal(str, str)
 
-    def __init__(self, db: DatabaseManager, parent=None) -> None:
+    def __init__(self, db: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db
         self.setWindowTitle("搜索记录")
@@ -439,7 +439,7 @@ class SearchDialog(QDialog):
         else:
             return format_duration(seconds, fmt="long")
 
-    def _on_double_click(self, index) -> None:
+    def _on_double_click(self, index: int) -> None:
         """双击记录跳转"""
         row = index.row()
         item = self.result_table.item(row, 0)

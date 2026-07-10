@@ -17,7 +17,7 @@ class ThumbnailLoadWorker(QThread):
     """异步缩略图加载Worker"""
     loaded = pyqtSignal(str, QPixmap)  # (path, pixmap)
 
-    def __init__(self, paths: list, size: tuple = (188, 106), parent=None) -> None:
+    def __init__(self, paths: list, size: tuple = (188, 106), parent: QWidget=None) -> None:
         super().__init__(parent)
         self._paths = paths
         self._size = size
@@ -55,7 +55,7 @@ class ScreenshotThumbnail(QFrame):
     clicked = pyqtSignal(str, list, int)  # (file_path, image_list, index)
 
     def __init__(self, file_path: str, thumbnail_path: str, timestamp: str,
-                 app_name: str = "", index: int = 0, image_list: list = None, parent=None) -> None:
+                 app_name: str = "", index: int = 0, image_list: list = None, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._file_path = file_path
         self._thumbnail_path = thumbnail_path
@@ -131,7 +131,7 @@ class ScreenshotThumbnail(QFrame):
         """清空缩略图缓存"""
         cls._pixmap_cache.clear()
 
-    def mousePressEvent(self, event) -> None:
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         """点击缩略图 - 发送点击信号"""
         if event.button() == Qt.LeftButton:
             self.clicked.emit(self._file_path, self._image_list, self._index)
@@ -146,7 +146,7 @@ class ScreenshotsPage(QWidget):
 
     PAGE_SIZE = 20  # 每页显示数量
 
-    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
+    def __init__(self, db_manager: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False

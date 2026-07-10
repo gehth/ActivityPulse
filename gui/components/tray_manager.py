@@ -17,7 +17,7 @@ class TrayManager:
     管理托盘图标、菜单和动态信息更新。
     """
 
-    def __init__(self, main_window, db, app_monitor, callbacks: dict) -> None:
+    def __init__(self, main_window, db: DatabaseManager, app_monitor, callbacks: dict) -> None:
         """
         Args:
             main_window: 主窗口实例（用于setWindowIcon等）

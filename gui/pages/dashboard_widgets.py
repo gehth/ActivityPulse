@@ -99,7 +99,7 @@ class MetricCard(AnimatedCard):
 class HeatmapWidget(QWidget):
     """活跃热力图 - 类GitHub贡献图，hover显示时长"""
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.setMinimumHeight(140)
         self.setMouseTracking(True)
@@ -120,7 +120,7 @@ class HeatmapWidget(QWidget):
         self._is_dark = is_dark
         self.update()
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """绘制事件重写"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -159,7 +159,7 @@ class HeatmapWidget(QWidget):
 
         painter.end()
 
-    def mouseMoveEvent(self, event) -> None:
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """hover显示时长tooltip"""
         mx, my = event.x(), event.y()
         cell_size = self._cell_size
@@ -197,7 +197,7 @@ class GoalProgressCard(AnimatedCard):
     goal_changed = pyqtSignal(int)  # 目标分钟数变更
     goal_achieved = pyqtSignal()  # 目标达成通知
 
-    def __init__(self, db_manager=None, parent=None) -> None:
+    def __init__(self, db_manager: DatabaseManager=None, parent: QWidget=None) -> None:
         super().__init__()
         self.db = db_manager
         self._is_dark = False
@@ -337,7 +337,7 @@ class GoalProgressCard(AnimatedCard):
         btn_box.rejected.connect(dialog.reject)
         dialog.exec_()
 
-    def _build_goal_dialog(self, colors) -> None:
+    def _build_goal_dialog(self, colors: dict) -> None:
         """构建目标设置对话框UI，返回(dialog, spin_box, btn_box)"""
         dialog = QDialog(self)
         dialog.setWindowTitle("设置每日目标")
@@ -429,12 +429,12 @@ class GoalProgressCard(AnimatedCard):
 class GoalRingWidget(QWidget):
     """环形进度条绘制组件"""
 
-    def __init__(self, parent_card=None) -> None:
+    def __init__(self, parent_card: QWidget=None) -> None:
         super().__init__(parent_card)
         self._card = parent_card
         self.setFixedSize(120, 120)
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """绘制事件重写"""
         if not self._card:
             return
@@ -486,7 +486,7 @@ class GoalRingWidget(QWidget):
 class IdleTimeCard(AnimatedCard):
     """空闲时间统计卡片 - 显示空闲时段汇总"""
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__()
         self._is_dark = False
         self._idle_periods = []
@@ -596,7 +596,7 @@ class IdleTimeCard(AnimatedCard):
 class WeekCompareCard(AnimatedCard):
     """周对比卡片 - 本周 vs 上周对比柱状图"""
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__()
         self._is_dark = False
         self._this_week = []  # [{day: str, seconds: int}, ...]
@@ -718,12 +718,12 @@ class WeekCompareCard(AnimatedCard):
 class WeekBarWidget(QWidget):
     """周对比柱状图绘制组件"""
 
-    def __init__(self, parent_card=None) -> None:
+    def __init__(self, parent_card: QWidget=None) -> None:
         super().__init__(parent_card)
         self._card = parent_card
         self.setFixedHeight(140)
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """绘制事件重写"""
         if not self._card:
             return
@@ -811,7 +811,7 @@ class WeekBarWidget(QWidget):
 class HourlyDistCard(AnimatedCard):
     """每小时活跃分布卡片 - 24小时柱状图"""
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__()
         self._is_dark = False
         self._hourly_data = []  # [{hour: int, total: int}, ...]
@@ -861,14 +861,14 @@ class HourlyDistCard(AnimatedCard):
 class HourlyBarWidget(QWidget):
     """每小时分布柱状图绘制组件"""
 
-    def __init__(self, parent_card=None) -> None:
+    def __init__(self, parent_card: QWidget=None) -> None:
         super().__init__(parent_card)
         self._card = parent_card
         self._hover_hour = -1  # 当前hover的小时
         self.setFixedHeight(100)
         self.setMouseTracking(True)
 
-    def mouseMoveEvent(self, event) -> None:
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """鼠标移动时显示tooltip"""
         if not self._card or not self._card._hourly_data:
             QToolTip.hideText()
@@ -912,13 +912,13 @@ class HourlyBarWidget(QWidget):
                 QToolTip.hideText()
                 self.update()
 
-    def leaveEvent(self, event) -> None:
+    def leaveEvent(self, event: QEvent) -> None:
         """鼠标离开事件重写"""
         self._hover_hour = -1
         QToolTip.hideText()
         self.update()
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """绘制事件重写"""
         if not self._card:
             return
@@ -1061,7 +1061,7 @@ class TopAppItem(QFrame):
             }}
         """)
 
-    def mousePressEvent(self, event) -> None:
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         """点击时发出信号，跳转到分类管理"""
         if event.button() == Qt.LeftButton:
             self.clicked.emit(self._app_name)

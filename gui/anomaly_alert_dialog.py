@@ -45,7 +45,7 @@ class AlertCard(QFrame):
     dismissed = pyqtSignal(int)  # alert_id
     read_clicked = pyqtSignal(int)  # alert_id
 
-    def __init__(self, alert: dict, parent=None) -> None:
+    def __init__(self, alert: dict, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.alert_id = alert.get("id", 0)
         self._alert = alert
@@ -195,7 +195,7 @@ class AnomalyAlertDialog(QDialog):
 
     alerts_changed = pyqtSignal()  # 告警状态变更信号
 
-    def __init__(self, db, parent=None) -> None:
+    def __init__(self, db: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db
         self._is_dark = False

@@ -43,7 +43,7 @@ class InputMonitor:
         self._mouse_move_count = 0
         self._scroll_count = 0
 
-    def _on_key_press(self, key) -> None:
+    def _on_key_press(self, key: object) -> None:
         """键盘按键回调"""
         try:
             if hasattr(key, 'char') and key.char:
@@ -57,7 +57,7 @@ class InputMonitor:
         except Exception:
             pass
 
-    def _on_mouse_click(self, x, y, button, pressed) -> None:
+    def _on_mouse_click(self, x: int, y: int, button: object, pressed: bool) -> None:
         """鼠标点击回调"""
         if pressed:
             btn_name = str(button).split('.')[-1] if button else "unknown"
@@ -65,14 +65,14 @@ class InputMonitor:
             self._mouse_click_count += 1
             self._add_event("mouse_click", event_detail)
 
-    def _on_mouse_move(self, x, y) -> None:
+    def _on_mouse_move(self, x: int, y: int) -> None:
         """鼠标移动回调"""
         if self.track_mouse_move:
             event_detail = f"移动: ({x}, {y})"
             self._mouse_move_count += 1
             self._add_event("mouse_move", event_detail)
 
-    def _on_mouse_scroll(self, x, y, dx, dy) -> None:
+    def _on_mouse_scroll(self, x: int, y: int, dx: int, dy: int) -> None:
         """鼠标滚轮回调"""
         direction = "上" if dy > 0 else "下"
         event_detail = f"滚轮: {direction} ({x}, {y})"

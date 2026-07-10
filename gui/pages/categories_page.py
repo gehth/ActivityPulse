@@ -79,7 +79,7 @@ class CategoryTag(QFrame):
 class CategoriesPage(QWidget):
     """分类管理页面"""
 
-    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
+    def __init__(self, db_manager: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
@@ -337,7 +337,7 @@ class CategoriesPage(QWidget):
         self._populate_filtered_table(filtered)
         self._update_filter_status(len(self._all_app_summary), len(filtered), search_text, filter_cat_key)
 
-    def _populate_filtered_table(self, filtered) -> None:
+    def _populate_filtered_table(self, filtered: list) -> None:
         """填充筛选后的应用表格"""
         all_cats = self._get_all_categories()
         cat_keys = [c[2] for c in all_cats]
@@ -382,7 +382,7 @@ class CategoriesPage(QWidget):
             )
             self.app_table.setCellWidget(row, 3, sensitive_cb)
 
-    def _update_filter_status(self, total, shown, search_text, filter_cat_key) -> None:
+    def _update_filter_status(self, total: int, shown: int, search_text: str, filter_cat_key: str) -> None:
         """更新筛选状态标签和空状态显示"""
         if search_text or filter_cat_key:
             self.filter_count_label.setText(f"显示 {shown}/{total} 个应用")

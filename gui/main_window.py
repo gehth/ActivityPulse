@@ -378,7 +378,7 @@ class MainWindow(QMainWindow):
         else:
             self._on_toggle_privacy(True)
 
-    def resizeEvent(self, event) -> None:
+    def resizeEvent(self, event: QResizeEvent) -> None:
         """窗口大小改变时更新引导页位置"""
         super().resizeEvent(event)
         if hasattr(self, '_welcome_page') and self._welcome_page and self._welcome_page.isVisible():
@@ -544,7 +544,7 @@ class MainWindow(QMainWindow):
             self.sidebar.set_monitoring(True)
             self.statusBar().showMessage("隐私模式已关闭，监控已恢复")
 
-    def eventFilter(self, obj, event) -> bool:
+    def eventFilter(self, obj, event: QEvent) -> bool:
         """事件过滤器 - 调整隐私遮罩位置"""
         try:
             if obj is self._content_stack and event.type() == event.Resize:
@@ -783,7 +783,7 @@ class MainWindow(QMainWindow):
         self.tray_icon.hide()
         QApplication.instance().quit()
 
-    def closeEvent(self, event) -> None:
+    def closeEvent(self, event: QCloseEvent) -> None:
         """关闭事件 - 最小化到托盘"""
         event.ignore()
         self.hide()

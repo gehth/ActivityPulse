@@ -56,7 +56,7 @@ class RestoreWorker(QThread):
 class SettingsDialog(QDialog):
     """设置对话框"""
 
-    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
+    def __init__(self, db_manager: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False

@@ -23,7 +23,7 @@ CHART_COLORS = [
 class DonutChartWidget(QWidget):
     """环形图控件 - 支持hover tooltip"""
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.data = []  # [(name, value, color)]
         self.setFixedSize(220, 220)
@@ -106,13 +106,13 @@ class DonutChartWidget(QWidget):
         else:
             QToolTip.hideText()
 
-    def leaveEvent(self, event) -> None:
+    def leaveEvent(self, event: QEvent) -> None:
         """鼠标离开时清除hover状态"""
         self._hover_index = -1
         QToolTip.hideText()
         self.update()
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """绘制事件重写"""
         if not self.data:
             return
@@ -179,7 +179,7 @@ class DonutChartWidget(QWidget):
 class LineChartWidget(QWidget):
     """折线图控件 - 支持hover tooltip"""
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.data = []  # [(label, value)]
         self.setFixedHeight(200)
@@ -234,13 +234,13 @@ class LineChartWidget(QWidget):
         else:
             QToolTip.hideText()
 
-    def leaveEvent(self, event) -> None:
+    def leaveEvent(self, event: QEvent) -> None:
         """鼠标离开时清除hover状态"""
         self._hover_index = -1
         QToolTip.hideText()
         self.update()
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """绘制事件重写"""
         if not self.data:
             return
@@ -342,7 +342,7 @@ class LineChartWidget(QWidget):
 class BarChartWidget(QWidget):
     """柱状图控件 - 支持hover tooltip"""
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.data = []  # [(label, value)]
         self.setFixedHeight(200)
@@ -391,13 +391,13 @@ class BarChartWidget(QWidget):
         else:
             QToolTip.hideText()
 
-    def leaveEvent(self, event) -> None:
+    def leaveEvent(self, event: QEvent) -> None:
         """鼠标离开时清除hover状态"""
         self._hover_index = -1
         QToolTip.hideText()
         self.update()
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """绘制事件重写"""
         if not self.data:
             return
@@ -475,7 +475,7 @@ class BarChartWidget(QWidget):
 class InsightsPage(QWidget):
     """统计洞察页面"""
 
-    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
+    def __init__(self, db_manager: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False

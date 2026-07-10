@@ -51,7 +51,7 @@ class TimelineWidget(QWidget):
     block_split = pyqtSignal(int, float)   # 拆分色块(record_id, split_offset_hours)
     block_merge = pyqtSignal(int, int)     # 合并色块(record_id1, record_id2)
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.blocks = []
         self.idle_blocks = []  # 空闲时段色块
@@ -69,7 +69,7 @@ class TimelineWidget(QWidget):
         self._is_dark = is_dark
         self.update()
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """绘制事件重写"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -193,7 +193,7 @@ class TimelineWidget(QWidget):
 
         painter.end()
 
-    def mouseMoveEvent(self, event) -> None:
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """鼠标移动事件重写"""
         margin_left = 55
         margin_top = 30
@@ -229,7 +229,7 @@ class TimelineWidget(QWidget):
         else:
             QToolTip.hideText()
 
-    def _get_block_at(self, x, y) -> object:
+    def _get_block_at(self, x: int, y: int) -> object:
         """获取指定坐标处的色块"""
         margin_left = 55
         margin_top = 30
@@ -250,7 +250,7 @@ class TimelineWidget(QWidget):
             current_y += row_height + row_gap
         return None
 
-    def _show_context_menu(self, pos) -> None:
+    def _show_context_menu(self, pos: QPoint) -> None:
         """右键菜单 - 快速标记分类/敏感/拆分/合并"""
         block = self._get_block_at(pos.x(), pos.y())
         if not block:
@@ -299,7 +299,7 @@ class TimelineWidget(QWidget):
 
         menu.exec_(self.mapToGlobal(pos))
 
-    def _find_merge_target(self, block) -> object:
+    def _find_merge_target(self, block: object) -> object:
         """查找可合并的相邻同应用色块"""
         block_end = block.start_hour + block.duration_hours
         for other in self.blocks:
@@ -311,7 +311,7 @@ class TimelineWidget(QWidget):
                 return other
         return None
 
-    def _show_split_dialog(self, block) -> None:
+    def _show_split_dialog(self, block: object) -> None:
         """显示拆分对话框"""
         from PyQt5.QtWidgets import QSlider, QDialog, QVBoxLayout, QLabel, QDialogButtonBox
 
@@ -349,7 +349,7 @@ class TimelineWidget(QWidget):
         split_time_label = QLabel()
         layout.addWidget(split_time_label)
 
-        def update_split_label(val) -> None:
+        def update_split_label(val: float) -> None:
             """更新拆分标签显示"""
             pct = val / 100.0
             split_hour = block.start_hour + block.duration_hours * pct
@@ -380,7 +380,7 @@ class TimelineWidget(QWidget):
 class TimelinePage(QWidget):
     """时间轴页面"""
 
-    def __init__(self, db_manager: DatabaseManager, parent=None) -> None:
+    def __init__(self, db_manager: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
@@ -480,7 +480,7 @@ class TimelinePage(QWidget):
         self._loader.result_ready.connect(lambda data: self._on_data_loaded(data, date))
         self._loader.start()
 
-    def _on_data_loaded(self, rows, date: str) -> None:
+    def _on_data_loaded(self, rows: list, date: str) -> None:
         """数据加载完成，构建时间轴色块"""
         blocks = []
         for row in rows:
