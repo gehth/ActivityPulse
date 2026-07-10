@@ -19,7 +19,7 @@ class InputMonitor:
     """监控键盘和鼠标操作"""
 
     def __init__(self, db_manager: DatabaseManager, save_interval: float = 2.0,
-                 track_mouse_move: bool = False):
+                 track_mouse_move: bool = False) -> None:
         """
         初始化键鼠监控器
 
@@ -43,7 +43,7 @@ class InputMonitor:
         self._mouse_move_count = 0
         self._scroll_count = 0
 
-    def _on_key_press(self, key):
+    def _on_key_press(self, key) -> None:
         """键盘按键回调"""
         try:
             if hasattr(key, 'char') and key.char:
@@ -57,7 +57,7 @@ class InputMonitor:
         except Exception:
             pass
 
-    def _on_mouse_click(self, x, y, button, pressed):
+    def _on_mouse_click(self, x, y, button, pressed) -> None:
         """鼠标点击回调"""
         if pressed:
             btn_name = str(button).split('.')[-1] if button else "unknown"
@@ -65,21 +65,21 @@ class InputMonitor:
             self._mouse_click_count += 1
             self._add_event("mouse_click", event_detail)
 
-    def _on_mouse_move(self, x, y):
+    def _on_mouse_move(self, x, y) -> None:
         """鼠标移动回调"""
         if self.track_mouse_move:
             event_detail = f"移动: ({x}, {y})"
             self._mouse_move_count += 1
             self._add_event("mouse_move", event_detail)
 
-    def _on_mouse_scroll(self, x, y, dx, dy):
+    def _on_mouse_scroll(self, x, y, dx, dy) -> None:
         """鼠标滚轮回调"""
         direction = "上" if dy > 0 else "下"
         event_detail = f"滚轮: {direction} ({x}, {y})"
         self._scroll_count += 1
         self._add_event("mouse_scroll", event_detail)
 
-    def _add_event(self, event_type: str, event_detail: str):
+    def _add_event(self, event_type: str, event_detail: str) -> None:
         """添加事件到缓冲区"""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         with self._buffer_lock:
@@ -89,7 +89,7 @@ class InputMonitor:
                 "timestamp": timestamp
             })
 
-    def _save_loop(self):
+    def _save_loop(self) -> None:
         """定期保存事件到数据库"""
         while self._running:
             try:
@@ -98,7 +98,7 @@ class InputMonitor:
             except Exception as e:
                 logger.error(f"键鼠事件保存错误: {e}")
 
-    def _flush_buffer(self):
+    def _flush_buffer(self) -> None:
         """将缓冲区中的事件批量写入数据库"""
         with self._buffer_lock:
             events = self._event_buffer.copy()

@@ -35,7 +35,7 @@ DEFAULT_ANOMALY_CONFIG = {
 class AnomalyDetector:
     """异常行为检测引擎"""
 
-    def __init__(self, db: DatabaseManager):
+    def __init__(self, db: DatabaseManager) -> None:
         self.db = db
 
     def _get_config(self, key: str) -> str:

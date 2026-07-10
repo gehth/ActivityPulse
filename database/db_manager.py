@@ -56,7 +56,7 @@ class DatabaseManager(
             self._local.conn = conn
         return conn
 
-    def _init_db(self):
+    def _init_db(self) -> None:
         """初始化数据库表结构"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -66,7 +66,7 @@ class DatabaseManager(
 
         conn.commit()
 
-    def _create_tables(self, cursor):
+    def _create_tables(self, cursor) -> None:
         """创建所有数据库表"""
         # 应用使用记录表
         cursor.execute("""
@@ -164,7 +164,7 @@ class DatabaseManager(
             )
         """)
 
-    def _create_indexes(self, cursor):
+    def _create_indexes(self, cursor) -> None:
         """创建所有索引"""
         # 基础索引
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_app_usage_time ON app_usage(start_time)")

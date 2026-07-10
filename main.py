@@ -12,7 +12,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 
-def setup_logging():
+def setup_logging() -> str:
     """配置日志系统 - 文件日志+控制台日志"""
     log_dir = os.path.join(os.path.expanduser("~"), ".computer_monitor", "logs")
     os.makedirs(log_dir, exist_ok=True)
@@ -49,7 +49,7 @@ def setup_logging():
     return log_file
 
 
-def global_exception_handler(exc_type, exc_value, exc_tb):
+def global_exception_handler(exc_type, exc_value, exc_tb) -> None:
     """全局异常处理器 - 捕获未处理异常并记录到日志"""
     # 记录到日志
     logging.critical("未捕获的异常", exc_info=(exc_type, exc_value, exc_tb))
@@ -83,7 +83,7 @@ def global_exception_handler(exc_type, exc_value, exc_tb):
     sys.__excepthook__(exc_type, exc_value, exc_tb)
 
 
-def check_dependencies():
+def check_dependencies() -> bool:
     """检查依赖库是否安装"""
     missing = []
     try:
@@ -115,7 +115,7 @@ def check_dependencies():
     return True
 
 
-def main():
+def main() -> None:
     """主函数"""
     if not check_dependencies():
         sys.exit(1)

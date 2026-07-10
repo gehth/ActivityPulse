@@ -119,7 +119,7 @@ def generate_weekly_report(db, end_date: str = None) -> dict:
     }
 
 
-def _build_daily_data(trend_data, end_date):
+def _build_daily_data(trend_data, end_date) -> dict:
     """从趋势数据构建每日详情列表"""
     daily_data = []
     for item in trend_data:
@@ -287,13 +287,13 @@ def should_send_weekly_report(db, current_weekday: int = None, current_hour: int
     return True
 
 
-def mark_daily_report_sent(db):
+def mark_daily_report_sent(db) -> None:
     """标记今日每日报告已发送"""
     today = datetime.now().strftime("%Y-%m-%d")
     db.save_config("daily_report_last_sent", today)
 
 
-def mark_weekly_report_sent(db):
+def mark_weekly_report_sent(db) -> None:
     """标记本周周报已发送"""
     now = datetime.now()
     monday = (now - timedelta(days=now.weekday())).strftime("%Y-%m-%d")

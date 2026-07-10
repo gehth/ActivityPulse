@@ -22,7 +22,7 @@ class ScreenMonitor:
     """定时截图监控"""
 
     def __init__(self, db_manager: DatabaseManager, interval: float = 60.0,
-                 quality: int = 80, save_screenshots: bool = True):
+                 quality: int = 80, save_screenshots: bool = True) -> None:
         """
         初始化屏幕截图监控
 
@@ -134,7 +134,7 @@ class ScreenMonitor:
             logger.warning(f"创建缩略图失败: {e}")
             return ""
 
-    def _monitor_loop(self):
+    def _monitor_loop(self) -> None:
         """截图监控循环"""
         while self._running:
             try:

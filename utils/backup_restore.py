@@ -76,7 +76,7 @@ def create_backup(output_dir: str, progress_callback: Optional[Callable[[int, st
     return backup_path
 
 
-def _backup_database_to_zip(zf, progress_callback=None):
+def _backup_database_to_zip(zf, progress_callback=None) -> None:
     """将数据库备份到zip文件中（使用SQLite backup API确保一致性）"""
     if progress_callback:
         progress_callback(15, "正在备份数据库...")
@@ -94,7 +94,7 @@ def _backup_database_to_zip(zf, progress_callback=None):
             os.remove(temp_db)
 
 
-def _backup_screenshots_to_zip(zf, screenshot_files, total_files, progress_callback=None):
+def _backup_screenshots_to_zip(zf, screenshot_files, total_files, progress_callback=None) -> None:
     """将截图文件备份到zip文件中"""
     if not screenshot_files:
         return

@@ -22,7 +22,7 @@ except ImportError:
 class AppMonitor:
     """监控应用程序使用情况"""
 
-    def __init__(self, db_manager: DatabaseManager, interval: float = 5.0):
+    def __init__(self, db_manager: DatabaseManager, interval: float = 5.0) -> None:
         """
         初始化应用监控器
 
@@ -39,7 +39,7 @@ class AppMonitor:
         self._current_start = None
         self._current_record_id = None
 
-    def _get_active_window(self):
+    def _get_active_window(self) -> tuple:
         """获取当前活动窗口信息"""
         try:
             if gw:
@@ -63,7 +63,7 @@ class AppMonitor:
             logger.warning(f"获取活动窗口失败: {e}")
         return "Unknown", "Unknown"
 
-    def _on_app_change(self, new_app: str, new_title: str):
+    def _on_app_change(self, new_app: str, new_title: str) -> None:
         """当活动应用发生变化时处理"""
         now = datetime.now()
         # 关闭旧的应用记录
@@ -84,7 +84,7 @@ class AppMonitor:
         self._current_start = now
         self._current_record_id = record_id
 
-    def _monitor_loop(self):
+    def _monitor_loop(self) -> None:
         """监控循环"""
         while self._running:
             try:

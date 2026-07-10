@@ -19,7 +19,7 @@ class DataLoadWorker(QThread):
     result_ready = pyqtSignal(object)  # 查询结果
     error_occurred = pyqtSignal(str)   # 错误信息
 
-    def __init__(self, load_func, parent=None):
+    def __init__(self, load_func, parent=None) -> None:
         """
         Args:
             load_func: 无参可调用对象，返回查询结果。
@@ -29,8 +29,7 @@ class DataLoadWorker(QThread):
         self._load_func = load_func
         self._cancelled = False
 
-    def run(self):
-        """在后台线程执行数据加载"""
+    def run(self) -> None:
         try:
             if not self._cancelled:
                 result = self._load_func()
@@ -41,8 +40,7 @@ class DataLoadWorker(QThread):
             if not self._cancelled:
                 self.error_occurred.emit(str(e))
 
-    def cancel(self):
-        """取消加载"""
+    def cancel(self) -> None:
         self._cancelled = True
 
 
@@ -62,19 +60,18 @@ class MultiDataLoader(QObject):
     partial_done = pyqtSignal(str, object)  # (key, result)
     error_occurred = pyqtSignal(str, str)   # (key, error_msg)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self._tasks = {}  # {key: load_func}
         self._results = {}
         self._errors = {}
         self._workers = []
 
-    def add(self, key: str, load_func):
+    def add(self, key: str, load_func) -> None:
         """添加一个数据加载任务"""
         self._tasks[key] = load_func
 
-    def start(self):
-        """启动所有加载任务"""
+    def start(self) -> None:
         self._results = {}
         self._errors = {}
         self._workers = []
@@ -86,19 +83,19 @@ class MultiDataLoader(QObject):
             self._workers.append(worker)
             worker.start()
 
-    def _on_result(self, key: str, result):
+    def _on_result(self, key: str, result) -> None:
         """单个任务完成"""
         self._results[key] = result
         self.partial_done.emit(key, result)
         self._check_all_done()
 
-    def _on_error(self, key: str, error_msg: str):
+    def _on_error(self, key: str, error_msg: str) -> None:
         """单个任务出错"""
         self._errors[key] = error_msg
         self.error_occurred.emit(key, error_msg)
         self._check_all_done()
 
-    def _check_all_done(self):
+    def _check_all_done(self) -> None:
         """检查是否全部完成"""
         if len(self._results) + len(self._errors) >= len(self._tasks):
             # 合并结果和错误
@@ -109,7 +106,7 @@ class MultiDataLoader(QObject):
                 final[k] = None  # 出错的任务结果为None
             self.all_done.emit(final)
 
-    def cancel_all(self):
+    def cancel_all(self) -> None:
         """取消所有任务"""
         for worker in self._workers:
             worker.cancel()

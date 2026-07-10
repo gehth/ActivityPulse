@@ -35,7 +35,7 @@ DEFAULT_HOTKEY_DISPLAY = 'Ctrl+Shift+H'
 class GlobalHotkeyManager:
     """全局热键管理器 - 支持多组快捷键注册和管理"""
 
-    def __init__(self, callback=None, hotkey_str: str = None):
+    def __init__(self, callback=None, hotkey_str: str = None) -> None:
         """
         Args:
             callback: 默认热键（toggle_window）触发时的回调函数
@@ -49,7 +49,7 @@ class GlobalHotkeyManager:
         initial_hotkey = hotkey_str or DEFAULT_HOTKEY
         self.register_hotkey("toggle_window", initial_hotkey, callback)
 
-    def register_hotkey(self, action: str, hotkey_str: str, callback=None):
+    def register_hotkey(self, action: str, hotkey_str: str, callback=None) -> None:
         """注册一组快捷键
         
         Args:
@@ -71,7 +71,7 @@ class GlobalHotkeyManager:
             self.stop()
             self.start()
 
-    def unregister_hotkey(self, action: str):
+    def unregister_hotkey(self, action: str) -> None:
         """取消注册一组快捷键"""
         if action in self._hotkeys:
             del self._hotkeys[action]
@@ -79,7 +79,7 @@ class GlobalHotkeyManager:
                 self.stop()
                 self.start()
 
-    def _invoke_callback(self, callback):
+    def _invoke_callback(self, callback) -> None:
         """安全调用回调函数"""
         if callback:
             try:
@@ -87,7 +87,7 @@ class GlobalHotkeyManager:
             except Exception:
                 pass
 
-    def _on_press(self, key):
+    def _on_press(self, key) -> None:
         """按键事件 - 传递给所有HotKey处理"""
         for entry in self._hotkeys.values():
             try:
@@ -95,7 +95,7 @@ class GlobalHotkeyManager:
             except (AttributeError, TypeError):
                 pass
 
-    def _on_release(self, key):
+    def _on_release(self, key) -> None:
         """释放事件 - 传递给所有HotKey处理"""
         for entry in self._hotkeys.values():
             try:
@@ -103,7 +103,7 @@ class GlobalHotkeyManager:
             except (AttributeError, TypeError):
                 pass
 
-    def start(self):
+    def start(self) -> None:
         """启动全局热键监听"""
         if self._running:
             return
@@ -115,19 +115,19 @@ class GlobalHotkeyManager:
         self._listener.daemon = True
         self._listener.start()
 
-    def stop(self):
+    def stop(self) -> None:
         """停止全局热键监听"""
         if self._listener:
             self._listener.stop()
             self._listener = None
         self._running = False
 
-    def set_callback(self, callback):
+    def set_callback(self, callback) -> None:
         """设置默认（toggle_window）回调函数"""
         if "toggle_window" in self._hotkeys:
             self._hotkeys["toggle_window"]["callback"] = callback
 
-    def update_hotkey(self, hotkey_str: str, action: str = "toggle_window"):
+    def update_hotkey(self, hotkey_str: str, action: str = "toggle_window") -> None:
         """更新指定动作的快捷键（运行时切换）
         
         Args:
