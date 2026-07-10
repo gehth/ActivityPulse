@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5.QtGui import QFont, QColor
-from gui.themes import HoverButton
+from gui.themes import HoverButton, get_colors
 
 
 class StatusIndicator(QWidget):
@@ -18,6 +18,7 @@ class StatusIndicator(QWidget):
         self._recording = False
         self._opacity = 1.0
         self._breathing_in = True
+        self._is_dark = False
 
         # 呼吸动画定时器
         self._breath_timer = QTimer(self)
@@ -34,6 +35,11 @@ class StatusIndicator(QWidget):
             self._breath_timer.stop()
             self._opacity = 1.0
             self.update()
+
+    def set_theme(self, is_dark: bool) -> None:
+        """设置主题"""
+        self._is_dark = is_dark
+        self.update()
 
     def _breath_tick(self) -> None:
         """呼吸动画步进"""
@@ -55,24 +61,25 @@ class StatusIndicator(QWidget):
         from PyQt5.QtGui import QPainter, QBrush
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
+        colors = get_colors("dark" if self._is_dark else "light")
 
         # 状态文字
         if self._recording:
-            color = QColor("#10B981")
+            color = QColor(colors["success"])
             color.setAlphaF(self._opacity)
             painter.setBrush(QBrush(color))
             painter.setPen(Qt.NoPen)
             painter.drawEllipse(8, 5, 14, 14)
 
-            painter.setPen(QColor("#10B981"))
+            painter.setPen(QColor(colors["success"]))
             painter.setFont(QFont("Microsoft YaHei", 11))
             painter.drawText(28, 17, "记录中")
         else:
-            painter.setBrush(QBrush(QColor("#9CA3AF")))
+            painter.setBrush(QBrush(QColor(colors["text_muted"])))
             painter.setPen(Qt.NoPen)
             painter.drawEllipse(8, 5, 14, 14)
 
-            painter.setPen(QColor("#9CA3AF"))
+            painter.setPen(QColor(colors["text_muted"]))
             painter.setFont(QFont("Microsoft YaHei", 11))
             painter.drawText(28, 17, "已暂停")
 
@@ -245,19 +252,6 @@ class Sidebar(QFrame):
         # 告警指示器
         self._alert_badge = QLabel("")
         self._alert_badge.setObjectName("alert_badge")
-        self._alert_badge.setStyleSheet("""
-            QLabel {
-                background: #EF4444;
-                color: white;
-                border-radius: 9px;
-                font-size: 11px;
-                font-weight: bold;
-                padding: 1px 5px;
-                min-width: 18px;
-                max-height: 18px;
-                qproperty-alignment: AlignCenter;
-            }
-        """)
         self._alert_badge.hide()
         self._alert_btn = HoverButton("🚨 告警")
         self._alert_btn.setObjectName("btn_outline")
@@ -356,7 +350,24 @@ class Sidebar(QFrame):
 
     def set_theme(self, is_dark: bool) -> None:
         """主题切换时更新HoverButton阴影"""
+        c = get_colors(is_dark)
+        # 更新告警badge样式
+        self._alert_badge.setStyleSheet(f"""
+            QLabel {{
+                background: {c['danger']};
+                color: white;
+                border-radius: 9px;
+                font-size: 11px;
+                font-weight: bold;
+                padding: 1px 5px;
+                min-width: 18px;
+                max-height: 18px;
+                qproperty-alignment: AlignCenter;
+            }}
+        """)
+        # 更新状态指示器主题
+        self.status_indicator.set_theme(is_dark)
         for btn in [self.btn_collapse, self.btn_toggle_monitor,
-                     self.btn_privacy, self.btn_settings]:
+                     self.btn_privacy, self.btn_settings, self._alert_btn]:
             if hasattr(btn, 'set_theme'):
                 btn.set_theme(is_dark)

@@ -37,7 +37,7 @@ class TagItemWidget(QFrame):
         super().__init__(parent)
         self._is_dark = is_dark
         self._tag_id = tag_data.get("id", 0)
-        self._color = tag_data.get("color", "#3B82F6")
+        self._color = tag_data.get("color", TAG_COLORS[0])
         self.setObjectName("card")
         self.setFixedHeight(60)
 
@@ -55,6 +55,7 @@ class TagItemWidget(QFrame):
         info_layout = QVBoxLayout()
         info_layout.setSpacing(2)
 
+        colors = get_colors("dark" if is_dark else "light")
         tag_label = QLabel(tag_data.get("tag", ""))
         tag_label.setStyleSheet(f"font-weight: bold; font-size: 13px; color: {colors['text_primary']};")
         layout_tag = tag_label  # keep reference
