@@ -114,10 +114,17 @@ class ExportManager:
             scroll_count = input_counts.get("scroll", 0) if isinstance(input_counts, dict) else 0
 
             # 构建HTML报告
-            html = self._build_pdf_html(
-                date_label, duration_str, app_summary, total_seconds,
-                input_counts, cat_rows, key_count, click_count, scroll_count
-            )
+            html = self._build_pdf_html({
+                "date_label": date_label,
+                "duration_str": duration_str,
+                "app_summary": app_summary,
+                "total_seconds": total_seconds,
+                "input_counts": input_counts,
+                "cat_rows": cat_rows,
+                "key_count": key_count,
+                "click_count": click_count,
+                "scroll_count": scroll_count,
+            })
 
             # 使用QPrinter输出PDF
             printer = QPrinter(QPrinter.HighResolution)
@@ -162,9 +169,17 @@ class ExportManager:
                 </tr>"""
         return cat_rows
 
-    def _build_pdf_html(self, date_label, duration_str, app_summary, total_seconds,
-                        input_counts, cat_rows, key_count, click_count, scroll_count):
+    def _build_pdf_html(self, data: dict):
         """构建PDF报告HTML内容"""
+        date_label = data["date_label"]
+        duration_str = data["duration_str"]
+        app_summary = data["app_summary"]
+        total_seconds = data["total_seconds"]
+        input_counts = data["input_counts"]
+        cat_rows = data["cat_rows"]
+        key_count = data["key_count"]
+        click_count = data["click_count"]
+        scroll_count = data["scroll_count"]
         input_count = sum(input_counts.values()) if isinstance(input_counts, dict) else 0
 
         html = f"""

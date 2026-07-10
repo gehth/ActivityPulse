@@ -41,7 +41,7 @@ print("6. 自定义日期范围: OK (main_window集成)")
 
 # 7. 活动标签
 from gui.activity_tag_dialog import ActivityTagDialog, AddTagDialog
-tid = db.add_activity_tag("2026-07-08", "测试", "测试备注", "09:00", "10:00")
+tid = db.add_activity_tag("2026-07-08", "测试", note="测试备注", start_time="09:00", end_time="10:00")
 tags = db.get_activity_tags("2026-07-08")
 db.delete_activity_tag(tid)
 print(f"7. 活动标签: OK (CRUD测试通过)")

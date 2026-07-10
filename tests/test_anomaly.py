@@ -20,7 +20,7 @@ def test_anomaly_db():
     
     # 1. 测试 save_anomaly_alert
     print('1. Testing save_anomaly_alert...')
-    alert_id = db.save_anomaly_alert('continuous_use', 'Test Alert', 'Test desc', 'Chrome', 'warning', 120, 180)
+    alert_id = db.save_anomaly_alert('continuous_use', 'Test Alert', description='Test desc', app_name='Chrome', severity='warning', threshold_value=120, actual_value=180)
     print(f'   Alert ID: {alert_id}')
     assert alert_id > 0, "save_anomaly_alert should return positive ID"
     

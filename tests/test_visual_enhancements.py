@@ -30,7 +30,7 @@ block2 = TimelineBlock("chrome.exe", "Chrome", 14.0, 1.0, "browser")
 blocks = [block1, block2]
 
 # 添加测试标签
-tag_id = db.add_activity_tag("2026-07-08", "工作", "编码工作", "09:00", "11:00", "#3B82F6")
+tag_id = db.add_activity_tag("2026-07-08", "工作", note="编码工作", start_time="09:00", end_time="11:00", color="#3B82F6")
 tp._attach_tags_to_blocks(blocks, "2026-07-08")
 print(f"1. 标签匹配: block1有{len(block1.tags)}个标签, block2有{len(block2.tags)}个标签")
 

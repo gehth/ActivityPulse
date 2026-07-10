@@ -9,23 +9,24 @@ from utils.segment_merge import merge_continuous_segments
 class AnomalyMixin:
     """异常告警和持续使用检测的数据库操作"""
 
-    def save_anomaly_alert(self, alert_type: str, title: str, description: str = None,
-                           app_name: str = None, severity: str = "warning",
-                           threshold_value: float = None, actual_value: float = None) -> int:
+    def save_anomaly_alert(self, alert_type: str, title: str, **kwargs) -> int:
         """保存异常告警记录（线程安全）
 
         Args:
             alert_type: 告警类型 (continuous_use/late_night/daily_deviation/no_break)
             title: 告警标题
-            description: 告警描述
-            app_name: 关联应用名（可选）
-            severity: 严重程度 info/warning/critical
-            threshold_value: 阈值
-            actual_value: 实际值
+            **kwargs: 可选字段 - description, app_name, severity(默认warning),
+                     threshold_value, actual_value
 
         Returns:
             新记录ID
         """
+        severity = kwargs.get("severity", "warning")
+        description = kwargs.get("description")
+        app_name = kwargs.get("app_name")
+        threshold_value = kwargs.get("threshold_value")
+        actual_value = kwargs.get("actual_value")
+
         return self._execute("""
             INSERT INTO anomaly_alerts
                 (alert_type, severity, title, description, app_name,

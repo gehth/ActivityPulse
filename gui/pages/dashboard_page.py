@@ -214,25 +214,14 @@ class DashboardPage(QWidget):
         date = ctx.get("date", "")
         start_date = ctx.get("start_date", "")
 
-        app_summary = results.get("app_summary") or []
-        prev_seconds = results.get("prev_seconds") or 0
-        prev_app_count = results.get("prev_app_count") or 0
-        input_stats = results.get("input_stats") or {}
-        screenshot_count = results.get("screenshot_count") or 0
-        heatmap_rows = results.get("heatmap") or []
-        sensitive_apps = results.get("sensitive_apps") or set()
-        idle_summary = results.get("idle_summary") or {"total_idle_minutes": 0, "idle_count": 0, "longest_idle_minutes": 0, "idle_periods": []}
-        week_this = results.get("week_this") or []
-        week_last = results.get("week_last") or []
-        hourly_data = results.get("hourly") or []
-
         # 更新指标卡片
-        self._update_metric_cards(app_summary, prev_seconds, prev_app_count, input_stats, screenshot_count, is_range)
+        self._update_metric_cards(results, is_range)
 
         # 更新图表和详情
-        self._update_charts_and_details(app_summary, heatmap_rows, sensitive_apps, idle_summary, week_this, week_last, hourly_data, is_range, start_date, date)
+        self._update_charts_and_details(results, is_range, start_date, date)
 
         # 空状态
+        app_summary = results.get("app_summary") or []
         total_seconds = sum(item.get("total_seconds", 0) or 0 for item in app_summary)
         has_data = total_seconds > 0 or len(app_summary) > 0
         if has_data:
@@ -244,8 +233,14 @@ class DashboardPage(QWidget):
         # 隐藏骨架屏
         self._skeleton.hide()
 
-    def _update_metric_cards(self, app_summary, prev_seconds, prev_app_count, input_stats, screenshot_count, is_range):
+    def _update_metric_cards(self, results, is_range):
         """更新指标卡片（专注时长、应用数、操作数、截图数）"""
+        app_summary = results.get("app_summary") or []
+        prev_seconds = results.get("prev_seconds") or 0
+        prev_app_count = results.get("prev_app_count") or 0
+        input_stats = results.get("input_stats") or {}
+        screenshot_count = results.get("screenshot_count") or 0
+
         total_seconds = sum(item.get("total_seconds", 0) or 0 for item in app_summary)
         duration_str = format_duration(total_seconds)
 
@@ -274,8 +269,16 @@ class DashboardPage(QWidget):
         # 每日目标进度
         self.goal_card.set_progress(total_seconds)
 
-    def _update_charts_and_details(self, app_summary, heatmap_rows, sensitive_apps, idle_summary, week_this, week_last, hourly_data, is_range, start_date, date):
+    def _update_charts_and_details(self, results, is_range, start_date, date):
         """更新图表和详情区域（空闲、周对比、热力图、Top5等）"""
+        app_summary = results.get("app_summary") or []
+        heatmap_rows = results.get("heatmap") or []
+        sensitive_apps = results.get("sensitive_apps") or set()
+        idle_summary = results.get("idle_summary") or {"total_idle_minutes": 0, "idle_count": 0, "longest_idle_minutes": 0, "idle_periods": []}
+        week_this = results.get("week_this") or []
+        week_last = results.get("week_last") or []
+        hourly_data = results.get("hourly") or []
+
         # 空闲时段
         self.idle_card.set_idle_data(idle_summary)
 

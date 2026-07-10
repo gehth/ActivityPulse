@@ -9,10 +9,18 @@ class ActivityTagMixin:
     _ACTIVITY_TAG_COLUMNS = {"tag", "note", "start_time", "end_time", "color"}
 
 
-    def add_activity_tag(self, date: str, tag: str, note: str = "",
-                         start_time: str = None, end_time: str = None,
-                         color: str = "#3B82F6") -> int:
-        """添加活动标签（线程安全）"""
+    def add_activity_tag(self, date: str, tag: str, **kwargs) -> int:
+        """添加活动标签（线程安全）
+
+        Args:
+            date: 日期
+            tag: 标签名
+            **kwargs: 可选字段 - note, start_time, end_time, color(默认#3B82F6)
+        """
+        note = kwargs.get("note", "")
+        start_time = kwargs.get("start_time")
+        end_time = kwargs.get("end_time")
+        color = kwargs.get("color", "#3B82F6")
         return self._execute("""
             INSERT INTO activity_tags (date, tag, note, start_time, end_time, color)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -30,14 +38,20 @@ class ActivityTagMixin:
         """删除活动标签（线程安全）"""
         self._execute("DELETE FROM activity_tags WHERE id = ?", (tag_id,))
 
-    def update_activity_tag(self, tag_id: int, tag: str = None, note: str = None,
-                            start_time: str = None, end_time: str = None,
-                            color: str = None) -> None:
-        """更新活动标签（线程安全）"""
+    def update_activity_tag(self, tag_id: int, **kwargs) -> None:
+        """更新活动标签（线程安全）
+
+        Args:
+            tag_id: 标签ID
+            **kwargs: 要更新的字段 - tag, note, start_time, end_time, color
+        """
         # 使用白名单构建更新字段，避免f-string拼接SQL
         field_map = {
-            "tag": tag, "note": note, "start_time": start_time,
-            "end_time": end_time, "color": color,
+            "tag": kwargs.get("tag"),
+            "note": kwargs.get("note"),
+            "start_time": kwargs.get("start_time"),
+            "end_time": kwargs.get("end_time"),
+            "color": kwargs.get("color"),
         }
         updates = []
         params = []
