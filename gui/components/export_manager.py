@@ -152,7 +152,7 @@ class ExportManager:
             input_counts = self.db.get_input_event_count(end_date)
         return app_summary, total_seconds, input_counts
 
-    def _build_category_rows(self, cat_stats, cat_names, cat_colors, total_seconds) -> None:
+    def _build_category_rows(self, cat_stats: dict, cat_names: dict, cat_colors: dict, total_seconds: int) -> None:
         """构建分类统计HTML表格行"""
         cat_rows = ""
         sorted_cats = sorted(cat_stats.items(), key=lambda x: -x[1]["seconds"])

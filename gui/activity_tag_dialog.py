@@ -288,7 +288,7 @@ class AddTagDialog(QDialog):
             self._color_btns.append(btn)
         return color_row
 
-    def _select_color(self, color, idx) -> None:
+    def _select_color(self, color: str, idx: int) -> None:
         """选择标签颜色"""
         self._selected_color = color
         colors = get_colors("dark" if self._is_dark else "light")

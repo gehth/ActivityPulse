@@ -89,7 +89,7 @@ class AlertCard(QFrame):
 
         layout.addLayout(self._create_bottom_layout(alert))
 
-    def _create_title_layout(self, alert, type_cfg, sev_cfg, is_read) -> None:
+    def _create_title_layout(self, alert: dict, type_cfg: dict, sev_cfg: dict, is_read: bool) -> None:
         """创建标题行（类型图标+标题+严重程度+已读标记）"""
         title_layout = QHBoxLayout()
 
@@ -113,7 +113,7 @@ class AlertCard(QFrame):
 
         return title_layout
 
-    def _create_bottom_layout(self, alert) -> None:
+    def _create_bottom_layout(self, alert: dict) -> None:
         """创建底部信息行（检测时间+忽略按钮）"""
         bottom_layout = QHBoxLayout()
 

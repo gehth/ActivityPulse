@@ -1,6 +1,7 @@
 """主窗口 - 侧边栏导航 + 多页面切换 + 主题系统"""
 
 import logging
+from typing import Callable
 
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -9,7 +10,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QGraphicsOpacityEffect, QShortcut
 )
-from PyQt5.QtCore import Qt, QTimer, QDate, QPropertyAnimation, QParallelAnimationGroup, QEasingCurve, QPoint
+from PyQt5.QtCore import Qt, QTimer, QDate, QPropertyAnimation, QParallelAnimationGroup, QEasingCurve, QPoint, QObject
 from PyQt5.QtGui import QKeySequence
 
 from database.db_manager import DatabaseManager
@@ -228,7 +229,7 @@ class MainWindow(QMainWindow):
         self._pomodoro_visible = False
         self._pomodoro_widget.pomodoro_completed.connect(self._on_pomodoro_completed)
 
-    def _setup_toolbar(self, parent_layout) -> None:
+    def _setup_toolbar(self, parent_layout: QVBoxLayout) -> None:
         """创建顶部工具栏"""
         toolbar, tb_widgets = create_toolbar({
             "on_time_range_changed": self._on_time_range_changed,
@@ -544,7 +545,7 @@ class MainWindow(QMainWindow):
             self.sidebar.set_monitoring(True)
             self.statusBar().showMessage("隐私模式已关闭，监控已恢复")
 
-    def eventFilter(self, obj, event: QEvent) -> bool:
+    def eventFilter(self, obj: QObject, event: QEvent) -> bool:
         """事件过滤器 - 调整隐私遮罩位置"""
         try:
             if obj is self._content_stack and event.type() == event.Resize:
@@ -700,7 +701,7 @@ class MainWindow(QMainWindow):
         if self.is_monitoring:
             self._refresh_current_page()
 
-    def _show_sedentary_dialog(self, minutes: int, snooze_callback) -> None:
+    def _show_sedentary_dialog(self, minutes: int, snooze_callback: Callable) -> None:
         """显示久坐提醒对话框（CheckManager回调）"""
         dialog = SedentaryDialog(minutes, self)
         dialog.snoozed.connect(snooze_callback)

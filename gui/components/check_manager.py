@@ -1,11 +1,16 @@
 """检测管理器 - 久坐提醒、应用限制、异常行为检测、自动报告"""
 
 import logging
+from typing import TYPE_CHECKING
 
 from datetime import datetime, timedelta
 
 from PyQt5.QtWidgets import QSystemTrayIcon
 from PyQt5.QtCore import QDate
+
+if TYPE_CHECKING:
+    from monitors.app_monitor import AppMonitor
+    from monitors.input_monitor import InputMonitor
 
 from utils.auto_report import (
     generate_daily_report, generate_weekly_report,
@@ -21,7 +26,7 @@ class CheckManager:
     管理久坐提醒、应用限制检查、异常行为检测和自动报告。
     """
 
-    def __init__(self, db: DatabaseManager, tray_icon, app_monitor, input_monitor, callbacks: dict) -> None:
+    def __init__(self, db: DatabaseManager, tray_icon: QSystemTrayIcon, app_monitor: 'AppMonitor', input_monitor: 'InputMonitor', callbacks: dict) -> None:
         """
         Args:
             db: DatabaseManager实例

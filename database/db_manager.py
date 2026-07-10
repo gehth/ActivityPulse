@@ -66,7 +66,7 @@ class DatabaseManager(
 
         conn.commit()
 
-    def _create_tables(self, cursor) -> None:
+    def _create_tables(self, cursor: sqlite3.Cursor) -> None:
         """创建所有数据库表"""
         # 应用使用记录表
         cursor.execute("""
@@ -164,7 +164,7 @@ class DatabaseManager(
             )
         """)
 
-    def _create_indexes(self, cursor) -> None:
+    def _create_indexes(self, cursor: sqlite3.Cursor) -> None:
         """创建所有索引"""
         # 基础索引
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_app_usage_time ON app_usage(start_time)")

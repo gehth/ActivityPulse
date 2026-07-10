@@ -1,10 +1,15 @@
 """系统托盘管理器 - 托盘图标、菜单、通知"""
 
-from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction
+from typing import TYPE_CHECKING
+
+from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction, QWidget
 from PyQt5.QtCore import QTimer, QDate
 
 from gui.components.icon_factory import create_app_icon
 from utils.time_utils import format_duration
+
+if TYPE_CHECKING:
+    from monitors.app_monitor import AppMonitor
 
 
 APP_NAME = "行为记录"
@@ -17,7 +22,7 @@ class TrayManager:
     管理托盘图标、菜单和动态信息更新。
     """
 
-    def __init__(self, main_window, db: DatabaseManager, app_monitor, callbacks: dict) -> None:
+    def __init__(self, main_window: QWidget, db: DatabaseManager, app_monitor: 'AppMonitor', callbacks: dict) -> None:
         """
         Args:
             main_window: 主窗口实例（用于setWindowIcon等）
@@ -54,7 +59,7 @@ class TrayManager:
         self._tray_info_timer.timeout.connect(self.update_tray_info)
         self._tray_info_timer.start(10000)  # 每10秒更新
 
-    def _build_tray_menu(self, main_window, callbacks) -> None:
+    def _build_tray_menu(self, main_window: QWidget, callbacks: dict) -> None:
         """构建托盘右键菜单"""
         menu = QMenu()
 
@@ -96,7 +101,7 @@ class TrayManager:
 
         return menu
 
-    def _on_tray_activated(self, reason) -> None:
+    def _on_tray_activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
         """托盘图标激活（双击打开主窗口）"""
         if reason == QSystemTrayIcon.DoubleClick:
             callback = self._callbacks.get("on_show_window")
