@@ -52,7 +52,7 @@ def test_anomaly_db():
     
     # 6. 测试 mark_all_alerts_read
     print('6. Testing mark_all_alerts_read...')
-    db.save_anomaly_alert('late_night', 'Late Night Test', 'desc2', severity='critical')
+    db.save_anomaly_alert('late_night', 'Late Night Test', description='desc2', severity='critical')
     db.mark_all_alerts_read()
     count3 = db.get_unread_alert_count()
     print(f'   Unread after all read: {count3}')

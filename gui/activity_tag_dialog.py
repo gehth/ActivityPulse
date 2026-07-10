@@ -3,11 +3,10 @@
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel,
     QLineEdit, QTextEdit, QPushButton, QTimeEdit,
-    QColorDialog, QFrame, QScrollArea, QWidget,
+    QFrame, QScrollArea, QWidget,
     QInputDialog, QMessageBox
 )
 from PyQt5.QtCore import Qt, QTime, pyqtSignal
-from PyQt5.QtGui import QColor
 
 from database.db_manager import DatabaseManager
 from gui.themes import get_colors

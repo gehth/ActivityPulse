@@ -176,7 +176,7 @@ class ScreenMonitor:
         self._running = False
         if self._thread:
             self._thread.join(timeout=3)
-        print("[屏幕监控] 已停止")
+        logger.info("屏幕监控已停止")
 
     def take_screenshot_now(self) -> str:
         """立即截取一张截图"""

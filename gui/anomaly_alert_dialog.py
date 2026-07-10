@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (
     QPushButton, QFrame, QScrollArea, QWidget, QSizePolicy
 )
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QFont
 
 from gui.themes import get_colors, HoverButton
 

@@ -1,5 +1,7 @@
 """主窗口 - 侧边栏导航 + 多页面切换 + 主题系统"""
 
+import logging
+
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QStackedWidget, QFrame,
@@ -177,7 +179,7 @@ class MainWindow(QMainWindow):
                     f"已自动清理 {retention_days} 天前的过期数据：{total} 条记录"
                 )
         except Exception as e:
-            print(f"自动清理失败: {e}")
+            logging.exception("自动清理失败")
 
     def _setup_ui(self):
         central = QWidget()
@@ -715,7 +717,7 @@ class MainWindow(QMainWindow):
             dialog.set_dark_mode(self._is_dark)
             dialog.exec_()
         except Exception as e:
-            print(f"显示告警对话框失败: {e}")
+            logging.exception("显示告警对话框失败")
 
     def _open_playback(self):
         """打开屏幕回放对话框"""
@@ -733,7 +735,7 @@ class MainWindow(QMainWindow):
             dialog.set_theme(self._is_dark)
             dialog.exec_()
         except Exception as e:
-            print(f"打开屏幕回放失败: {e}")
+            logging.exception("打开屏幕回放失败")
             QMessageBox.warning(self, "屏幕回放", f"打开回放失败: {e}")
 
     def _update_anomaly_badge(self):

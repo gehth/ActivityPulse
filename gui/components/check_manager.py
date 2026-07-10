@@ -1,5 +1,7 @@
 """检测管理器 - 久坐提醒、应用限制、异常行为检测、自动报告"""
 
+import logging
+
 from datetime import datetime, timedelta
 
 from PyQt5.QtWidgets import QSystemTrayIcon
@@ -51,6 +53,12 @@ class CheckManager:
         # 异常检测器
         from utils.anomaly_detector import AnomalyDetector
         self._anomaly_detector = AnomalyDetector(db)
+
+    def _show_status(self, message: str):
+        """通过回调显示状态栏消息"""
+        show_status = self._callbacks.get("show_status")
+        if show_status:
+            show_status(message)
 
     def check_sedentary(self):
         """久坐提醒检查 - 每分钟调用，支持暂停15分钟"""
@@ -106,9 +114,7 @@ class CheckManager:
     def _on_sedentary_snooze(self):
         """久坐提醒暂停15分钟"""
         self._snooze_until = datetime.now() + timedelta(minutes=15)
-        show_status = self._callbacks.get("show_status")
-        if show_status:
-            show_status("久坐提醒已暂停15分钟")
+        self._show_status("久坐提醒已暂停15分钟")
 
     def check_app_limits(self):
         """检查应用使用限制，超限时发送通知"""
@@ -137,11 +143,9 @@ class CheckManager:
                     )
 
                     # 状态栏提示
-                    show_status = self._callbacks.get("show_status")
-                    if show_status:
-                        show_status(f"⚠ {app_name} 已超过每日使用限制 ({limit_min}分钟)")
+                    self._show_status(f"⚠ {app_name} 已超过每日使用限制 ({limit_min}分钟)")
         except Exception as e:
-            print(f"应用限制检查失败: {e}")
+            logging.exception("应用限制检查失败")
 
     def check_anomaly(self):
         """定时检查异常行为并通知"""
@@ -172,9 +176,7 @@ class CheckManager:
                     )
 
                 # 状态栏提示
-                show_status = self._callbacks.get("show_status")
-                if show_status:
-                    show_status(f"🚨 {alert.get('title', '异常告警')}")
+                self._show_status(f"🚨 {alert.get('title', '异常告警')}")
 
             # 弹窗通知（合并显示）
             if popup_enabled == "1" and new_alerts:
@@ -183,7 +185,7 @@ class CheckManager:
                     show_alerts()
 
         except Exception as e:
-            print(f"异常行为检测失败: {e}")
+            logging.exception("异常行为检测失败")
 
     def check_auto_report(self):
         """检查并发送自动报告（每日/每周）"""
@@ -198,9 +200,7 @@ class CheckManager:
                         QSystemTrayIcon.Information, 8000
                     )
                     mark_daily_report_sent(self._db)
-                    show_status = self._callbacks.get("show_status")
-                    if show_status:
-                        show_status(f"每日报告已推送 - {report['date']}")
+                    self._show_status(f"每日报告已推送 - {report['date']}")
 
             # 检查每周报告
             if should_send_weekly_report(self._db):
@@ -212,8 +212,6 @@ class CheckManager:
                         QSystemTrayIcon.Information, 10000
                     )
                     mark_weekly_report_sent(self._db)
-                    show_status = self._callbacks.get("show_status")
-                    if show_status:
-                        show_status(f"周报已推送 - {report['start_date']} ~ {report['end_date']}")
+                    self._show_status(f"周报已推送 - {report['start_date']} ~ {report['end_date']}")
         except Exception as e:
-            print(f"自动报告检查失败: {e}")
+            logging.exception("自动报告检查失败")

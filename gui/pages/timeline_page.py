@@ -1,5 +1,7 @@
 """时间轴页面 - 甘特图样式行为流 + 语义化配色"""
 
+from dataclasses import dataclass, field
+
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QScrollArea, QToolTip, QMenu, QMessageBox
@@ -23,19 +25,21 @@ CATEGORY_COLORS = {
 }
 
 
+@dataclass
 class TimelineBlock:
     """时间轴色块数据"""
-    def __init__(self, app_name: str, window_title: str,
-                 start_hour: float, duration_hours: float, category: str,
-                 record_id: int = -1):
-        self.app_name = app_name
-        self.window_title = window_title
-        self.start_hour = start_hour
-        self.duration_hours = duration_hours
-        self.category = category
-        self.record_id = record_id
-        self.color = CATEGORY_COLORS.get(category, CATEGORY_COLORS["other"])
-        self.tags = []  # 关联的活动标签 [{tag, note, color, start_time, end_time}]
+    app_name: str
+    window_title: str
+    start_hour: float
+    duration_hours: float
+    category: str
+    record_id: int = -1
+    color: str = ""
+    tags: list = field(default_factory=list)
+
+    def __post_init__(self):
+        if not self.color:
+            self.color = CATEGORY_COLORS.get(self.category, CATEGORY_COLORS["other"])
 
 
 class TimelineWidget(QWidget):

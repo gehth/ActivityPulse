@@ -1,5 +1,6 @@
 """Windows开机自启工具 - 通过注册表实现"""
 
+import logging
 import sys
 import os
 
@@ -50,7 +51,7 @@ def enable_auto_start() -> bool:
         winreg.CloseKey(key)
         return True
     except Exception as e:
-        print(f"启用开机自启失败: {e}")
+        logging.exception("启用开机自启失败")
         return False
 
 
@@ -71,5 +72,5 @@ def disable_auto_start() -> bool:
         winreg.CloseKey(key)
         return True
     except Exception as e:
-        print(f"禁用开机自启失败: {e}")
+        logging.exception("禁用开机自启失败")
         return False

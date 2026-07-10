@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QFont
 
 from gui.themes import HoverButton
 from utils.time_utils import format_minutes

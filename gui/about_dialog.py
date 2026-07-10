@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QFrame
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPainter, QColor, QFont, QIcon
+from PyQt5.QtGui import QPixmap, QPainter, QColor, QFont
 
 
 class AboutDialog(QDialog):
