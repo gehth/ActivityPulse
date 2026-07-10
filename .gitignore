@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# PyInstaller
+*.spec
+
+# Pytest
+.pytest_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Database & User Data (runtime generated)
+database/*.db
+screenshots/
+
+# Build output
+dist_v14/
+
+# Old versions
+旧版本/
+
+# Temporary analysis scripts
+_*.py
+
+# OS
+Thumbs.db
+.DS_Store
