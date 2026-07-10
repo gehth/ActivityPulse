@@ -18,6 +18,7 @@ from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QRectF
 from PyQt5.QtGui import QPainter, QColor, QPen, QConicalGradient
 
 from database.db_manager import DatabaseManager
+from gui.themes import get_colors
 
 
 # 默认配置
@@ -217,58 +218,35 @@ class PomodoroWidget(QWidget):
 
     def _apply_styles(self) -> None:
         """应用样式"""
-        self.setStyleSheet(self._build_qss("light"))
+        self.setStyleSheet(self._build_qss(get_colors(False)))
 
     def _apply_dark_styles(self) -> None:
         """应用暗色主题样式"""
-        self.setStyleSheet(self._build_qss("dark"))
+        self.setStyleSheet(self._build_qss(get_colors(True)))
 
-    def _build_qss(self, theme: str) -> str:
+    def _build_qss(self, c: dict) -> str:
         """构建番茄钟QSS样式"""
-        c = {
-            "light": {
-                "bg": "#ffffff", "title_color": "#1e293b", "mode_bg": "#f1f5f9",
-                "mode_color": "#64748b", "mode_border": "#e2e8f0", "mode_hover": "#e2e8f0",
-                "time_color": "#1e293b", "count_color": "#64748b",
-                "reset_bg": "#f1f5f9", "reset_color": "#475569", "reset_border": "#e2e8f0", "reset_hover": "#e2e8f0",
-                "settings_btn_color": "#94a3b8", "settings_btn_hover": "#64748b",
-                "settings_bg": "#f8fafc", "settings_border": "#e2e8f0",
-                "spin_bg": "white", "spin_color": "#1e293b", "spin_border": "#e2e8f0",
-                "label_color": "#475569",
-            },
-            "dark": {
-                "bg": "#1e293b", "title_color": "#e2e8f0", "mode_bg": "#334155",
-                "mode_color": "#94a3b8", "mode_border": "#475569", "mode_hover": "#475569",
-                "time_color": "#e2e8f0", "count_color": "#94a3b8",
-                "reset_bg": "#334155", "reset_color": "#94a3b8", "reset_border": "#475569", "reset_hover": "#475569",
-                "settings_btn_color": "#64748b", "settings_btn_hover": "#94a3b8",
-                "settings_bg": "#0f172a", "settings_border": "#334155",
-                "spin_bg": "#0f172a", "spin_color": "#e2e8f0", "spin_border": "#334155",
-                "label_color": "#94a3b8",
-            },
-        }[theme]
-
         return f"""
             #pomodoro_widget {{
-                background-color: {c['bg']};
+                background-color: {c['bg_card']};
                 border-radius: 12px;
             }}
             #pomodoro_title {{
                 font-size: 18px;
                 font-weight: bold;
-                color: {c['title_color']};
+                color: {c['text_primary']};
                 padding: 4px;
             }}
             #mode_btn {{
-                background-color: {c['mode_bg']};
-                color: {c['mode_color']};
-                border: 1px solid {c['mode_border']};
+                background-color: {c['bg_sidebar_hover']};
+                color: {c['text_muted']};
+                border: 1px solid {c['border']};
                 border-radius: 6px;
                 font-size: 12px;
                 padding: 4px 12px;
             }}
             #mode_btn:hover {{
-                background-color: {c['mode_hover']};
+                background-color: {c['border']};
             }}
             #mode_btn_active {{
                 background-color: #ef4444;
@@ -282,12 +260,12 @@ class PomodoroWidget(QWidget):
             #pomodoro_time {{
                 font-size: 42px;
                 font-weight: bold;
-                color: {c['time_color']};
+                color: {c['text_primary']};
                 background: transparent;
             }}
             #pomodoro_count {{
                 font-size: 14px;
-                color: {c['count_color']};
+                color: {c['text_muted']};
                 padding: 2px;
             }}
             #pomodoro_start {{
@@ -303,34 +281,34 @@ class PomodoroWidget(QWidget):
                 background-color: #dc2626;
             }}
             #pomodoro_reset {{
-                background-color: {c['reset_bg']};
-                color: {c['reset_color']};
-                border: 1px solid {c['reset_border']};
+                background-color: {c['bg_sidebar_hover']};
+                color: {c['text_secondary']};
+                border: 1px solid {c['border']};
                 border-radius: 8px;
                 font-size: 14px;
                 padding: 8px 16px;
             }}
             #pomodoro_reset:hover {{
-                background-color: {c['reset_hover']};
+                background-color: {c['border']};
             }}
             #pomodoro_settings_btn {{
                 background: transparent;
-                color: {c['settings_btn_color']};
+                color: {c['text_muted']};
                 border: none;
                 font-size: 12px;
                 padding: 4px;
             }}
             #pomodoro_settings_btn:hover {{
-                color: {c['settings_btn_hover']};
+                color: {c['text_secondary']};
             }}
             #pomodoro_settings {{
-                background-color: {c['settings_bg']};
-                border: 1px solid {c['settings_border']};
+                background-color: {c['bg_primary']};
+                border: 1px solid {c['border']};
                 border-radius: 8px;
                 padding: 8px;
             }}
             #pomodoro_save {{
-                background-color: #3b82f6;
+                background-color: {c['primary']};
                 color: white;
                 border: none;
                 border-radius: 6px;
@@ -338,18 +316,18 @@ class PomodoroWidget(QWidget):
                 padding: 6px;
             }}
             #pomodoro_save:hover {{
-                background-color: #2563eb;
+                background-color: {c['primary_hover']};
             }}
             QSpinBox {{
                 padding: 4px 8px;
-                border: 1px solid {c['spin_border']};
+                border: 1px solid {c['border']};
                 border-radius: 4px;
-                background: {c['spin_bg']};
-                color: {c['spin_color']};
+                background: {c['bg_card']};
+                color: {c['text_primary']};
                 font-size: 13px;
             }}
             QLabel {{
-                color: {c['label_color']};
+                color: {c['text_secondary']};
                 font-size: 13px;
             }}
         """
@@ -625,18 +603,11 @@ class PomodoroDialog(QFrame):
 
     def _get_qss(self, is_dark: bool) -> str:
         """获取当前QSS样式表"""
-        if is_dark:
-            return """
-                #pomodoro_dialog {
-                    background-color: #1e293b;
-                    border: 1px solid #334155;
-                    border-radius: 12px;
-                }
-            """
-        return """
-            #pomodoro_dialog {
-                background-color: #ffffff;
-                border: 1px solid #e2e8f0;
+        c = get_colors(is_dark)
+        return f"""
+            #pomodoro_dialog {{
+                background-color: {c['bg_card']};
+                border: 1px solid {c['border']};
                 border-radius: 12px;
-            }
+            }}
         """

@@ -10,6 +10,7 @@ from PyQt5.QtGui import QColor
 
 from database.db_manager import DatabaseManager
 from utils.time_utils import format_duration
+from gui.themes import get_colors
 
 
 class SearchDialog(QDialog):
@@ -139,206 +140,112 @@ class SearchDialog(QDialog):
     def _apply_styles(self) -> None:
         """应用QSS样式表"""
         self._is_dark = False
-        self._light_qss = """
-            SearchDialog {
-                background-color: #ffffff;
-            }
-            QLineEdit {
+        self.setStyleSheet(self._build_qss(get_colors(False)))
+
+    def _build_qss(self, c: dict) -> str:
+        """构建主题QSS样式表"""
+        return f"""
+            SearchDialog {{
+                background-color: {c['bg_card']};
+            }}
+            QLineEdit {{
                 padding: 10px 14px;
-                border: 2px solid #e2e8f0;
+                border: 2px solid {c['border']};
                 border-radius: 8px;
                 font-size: 14px;
-                background: #f8fafc;
-                color: #1e293b;
-            }
-            QLineEdit:focus {
-                border-color: #3b82f6;
-                background: #ffffff;
-            }
-            #btn_primary {
-                background-color: #3b82f6;
+                background: {c['bg_primary']};
+                color: {c['text_primary']};
+            }}
+            QLineEdit:focus {{
+                border-color: {c['primary']};
+                background: {c['bg_card']};
+            }}
+            #btn_primary {{
+                background-color: {c['primary']};
                 color: white;
                 border: none;
                 border-radius: 8px;
                 padding: 10px 16px;
                 font-size: 14px;
                 font-weight: bold;
-            }
-            #btn_primary:hover {
-                background-color: #2563eb;
-            }
-            #btn_primary:pressed {
-                background-color: #1d4ed8;
-            }
-            #btn_filter {
-                background-color: #f1f5f9;
-                color: #475569;
-                border: 1px solid #e2e8f0;
+            }}
+            #btn_primary:hover {{
+                background-color: {c['primary_hover']};
+            }}
+            #btn_primary:pressed {{
+                background-color: {c['primary']};
+            }}
+            #btn_filter {{
+                background-color: {c['bg_sidebar_hover']};
+                color: {c['text_secondary']};
+                border: 1px solid {c['border']};
                 border-radius: 6px;
                 padding: 4px 8px;
                 font-size: 12px;
-            }
-            #btn_filter:hover {
-                background-color: #e2e8f0;
-                color: #1e293b;
-            }
-            #separator {
-                color: #e2e8f0;
-            }
-            QTableWidget {
-                border: 1px solid #e2e8f0;
+            }}
+            #btn_filter:hover {{
+                background-color: {c['border']};
+                color: {c['text_primary']};
+            }}
+            #separator {{
+                color: {c['border']};
+            }}
+            QTableWidget {{
+                border: 1px solid {c['border']};
                 border-radius: 8px;
-                background-color: #ffffff;
-                gridline-color: #f1f5f9;
+                background-color: {c['bg_card']};
+                gridline-color: {c['bg_sidebar_hover']};
                 font-size: 13px;
-                color: #334155;
-            }
-            QTableWidget::item {
+                color: {c['text_primary']};
+            }}
+            QTableWidget::item {{
                 padding: 6px 10px;
-                border-bottom: 1px solid #f1f5f9;
-            }
-            QTableWidget::item:selected {
-                background-color: #eff6ff;
-                color: #1e40af;
-            }
-            QHeaderView::section {
-                background-color: #f8fafc;
-                color: #64748b;
+                border-bottom: 1px solid {c['bg_sidebar_hover']};
+            }}
+            QTableWidget::item:selected {{
+                background-color: {c['primary_light']};
+                color: {c['primary']};
+            }}
+            QHeaderView::section {{
+                background-color: {c['bg_primary']};
+                color: {c['text_secondary']};
                 padding: 8px 10px;
                 border: none;
-                border-bottom: 2px solid #e2e8f0;
+                border-bottom: 2px solid {c['border']};
                 font-weight: bold;
                 font-size: 12px;
-            }
-            QDateEdit {
+            }}
+            QDateEdit {{
                 padding: 4px 8px;
-                border: 1px solid #e2e8f0;
+                border: 1px solid {c['border']};
                 border-radius: 6px;
-                background: #f8fafc;
-                color: #1e293b;
+                background: {c['bg_primary']};
+                color: {c['text_primary']};
                 font-size: 13px;
-            }
-            QDateEdit:focus {
-                border-color: #3b82f6;
-            }
-            QLabel {
-                color: #475569;
+            }}
+            QDateEdit:focus {{
+                border-color: {c['primary']};
+            }}
+            QLabel {{
+                color: {c['text_secondary']};
                 font-size: 13px;
-            }
-            #result_count {
-                color: #3b82f6;
+            }}
+            #result_count {{
+                color: {c['primary']};
                 font-weight: bold;
                 font-size: 13px;
-            }
-            #hint_label {
-                color: #94a3b8;
+            }}
+            #hint_label {{
+                color: {c['text_muted']};
                 font-size: 12px;
                 padding: 4px;
-            }
+            }}
         """
-        self._dark_qss = """
-            SearchDialog {
-                background-color: #1e293b;
-            }
-            QLineEdit {
-                padding: 10px 14px;
-                border: 2px solid #334155;
-                border-radius: 8px;
-                font-size: 14px;
-                background: #0f172a;
-                color: #e2e8f0;
-            }
-            QLineEdit:focus {
-                border-color: #3b82f6;
-                background: #1e293b;
-            }
-            #btn_primary {
-                background-color: #3b82f6;
-                color: white;
-                border: none;
-                border-radius: 8px;
-                padding: 10px 16px;
-                font-size: 14px;
-                font-weight: bold;
-            }
-            #btn_primary:hover {
-                background-color: #2563eb;
-            }
-            #btn_primary:pressed {
-                background-color: #1d4ed8;
-            }
-            #btn_filter {
-                background-color: #334155;
-                color: #94a3b8;
-                border: 1px solid #475569;
-                border-radius: 6px;
-                padding: 4px 8px;
-                font-size: 12px;
-            }
-            #btn_filter:hover {
-                background-color: #475569;
-                color: #e2e8f0;
-            }
-            #separator {
-                color: #334155;
-            }
-            QTableWidget {
-                border: 1px solid #334155;
-                border-radius: 8px;
-                background-color: #0f172a;
-                gridline-color: #1e293b;
-                font-size: 13px;
-                color: #e2e8f0;
-            }
-            QTableWidget::item {
-                padding: 6px 10px;
-                border-bottom: 1px solid #1e293b;
-            }
-            QTableWidget::item:selected {
-                background-color: #1e3a5f;
-                color: #93c5fd;
-            }
-            QHeaderView::section {
-                background-color: #1e293b;
-                color: #94a3b8;
-                padding: 8px 10px;
-                border: none;
-                border-bottom: 2px solid #334155;
-                font-weight: bold;
-                font-size: 12px;
-            }
-            QDateEdit {
-                padding: 4px 8px;
-                border: 1px solid #334155;
-                border-radius: 6px;
-                background: #0f172a;
-                color: #e2e8f0;
-                font-size: 13px;
-            }
-            QDateEdit:focus {
-                border-color: #3b82f6;
-            }
-            QLabel {
-                color: #94a3b8;
-                font-size: 13px;
-            }
-            #result_count {
-                color: #60a5fa;
-                font-weight: bold;
-                font-size: 13px;
-            }
-            #hint_label {
-                color: #64748b;
-                font-size: 12px;
-                padding: 4px;
-            }
-        """
-        self.setStyleSheet(self._light_qss)
 
     def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
-        self.setStyleSheet(self._dark_qss if is_dark else self._light_qss)
+        self.setStyleSheet(self._build_qss(get_colors(is_dark)))
 
     def _set_date_range(self, days: int) -> None:
         """设置快捷日期范围"""
