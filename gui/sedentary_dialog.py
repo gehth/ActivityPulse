@@ -48,39 +48,49 @@ class SedentaryDialog(QDialog):
         layout.setSpacing(16)
         layout.setContentsMargins(24, 24, 24, 24)
 
-        # 标题
+        layout.addLayout(self._create_header())
+        layout.addWidget(self._create_separator())
+        self._add_suggestions(layout)
+        layout.addStretch()
+        layout.addLayout(self._create_buttons())
+
+    def _create_header(self):
+        """创建标题和时长信息"""
+        header = QVBoxLayout()
+        header.setSpacing(4)
+
         title = QLabel("⚠️ 久坐提醒")
         title.setStyleSheet("font-size: 20px; font-weight: bold; color: #F59E0B;")
         title.setAlignment(Qt.AlignCenter)
-        layout.addWidget(title)
+        header.addWidget(title)
 
-        # 时长信息
         time_text = f"您已连续使用电脑 {format_minutes(self._continuous_minutes, fmt='long')}"
-
         info = QLabel(time_text)
         info.setStyleSheet("font-size: 15px; color: #374151;")
         info.setAlignment(Qt.AlignCenter)
-        layout.addWidget(info)
+        header.addWidget(info)
 
         warning = QLabel("长时间久坐可能影响健康，建议适当休息")
         warning.setStyleSheet("font-size: 13px; color: #6B7280;")
         warning.setAlignment(Qt.AlignCenter)
-        layout.addWidget(warning)
+        header.addWidget(warning)
 
-        # 分隔线
+        return header
+
+    def _create_separator(self):
+        """创建分隔线"""
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
         sep.setStyleSheet("color: #E5E7EB;")
-        layout.addWidget(sep)
+        return sep
 
-        # 休息建议
+    def _add_suggestions(self, layout):
+        """添加随机休息建议"""
         suggest_label = QLabel("💡 休息建议")
         suggest_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #3B82F6;")
         layout.addWidget(suggest_label)
 
-        # 随机选2个建议
         suggestions = random.sample(REST_SUGGESTIONS, min(2, len(REST_SUGGESTIONS)))
-
         for icon, name, desc in suggestions:
             row = QHBoxLayout()
             icon_label = QLabel(icon)
@@ -100,9 +110,8 @@ class SedentaryDialog(QDialog):
             row.addStretch()
             layout.addLayout(row)
 
-        layout.addStretch()
-
-        # 按钮
+    def _create_buttons(self):
+        """创建操作按钮"""
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(12)
 
@@ -115,7 +124,7 @@ class SedentaryDialog(QDialog):
         self.btn_ok.clicked.connect(self.accept)
         btn_layout.addWidget(self.btn_ok)
 
-        layout.addLayout(btn_layout)
+        return btn_layout
 
     def _on_snooze(self):
         """暂停提醒15分钟"""

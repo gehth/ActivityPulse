@@ -212,7 +212,18 @@ class AnomalyAlertDialog(QDialog):
         main_layout.setSpacing(12)
         main_layout.setContentsMargins(20, 16, 20, 16)
 
-        # 标题行
+        main_layout.addLayout(self._create_header())
+        main_layout.addLayout(self._create_action_bar())
+        main_layout.addWidget(self._create_alert_list(), 1)
+
+        # 底部关闭按钮
+        close_btn = HoverButton("关闭")
+        close_btn.setFixedHeight(34)
+        close_btn.clicked.connect(self.accept)
+        main_layout.addWidget(close_btn, 0, Qt.AlignRight)
+
+    def _create_header(self):
+        """创建标题行"""
         header_layout = QHBoxLayout()
         title = QLabel("🚨 异常行为告警中心")
         title.setStyleSheet("font-size: 18px; font-weight: bold;")
@@ -222,10 +233,10 @@ class AnomalyAlertDialog(QDialog):
         self._count_label.setStyleSheet("font-size: 12px; color: #6B7280;")
         header_layout.addStretch()
         header_layout.addWidget(self._count_label)
+        return header_layout
 
-        main_layout.addLayout(header_layout)
-
-        # 操作按钮行
+    def _create_action_bar(self):
+        """创建操作按钮行（全部已读+刷新+筛选）"""
         btn_layout = QHBoxLayout()
 
         self._mark_all_read_btn = HoverButton("✓ 全部已读")
@@ -240,7 +251,6 @@ class AnomalyAlertDialog(QDialog):
 
         btn_layout.addStretch()
 
-        # 筛选按钮
         self._filter_all_btn = HoverButton("全部")
         self._filter_all_btn.setFixedHeight(28)
         self._filter_all_btn.setCheckable(True)
@@ -254,9 +264,10 @@ class AnomalyAlertDialog(QDialog):
         self._filter_unread_btn.clicked.connect(lambda: self._set_filter("unread"))
         btn_layout.addWidget(self._filter_unread_btn)
 
-        main_layout.addLayout(btn_layout)
+        return btn_layout
 
-        # 告警列表（滚动区域）
+    def _create_alert_list(self):
+        """创建告警列表滚动区域"""
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setStyleSheet("""
@@ -270,13 +281,7 @@ class AnomalyAlertDialog(QDialog):
         self._list_layout.addStretch()
 
         scroll.setWidget(self._list_widget)
-        main_layout.addWidget(scroll, 1)
-
-        # 底部关闭按钮
-        close_btn = HoverButton("关闭")
-        close_btn.setFixedHeight(34)
-        close_btn.clicked.connect(self.accept)
-        main_layout.addWidget(close_btn, 0, Qt.AlignRight)
+        return scroll
 
     def _set_filter(self, filter_type: str):
         """设置筛选模式"""

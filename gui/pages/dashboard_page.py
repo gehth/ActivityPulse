@@ -226,7 +226,26 @@ class DashboardPage(QWidget):
         week_last = results.get("week_last") or []
         hourly_data = results.get("hourly") or []
 
-        # 指标卡
+        # 更新指标卡片
+        self._update_metric_cards(app_summary, prev_seconds, prev_app_count, input_stats, screenshot_count, is_range)
+
+        # 更新图表和详情
+        self._update_charts_and_details(app_summary, heatmap_rows, sensitive_apps, idle_summary, week_this, week_last, hourly_data, is_range, start_date, date)
+
+        # 空状态
+        total_seconds = sum(item.get("total_seconds", 0) or 0 for item in app_summary)
+        has_data = total_seconds > 0 or len(app_summary) > 0
+        if has_data:
+            self.empty_state.hide()
+        else:
+            self.empty_state.show()
+            self.empty_state.set_theme(self._is_dark)
+
+        # 隐藏骨架屏
+        self._skeleton.hide()
+
+    def _update_metric_cards(self, app_summary, prev_seconds, prev_app_count, input_stats, screenshot_count, is_range):
+        """更新指标卡片（专注时长、应用数、操作数、截图数）"""
         total_seconds = sum(item.get("total_seconds", 0) or 0 for item in app_summary)
         duration_str = format_duration(total_seconds)
 
@@ -255,6 +274,8 @@ class DashboardPage(QWidget):
         # 每日目标进度
         self.goal_card.set_progress(total_seconds)
 
+    def _update_charts_and_details(self, app_summary, heatmap_rows, sensitive_apps, idle_summary, week_this, week_last, hourly_data, is_range, start_date, date):
+        """更新图表和详情区域（空闲、周对比、热力图、Top5等）"""
         # 空闲时段
         self.idle_card.set_idle_data(idle_summary)
 
@@ -273,17 +294,6 @@ class DashboardPage(QWidget):
         else:
             self.top5_title_label.setText("今日 Top 5 应用")
         self._update_top5(app_summary, sensitive_apps)
-
-        # 空状态
-        has_data = total_seconds > 0 or len(app_summary) > 0
-        if has_data:
-            self.empty_state.hide()
-        else:
-            self.empty_state.show()
-            self.empty_state.set_theme(self._is_dark)
-
-        # 隐藏骨架屏
-        self._skeleton.hide()
 
     def _update_heatmap(self, rows: list):
         """更新热力图数据"""

@@ -39,50 +39,12 @@ class TrayManager:
         self.tray_icon = QSystemTrayIcon(main_window)
         self.tray_icon.setToolTip(f"{APP_NAME} v{APP_VERSION}\n快捷键: Ctrl+Shift+H 显示/隐藏")
 
-        # 生成应用图标
         app_icon = create_app_icon()
         self.tray_icon.setIcon(app_icon)
         main_window.setWindowIcon(app_icon)
 
-        # 托盘菜单
-        self._tray_menu = QMenu()
-
-        # 今日时长（动态更新）
-        self._tray_duration_action = QAction("今日记录: 计算中...", main_window)
-        self._tray_duration_action.setEnabled(False)
-        self._tray_menu.addAction(self._tray_duration_action)
-
-        # 当前应用（动态更新）
-        self._tray_current_app_action = QAction("当前应用: --", main_window)
-        self._tray_current_app_action.setEnabled(False)
-        self._tray_menu.addAction(self._tray_current_app_action)
-
-        self._tray_menu.addSeparator()
-
-        action_show = QAction("打开主界面", main_window)
-        action_show.triggered.connect(callbacks.get("on_show_window"))
-        self._tray_menu.addAction(action_show)
-
-        self._tray_menu.addSeparator()
-
-        self.action_toggle = QAction("暂停记录", main_window)
-        self.action_toggle.triggered.connect(callbacks.get("on_toggle_monitor"))
-        self._tray_menu.addAction(self.action_toggle)
-
-        action_privacy = QAction("隐私模式", main_window)
-        action_privacy.triggered.connect(callbacks.get("on_toggle_privacy"))
-        self._tray_menu.addAction(action_privacy)
-
-        self._tray_menu.addSeparator()
-
-        action_about = QAction(f"关于 {APP_NAME} v{APP_VERSION}", main_window)
-        action_about.triggered.connect(callbacks.get("on_show_about"))
-        self._tray_menu.addAction(action_about)
-
-        action_quit = QAction("退出", main_window)
-        action_quit.triggered.connect(callbacks.get("on_quit"))
-        self._tray_menu.addAction(action_quit)
-
+        # 构建托盘菜单
+        self._tray_menu = self._build_tray_menu(main_window, callbacks)
         self.tray_icon.setContextMenu(self._tray_menu)
         self.tray_icon.activated.connect(self._on_tray_activated)
         self.tray_icon.show()
@@ -91,6 +53,48 @@ class TrayManager:
         self._tray_info_timer = QTimer(main_window)
         self._tray_info_timer.timeout.connect(self.update_tray_info)
         self._tray_info_timer.start(10000)  # 每10秒更新
+
+    def _build_tray_menu(self, main_window, callbacks):
+        """构建托盘右键菜单"""
+        menu = QMenu()
+
+        # 今日时长（动态更新）
+        self._tray_duration_action = QAction("今日记录: 计算中...", main_window)
+        self._tray_duration_action.setEnabled(False)
+        menu.addAction(self._tray_duration_action)
+
+        # 当前应用（动态更新）
+        self._tray_current_app_action = QAction("当前应用: --", main_window)
+        self._tray_current_app_action.setEnabled(False)
+        menu.addAction(self._tray_current_app_action)
+
+        menu.addSeparator()
+
+        action_show = QAction("打开主界面", main_window)
+        action_show.triggered.connect(callbacks.get("on_show_window"))
+        menu.addAction(action_show)
+
+        menu.addSeparator()
+
+        self.action_toggle = QAction("暂停记录", main_window)
+        self.action_toggle.triggered.connect(callbacks.get("on_toggle_monitor"))
+        menu.addAction(self.action_toggle)
+
+        action_privacy = QAction("隐私模式", main_window)
+        action_privacy.triggered.connect(callbacks.get("on_toggle_privacy"))
+        menu.addAction(action_privacy)
+
+        menu.addSeparator()
+
+        action_about = QAction(f"关于 {APP_NAME} v{APP_VERSION}", main_window)
+        action_about.triggered.connect(callbacks.get("on_show_about"))
+        menu.addAction(action_about)
+
+        action_quit = QAction("退出", main_window)
+        action_quit.triggered.connect(callbacks.get("on_quit"))
+        menu.addAction(action_quit)
+
+        return menu
 
     def _on_tray_activated(self, reason):
         """托盘图标激活（双击打开主窗口）"""

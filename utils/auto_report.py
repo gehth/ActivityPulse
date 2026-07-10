@@ -92,35 +92,18 @@ def generate_weekly_report(db, end_date: str = None) -> dict:
     from utils.category_stats import compute_category_stats
     cat_stats, cat_names, _ = compute_category_stats(app_summary)
     
-    # 每日数据
-    daily_data = []
-    for item in trend_data:
-        days_ago = item.get("days_ago", 0)
-        d = (datetime.strptime(end_date, "%Y-%m-%d") - timedelta(days=days_ago)).strftime("%Y-%m-%d")
-        secs = item.get("total_seconds", 0) or 0
-        daily_data.append({
-            "date": d,
-            "seconds": secs,
-            "formatted": _format_duration(secs),
-            "weekday": _get_weekday(d),
-        })
-    
-    # 平均每日时长
+    # 每日数据与汇总
+    daily_data = _build_daily_data(trend_data, end_date)
     active_days = sum(1 for d in daily_data if d["seconds"] > 0)
     avg_seconds = total_seconds / max(active_days, 1)
-    
-    # 最活跃的一天
     most_active = max(daily_data, key=lambda x: x["seconds"]) if daily_data else None
-    
-    # 格式化总时长
-    total_formatted = format_duration(total_seconds, fmt="long")
     
     return {
         "type": "weekly",
         "start_date": start_date,
         "end_date": end_date,
         "total_seconds": total_seconds,
-        "total_formatted": total_formatted,
+        "total_formatted": format_duration(total_seconds, fmt="long"),
         "active_days": active_days,
         "avg_formatted": _format_duration(avg_seconds),
         "app_count": len(app_summary),
@@ -134,6 +117,22 @@ def generate_weekly_report(db, end_date: str = None) -> dict:
         "daily_data": daily_data,
         "most_active": most_active,
     }
+
+
+def _build_daily_data(trend_data, end_date):
+    """从趋势数据构建每日详情列表"""
+    daily_data = []
+    for item in trend_data:
+        days_ago = item.get("days_ago", 0)
+        d = (datetime.strptime(end_date, "%Y-%m-%d") - timedelta(days=days_ago)).strftime("%Y-%m-%d")
+        secs = item.get("total_seconds", 0) or 0
+        daily_data.append({
+            "date": d,
+            "seconds": secs,
+            "formatted": _format_duration(secs),
+            "weekday": _get_weekday(d),
+        })
+    return daily_data
 
 
 def format_daily_notification(report: dict) -> tuple:

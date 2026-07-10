@@ -313,7 +313,14 @@ class ScreenPlaybackDialog(QDialog):
         app_name = shot.get("app_name", "")
         timestamp = shot.get("timestamp", "")
 
-        # 优先加载原图
+        # 加载并显示图片
+        self._display_frame_image(file_path, thumb_path)
+
+        # 更新界面信息
+        self._update_frame_info(app_name, timestamp)
+
+    def _display_frame_image(self, file_path, thumb_path):
+        """加载并显示帧图片（带缓存）"""
         load_path = file_path if os.path.exists(file_path) else thumb_path
 
         if load_path and os.path.exists(load_path):
@@ -330,7 +337,6 @@ class ScreenPlaybackDialog(QDialog):
                     self._pixmap_cache[load_path] = pixmap
 
             if not pixmap.isNull():
-                # 缩放到适合显示区域
                 label_size = self._image_label.size()
                 scaled = pixmap.scaled(
                     label_size.width() - 20, label_size.height() - 20,
@@ -349,6 +355,8 @@ class ScreenPlaybackDialog(QDialog):
                 "font-size: 32px; color: #9CA3AF; background-color: #111827;"
             )
 
+    def _update_frame_info(self, app_name, timestamp):
+        """更新帧信息（应用名、时间、进度、滑块、按钮）"""
         # 更新应用名叠加层
         if app_name:
             self._app_overlay.setText(f"  {app_name}  ")
