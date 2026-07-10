@@ -509,14 +509,17 @@ class PomodoroWidget(QWidget):
 
     @property
     def completed_count(self) -> int:
+        """获取已完成的番茄钟数量"""
         return self._completed_count
 
     @property
     def mode(self) -> str:
+        """获取当前番茄钟模式"""
         return self._mode
 
     @property
     def is_running(self) -> bool:
+        """获取番茄钟是否正在运行"""
         return self._running
 
     # ── 绘制圆形进度条 ──

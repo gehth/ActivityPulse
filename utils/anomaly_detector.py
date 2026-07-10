@@ -166,28 +166,12 @@ class AnomalyDetector:
         factor = float(self._get_config("anomaly_deviation_factor") or 1.5)
         cooldown_hours = float(self._get_config("anomaly_alert_cooldown_hours") or 1.0)
 
-        # 获取最近7天数据
-        recent = self.db.get_recent_daily_totals(days=7)
-        if len(recent) < 3:  # 至少3天数据才有统计意义
+        # 获取并验证数据
+        deviation_data = self._get_deviation_data(factor)
+        if deviation_data is None:
             return []
 
-        today_str = datetime.now().strftime("%Y-%m-%d")
-        today_data = next((d for d in recent if d["date"] == today_str), None)
-        if not today_data:
-            return []
-
-        today_minutes = today_data["total_minutes"]
-        # 排除今天计算均值
-        other_days = [d["total_minutes"] for d in recent if d["date"] != today_str]
-        if not other_days:
-            return []
-
-        avg_minutes = sum(other_days) / len(other_days)
-        if avg_minutes < 30:  # 均值太低不检测
-            return []
-
-        if today_minutes <= avg_minutes * factor:
-            return []
+        today_minutes, avg_minutes = deviation_data
 
         # 检查冷却期
         if self.db.check_recent_alert_exists("daily_deviation", hours=cooldown_hours):
@@ -208,6 +192,28 @@ class AnomalyDetector:
             "threshold_value": avg_minutes * factor,
             "actual_value": today_minutes,
         }]
+
+    def _get_deviation_data(self, factor: float):
+        """获取日偏离检测数据，返回(today_minutes, avg_minutes)或None"""
+        recent = self.db.get_recent_daily_totals(days=7)
+        if len(recent) < 3:
+            return None
+
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        today_data = next((d for d in recent if d["date"] == today_str), None)
+        if not today_data:
+            return None
+
+        today_minutes = today_data["total_minutes"]
+        other_days = [d["total_minutes"] for d in recent if d["date"] != today_str]
+        if not other_days:
+            return None
+
+        avg_minutes = sum(other_days) / len(other_days)
+        if avg_minutes < 30 or today_minutes <= avg_minutes * factor:
+            return None
+
+        return (today_minutes, avg_minutes)
 
     def detect_no_break(self) -> List[Dict]:
         """检测长时间无休息连续使用电脑"""

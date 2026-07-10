@@ -107,6 +107,7 @@ class NavButton(QPushButton):
 
     @property
     def active(self) -> bool:
+        """获取按钮激活状态"""
         return self._active
 
     def set_active(self, active: bool) -> None:
