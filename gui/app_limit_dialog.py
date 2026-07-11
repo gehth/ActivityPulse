@@ -22,6 +22,7 @@ class AppLimitDialog(QDialog):
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
+        self._colors = get_colors(False)
         self.setWindowTitle("应用使用限制")
         self.setMinimumSize(520, 420)
         self._setup_ui()
@@ -139,7 +140,7 @@ class AppLimitDialog(QDialog):
     def _load_limits(self) -> None:
         """加载已有限制列表"""
         self.table.setRowCount(0)
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         limits = self.db.get_all_limits()
         
         for i, lim in enumerate(limits):
@@ -236,7 +237,8 @@ class AppLimitDialog(QDialog):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
-        colors = get_colors(is_dark)
+        self._colors = get_colors(is_dark)
+        colors = self._colors
         # 更新表格样式
         self.table.setStyleSheet(f"""
             QTableWidget {{

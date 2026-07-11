@@ -62,6 +62,7 @@ class MainWindow(QMainWindow):
         self.is_monitoring = False
         self.privacy_mode = False
         self.current_theme = "light"
+        self._colors = get_colors(False)
         self._time_range_mode = "今日"  # 当前时间范围模式
 
         # 构建UI
@@ -762,7 +763,8 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(qss)
         is_dark = self.current_theme == "dark"
         # 隐私遮罩使用danger色的8%透明度
-        c = get_colors(is_dark)
+        self._colors = get_colors(is_dark)
+        c = self._colors
         danger_hex = c['danger'].lstrip('#')
         r, g, b = int(danger_hex[:2], 16), int(danger_hex[2:4], 16), int(danger_hex[4:6], 16)
         self.privacy_overlay.setStyleSheet(

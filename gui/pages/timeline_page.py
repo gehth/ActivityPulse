@@ -75,7 +75,7 @@ class TimelineWidget(QWidget):
         """绘制事件重写"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
 
         margin_left = 55
         margin_top = 30
@@ -442,7 +442,7 @@ class TimelinePage(QWidget):
 
         # 标签图例
         tag_legend = QLabel("● 活动标签")
-        tag_legend.setStyleSheet(f"color: {get_colors(False)['primary']}; font-size: 12px; font-weight: bold;")
+        tag_legend.setStyleSheet(f"color: {self._colors['primary']}; font-size: 12px; font-weight: bold;")
         self._tag_legend = tag_legend
         legend_layout.addWidget(tag_legend)
         main_layout.addWidget(legend_card)

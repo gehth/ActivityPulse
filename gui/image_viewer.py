@@ -31,6 +31,7 @@ class ImageViewerDialog(QDialog):
         self._image_list = image_list or [image_path]
         self._current_index = current_index
         self._is_dark = False
+        self._colors = get_colors(False)
 
         # 缩放状态
         self._scale = 1.0
@@ -152,7 +153,7 @@ class ImageViewerDialog(QDialog):
 
         if self._original_pixmap.isNull():
             self.image_label.setText("📷 无法加载图片")
-            colors = get_colors("dark" if self._is_dark else "light")
+            colors = self._colors
             self.image_label.setStyleSheet(
                 f"font-size: 48px; color: {colors['text_muted']}; background-color: {colors['bg_primary']}; "
                 f"min-width: 600px; min-height: 400px;"
@@ -286,7 +287,8 @@ class ImageViewerDialog(QDialog):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
-        colors = get_colors("dark" if is_dark else "light")
+        self._colors = get_colors(is_dark)
+        colors = self._colors
         self.setStyleSheet(f"""
             QDialog {{ background-color: {colors['bg_primary']}; }}
             #toolbar {{ background-color: {colors['bg_card']}; border-bottom: 1px solid {colors['border']}; }}

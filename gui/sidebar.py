@@ -19,6 +19,7 @@ class StatusIndicator(QWidget):
         self._opacity = 1.0
         self._breathing_in = True
         self._is_dark = False
+        self._colors = get_colors(False)
 
         # 呼吸动画定时器
         self._breath_timer = QTimer(self)
@@ -39,6 +40,7 @@ class StatusIndicator(QWidget):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self.update()
 
     def _breath_tick(self) -> None:
@@ -61,7 +63,7 @@ class StatusIndicator(QWidget):
         from PyQt5.QtGui import QPainter, QBrush
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
 
         # 状态文字
         if self._recording:
@@ -149,6 +151,7 @@ class Sidebar(QFrame):
         self._monitoring = False
         self._privacy_mode = False
         self._nav_buttons = []
+        self._colors = get_colors(False)
         self._setup_ui()
 
     def _setup_ui(self) -> None:
@@ -350,7 +353,8 @@ class Sidebar(QFrame):
 
     def set_theme(self, is_dark: bool) -> None:
         """主题切换时更新HoverButton阴影"""
-        c = get_colors(is_dark)
+        self._colors = get_colors(is_dark)
+        c = self._colors
         # 更新告警badge样式
         self._alert_badge.setStyleSheet(f"""
             QLabel {{

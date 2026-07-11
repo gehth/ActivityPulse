@@ -29,6 +29,7 @@ class DonutChartWidget(QWidget):
         self.data = []  # [(name, value, color)]
         self.setFixedSize(220, 220)
         self._is_dark = False
+        self._colors = get_colors(False)
         self._hover_index = -1  # 当前hover的扇区索引
         self._segments = []  # 存储每个扇区的角度范围 [(start_angle, span_angle)]
         self.setMouseTracking(True)
@@ -37,6 +38,7 @@ class DonutChartWidget(QWidget):
         """设置数据并更新显示"""
         self.data = data
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self._hover_index = -1
         self._update_segments()
         self.update()
@@ -120,7 +122,7 @@ class DonutChartWidget(QWidget):
 
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
 
         cx, cy = 110, 100
         outer_r = 85
@@ -185,6 +187,7 @@ class LineChartWidget(QWidget):
         self.data = []  # [(label, value)]
         self.setFixedHeight(200)
         self._is_dark = False
+        self._colors = get_colors(False)
         self._hover_index = -1  # 当前hover的数据点索引
         self._points = []  # 缓存绘制后的像素坐标
         self._margin_left = 50
@@ -197,6 +200,7 @@ class LineChartWidget(QWidget):
         """设置数据并更新显示"""
         self.data = data
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self._hover_index = -1
         self.update()
 
@@ -248,7 +252,7 @@ class LineChartWidget(QWidget):
 
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
 
         margin_left = self._margin_left
         margin_right = self._margin_right
@@ -361,6 +365,7 @@ class BarChartWidget(QWidget):
         self.data = []  # [(label, value)]
         self.setFixedHeight(200)
         self._is_dark = False
+        self._colors = get_colors(False)
         self._hover_index = -1  # 当前hover的柱子索引
         self._bar_rects = []  # 缓存每个柱子的QRect
         self._margin_left = 40
@@ -373,6 +378,7 @@ class BarChartWidget(QWidget):
         """设置数据并更新显示"""
         self.data = data
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self._hover_index = -1
         self.update()
 
@@ -418,7 +424,7 @@ class BarChartWidget(QWidget):
 
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
 
         margin_left = self._margin_left
         margin_right = self._margin_right

@@ -158,6 +158,7 @@ class ScreenshotsPage(QWidget):
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
+        self._colors = get_colors(False)
         self._current_page = 1
         self._total_count = 0
         self._total_pages = 1
@@ -420,6 +421,7 @@ class ScreenshotsPage(QWidget):
     def set_theme(self, is_dark: bool) -> None:
         """更新主题"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         # 更新已有缩略图的主题
         for i in range(self.grid_layout.count()):
             item = self.grid_layout.itemAt(i)
@@ -427,7 +429,7 @@ class ScreenshotsPage(QWidget):
                 item.widget().set_theme(is_dark)
 
         # 更新日期选择器样式
-        colors = get_colors(is_dark)
+        colors = self._colors
         date_qss = f"""
             QDateEdit {{
                 background-color: {colors['bg_card']};

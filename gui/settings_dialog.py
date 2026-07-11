@@ -60,6 +60,7 @@ class SettingsDialog(QDialog):
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
+        self._colors = get_colors(False)
         self.setWindowTitle("设置")
         self.setMinimumWidth(480)
         self._setup_ui()
@@ -766,7 +767,8 @@ class SettingsDialog(QDialog):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
-        colors = get_colors("dark" if is_dark else "light")
+        self._colors = get_colors(is_dark)
+        colors = self._colors
         
         # 应用主题QSS到对话框
         qss = get_theme_qss("dark" if is_dark else "light")

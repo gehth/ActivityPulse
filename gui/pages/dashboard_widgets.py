@@ -108,6 +108,7 @@ class HeatmapWidget(QWidget):
         self.colors_light = ["#E5E7EB", "#BBF7D0", "#86EFAC", "#34D399", "#10B981"]
         self.colors_dark = ["#374151", "#064E3B", "#065F46", "#047857", "#10B981"]
         self._is_dark = False
+        self._colors = get_colors(False)
         self._cell_size = 20
         self._gap = 3
         self._margin_left = 40
@@ -118,6 +119,7 @@ class HeatmapWidget(QWidget):
         self.data = data
         self.raw_seconds = raw_seconds or {}
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self.update()
 
     def paintEvent(self, event: QPaintEvent) -> None:
@@ -137,7 +139,7 @@ class HeatmapWidget(QWidget):
         # 绘制小时标签
         font = QFont("Consolas", 8)
         painter.setFont(font)
-        painter.setPen(QColor(get_colors("dark" if self._is_dark else "light")["text_muted"]))
+        painter.setPen(QColor(self._colors["text_muted"]))
         for h in range(0, hours, 3):
             x = margin_left + h * (cell_size + gap)
             painter.drawText(x, margin_top - 8, f"{h:02d}")
@@ -201,6 +203,7 @@ class GoalProgressCard(AnimatedCard):
         super().__init__()
         self.db = db_manager
         self._is_dark = False
+        self._colors = get_colors(False)
         self._progress = 0.0  # 0.0 ~ 1.0
         self._current_minutes = 0
         self._goal_minutes = 480  # 默认8小时
@@ -260,7 +263,7 @@ class GoalProgressCard(AnimatedCard):
 
     def _apply_styles(self) -> None:
         """应用QSS样式表"""
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         self.goal_btn.setStyleSheet(f"""
             QPushButton {{
                 border: 1px solid {colors['border']};
@@ -299,11 +302,9 @@ class GoalProgressCard(AnimatedCard):
         # 根据完成度改变颜色
         if pct >= 100:
             self.percent_label.setText("🎉 已达成!")
-            colors = get_colors("dark" if self._is_dark else "light")
-            self.percent_label.setStyleSheet(f"color: {colors['success']}; font-weight: bold; font-size: 13px;")
+            self.percent_label.setStyleSheet(f"color: {self._colors['success']}; font-weight: bold; font-size: 13px;")
         else:
-            colors = get_colors("dark" if self._is_dark else "light")
-            self.percent_label.setStyleSheet(f"color: {colors['primary']}; font-size: 12px;")
+            self.percent_label.setStyleSheet(f"color: {self._colors['primary']}; font-size: 12px;")
 
     def _anim_tick(self) -> None:
         """环形进度动画步进"""
@@ -316,7 +317,7 @@ class GoalProgressCard(AnimatedCard):
 
     def _open_goal_dialog(self) -> None:
         """打开目标设置对话框"""
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         dialog, spin, btn_box = self._build_goal_dialog(colors)
 
         def on_accept() -> None:
@@ -420,6 +421,7 @@ class GoalProgressCard(AnimatedCard):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         super().set_theme(is_dark)
         self._apply_styles()
         self._update_labels()
@@ -447,7 +449,7 @@ class GoalRingWidget(QWidget):
         rect = QRectF(margin, margin, size, size)
 
         # 背景环
-        colors = get_colors("dark" if self._card._is_dark else "light")
+        colors = self._card._colors
         bg_pen = QPen(QColor(colors['bg_sidebar_hover']), pen_width)
         bg_pen.setCapStyle(Qt.RoundCap)
         painter.setPen(bg_pen)
@@ -489,6 +491,7 @@ class IdleTimeCard(AnimatedCard):
     def __init__(self, parent: QWidget=None) -> None:
         super().__init__()
         self._is_dark = False
+        self._colors = get_colors(False)
         self._idle_periods = []
         self.setObjectName("card")
         apply_card_shadow(self)
@@ -536,7 +539,7 @@ class IdleTimeCard(AnimatedCard):
 
     def _apply_styles(self) -> None:
         """应用QSS样式表"""
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         self.total_label.setStyleSheet(QSS_STYLES["secondary_text"].format(c=colors))
         self.longest_label.setStyleSheet(QSS_STYLES["secondary_text"].format(c=colors))
 
@@ -562,7 +565,7 @@ class IdleTimeCard(AnimatedCard):
         # 显示空闲时段
         if self._idle_periods:
             self.no_idle_label.hide()
-            colors = get_colors("dark" if self._is_dark else "light")
+            colors = self._colors
             for period in self._idle_periods[:5]:  # 最多显示5条
                 start = period.get("start", "")
                 end = period.get("end", "")
@@ -581,6 +584,7 @@ class IdleTimeCard(AnimatedCard):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         super().set_theme(is_dark)
         self._apply_styles()
         # 重新渲染时段列表
@@ -619,7 +623,7 @@ class WeekCompareCard(AnimatedCard):
         # 图例
         legend_row = QHBoxLayout()
         legend_row.setSpacing(16)
-        colors = get_colors("light")
+        colors = self._colors
 
         this_indicator = QLabel("■")
         this_indicator.setStyleSheet(f"color: {colors['primary']}; font-size: 12px;")
@@ -678,7 +682,7 @@ class WeekCompareCard(AnimatedCard):
             self._summary_label.setText(
                 f"本周 {this_str} vs 上周 {last_str}  {arrow}{pct}%"
             )
-            colors = get_colors("dark" if self._is_dark else "light")
+            colors = self._colors
             color = colors['success'] if is_up else colors['danger']
             self._summary_label.setStyleSheet(QSS_STYLES["muted_text"].format(c=colors))
         else:
@@ -687,9 +691,10 @@ class WeekCompareCard(AnimatedCard):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         super().set_theme(is_dark)
         # 更新图例颜色
-        colors = get_colors("dark" if is_dark else "light")
+        colors = self._colors
         # 重新构建图例
         while self._legend_row.count():
             item = self._legend_row.takeAt(0)
@@ -729,7 +734,7 @@ class WeekBarWidget(QWidget):
             return
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        colors = get_colors("dark" if self._card._is_dark else "light")
+        colors = self._card._colors
 
         this_week = self._card._this_week
         last_week = self._card._last_week
@@ -859,6 +864,7 @@ class HourlyDistCard(AnimatedCard):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         super().set_theme(is_dark)
         self._bar_widget.update()
 
@@ -929,7 +935,7 @@ class HourlyBarWidget(QWidget):
             return
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        colors = get_colors("dark" if self._card._is_dark else "light")
+        colors = self._card._colors
 
         data = self._card._hourly_data
         if not data:
@@ -1008,6 +1014,7 @@ class TopAppItem(QFrame):
         super().__init__()
         self._color = color
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self._app_name = name
         self.setObjectName("card")
         self.setCursor(Qt.PointingHandCursor)
@@ -1028,7 +1035,7 @@ class TopAppItem(QFrame):
         layout.addStretch()
 
         # 进度条 - 使用QProgressBar替代硬编码frame
-        colors = get_colors("dark" if is_dark else "light")
+        colors = self._colors
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(int(percentage * 100))
@@ -1055,7 +1062,9 @@ class TopAppItem(QFrame):
 
     def set_theme(self, is_dark: bool) -> None:
         """更新主题"""
-        colors = get_colors("dark" if is_dark else "light")
+        self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
+        colors = self._colors
         self.progress_bar.setStyleSheet(f"""
             QProgressBar {{
                 border: none; border-radius: 4px;

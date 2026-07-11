@@ -506,6 +506,7 @@ class SkeletonWidget(QWidget):
     def __init__(self, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._is_dark = False
+        self._colors = get_colors(False)
         self._opacity = 0.0
         self._increasing = True
 
@@ -518,6 +519,7 @@ class SkeletonWidget(QWidget):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self.update()
 
     def _animate(self) -> None:
@@ -541,8 +543,7 @@ class SkeletonWidget(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
-        colors = get_colors("dark" if self._is_dark else "light")
-        base_color = QColor(colors["bg_sidebar_hover"])
+        colors = self._colors
         highlight = QColor(colors["primary"])
         highlight.setAlphaF(self._opacity)
 
@@ -637,6 +638,7 @@ class RippleOverlay(QWidget):
         super().__init__(parent)
         self._ripples = []  # [(cx, cy, radius, max_radius, opacity), ...]
         self._is_dark = False
+        self._colors = get_colors(False)
         self._timer = QTimer(self)
         self._timer.setInterval(16)  # ~60fps
         self._timer.timeout.connect(self._tick)
@@ -646,6 +648,7 @@ class RippleOverlay(QWidget):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
 
     def add_ripple(self, x: int, y: int) -> None:
         """在(x,y)位置添加一个ripple"""
@@ -673,7 +676,7 @@ class RippleOverlay(QWidget):
             return
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        color = QColor(get_colors("dark" if self._is_dark else "light")["primary"])
+        color = QColor(self._colors["primary"])
         for cx, cy, radius, _, opacity in self._ripples:
             color.setAlphaF(max(0, opacity))
             gradient = QRadialGradient(cx, cy, radius)
@@ -742,6 +745,7 @@ class EmptyStateWidget(QWidget):
                  description: str = "开始使用后，数据将自动出现在这里", parent: QWidget=None) -> None:
         super().__init__(parent)
         self._is_dark = False
+        self._colors = get_colors(False)
         self._icon = icon
         self._title = title
         self._description = description
@@ -749,6 +753,7 @@ class EmptyStateWidget(QWidget):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self.update()
 
     def set_content(self, icon: str = None, title: str = None, description: str = None) -> None:
@@ -767,7 +772,7 @@ class EmptyStateWidget(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
 
         # 图标
         painter.setFont(QFont("Segoe UI Emoji", 48))

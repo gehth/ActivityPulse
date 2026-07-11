@@ -20,6 +20,7 @@ class AboutDialog(QDialog):
         super().__init__(parent)
         self._version = version or self.APP_VERSION
         self._is_dark = False
+        self._colors = get_colors(False)
         self.setWindowTitle("关于")
         self.setFixedSize(420, 340)
         self._setup_ui()
@@ -31,7 +32,7 @@ class AboutDialog(QDialog):
         layout.setContentsMargins(32, 28, 32, 24)
 
         # 应用图标
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         icon_label = QLabel()
         pixmap = QPixmap(64, 64)
         pixmap.fill(Qt.transparent)
@@ -75,7 +76,7 @@ class AboutDialog(QDialog):
         # 隐私声明
         privacy_label = QLabel("🛡 所有数据均存储于本地，不会上传至任何服务器")
         privacy_label.setAlignment(Qt.AlignCenter)
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         privacy_label.setStyleSheet(f"color: {colors['success']}; font-size: 12px; font-weight: bold;")
         self._privacy_label = privacy_label
         layout.addWidget(privacy_label)
@@ -99,7 +100,8 @@ class AboutDialog(QDialog):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
-        colors = get_colors("dark" if is_dark else "light")
+        self._colors = get_colors(is_dark)
+        colors = self._colors
         # 更新隐私声明颜色
         if hasattr(self, '_privacy_label'):
             self._privacy_label.setStyleSheet(

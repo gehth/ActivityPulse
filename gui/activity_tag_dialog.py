@@ -36,6 +36,7 @@ class TagItemWidget(QFrame):
     def __init__(self, tag_data: dict, is_dark: bool = False, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self._tag_id = tag_data.get("id", 0)
         self._color = tag_data.get("color", TAG_COLORS[0])
         self.setObjectName("card")
@@ -55,7 +56,7 @@ class TagItemWidget(QFrame):
         info_layout = QVBoxLayout()
         info_layout.setSpacing(2)
 
-        colors = get_colors("dark" if is_dark else "light")
+        colors = self._colors
         tag_label = QLabel(tag_data.get("tag", ""))
         tag_label.setStyleSheet(f"font-weight: bold; font-size: 13px; color: {colors['text_primary']};")
         layout_tag = tag_label  # keep reference
@@ -100,7 +101,7 @@ class TagItemWidget(QFrame):
 
     def _apply_styles(self) -> None:
         """应用QSS样式表"""
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         self.setStyleSheet(f"""
             QFrame#card {{
                 background-color: {colors['bg_card']};
@@ -112,6 +113,8 @@ class TagItemWidget(QFrame):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
+        self._colors = get_colors(is_dark)
         self._apply_styles()
 
 
@@ -123,6 +126,7 @@ class AddTagDialog(QDialog):
     def __init__(self, date: str, is_dark: bool = False, parent: QWidget=None) -> None:
         super().__init__(parent)
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self._date = date
         self._selected_color = TAG_COLORS[0]
         self.setWindowTitle("添加活动标签")
@@ -131,7 +135,7 @@ class AddTagDialog(QDialog):
 
     def _setup_ui(self) -> None:
         """初始化UI界面布局和组件"""
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         self.setStyleSheet(f"background-color: {colors['bg_card']};")
 
         layout = QVBoxLayout(self)
@@ -292,7 +296,7 @@ class AddTagDialog(QDialog):
     def _select_color(self, color: str, idx: int) -> None:
         """选择标签颜色"""
         self._selected_color = color
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         for i, btn in enumerate(self._color_btns):
             border = "white" if i == idx else "transparent"
             btn.setStyleSheet(f"""
@@ -331,6 +335,7 @@ class ActivityTagDialog(QDialog):
         self.db = db_manager
         self._date = date
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         self._tag_widgets = []
         self.setWindowTitle(f"活动标签 - {date}")
         self.setFixedSize(420, 520)
@@ -339,7 +344,7 @@ class ActivityTagDialog(QDialog):
 
     def _setup_ui(self) -> None:
         """初始化UI界面布局和组件"""
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         self.setStyleSheet(f"background-color: {colors['bg_primary']};")
 
         layout = QVBoxLayout(self)
@@ -479,3 +484,4 @@ class ActivityTagDialog(QDialog):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)

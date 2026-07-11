@@ -22,6 +22,8 @@ class SearchDialog(QDialog):
     def __init__(self, db: DatabaseManager, parent: QWidget=None) -> None:
         super().__init__(parent)
         self.db = db
+        self._is_dark = False
+        self._colors = get_colors(False)
         self.setWindowTitle("搜索记录")
         self.setMinimumSize(750, 500)
         self.resize(850, 600)
@@ -140,7 +142,8 @@ class SearchDialog(QDialog):
     def _apply_styles(self) -> None:
         """应用QSS样式表"""
         self._is_dark = False
-        self.setStyleSheet(self._build_qss(get_colors(False)))
+        self._colors = get_colors(False)
+        self.setStyleSheet(self._build_qss(self._colors))
 
     def _build_qss(self, c: dict) -> str:
         """构建主题QSS样式表 - 由5个样式构建函数组合而成"""
@@ -273,7 +276,8 @@ class SearchDialog(QDialog):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
-        self.setStyleSheet(self._build_qss(get_colors(is_dark)))
+        self._colors = get_colors(is_dark)
+        self.setStyleSheet(self._build_qss(self._colors))
 
     def _set_date_range(self, days: int) -> None:
         """设置快捷日期范围"""
@@ -362,7 +366,7 @@ class SearchDialog(QDialog):
         text = item.text()
         if keyword.lower() in text.lower():
             # 使用主题色文字标识匹配项
-            colors = get_colors("dark" if self._is_dark else "light")
+            colors = self._colors
             item.setForeground(QColor(colors["primary_hover"]))
 
     def _format_duration(self, seconds: int) -> str:

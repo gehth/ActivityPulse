@@ -83,6 +83,7 @@ class CategoriesPage(QWidget):
         super().__init__(parent)
         self.db = db_manager
         self._is_dark = False
+        self._colors = get_colors(False)
         self._app_categories = {}  # app_name -> category
         self._sensitive_apps = set()  # 敏感应用集合
         self._custom_categories = []  # 自定义分类列表 [(name, color, key)]
@@ -443,6 +444,7 @@ class CategoriesPage(QWidget):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
 
     def _on_open_limit_dialog(self) -> None:
         """打开应用使用限制设置对话框"""
@@ -464,7 +466,7 @@ class CategoriesPage(QWidget):
                 self.app_table.selectRow(row)
                 self.app_table.scrollToItem(item)
                 # 闪烁高亮效果
-                c = get_colors(self._is_dark)
+                c = self._colors
                 self.app_table.setStyleSheet(
                     self.app_table.styleSheet() +
                     f"\nQTableWidget::item:selected {{ background-color: {c['primary']}; }}"

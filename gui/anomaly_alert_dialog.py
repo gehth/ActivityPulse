@@ -218,6 +218,7 @@ class AnomalyAlertDialog(QDialog):
         super().__init__(parent)
         self.db = db
         self._is_dark = False
+        self._colors = get_colors(False)
         self._cards = []
         self._setup_ui()
         self._load_alerts()
@@ -244,7 +245,7 @@ class AnomalyAlertDialog(QDialog):
 
     def _create_header(self) -> None:
         """创建标题行"""
-        colors = get_colors(self._is_dark)
+        colors = self._colors
         header_layout = QHBoxLayout()
         title = QLabel("🚨 异常行为告警中心")
         title.setStyleSheet(QSS_STYLES["dialog_title"].format(c=colors))
@@ -289,7 +290,7 @@ class AnomalyAlertDialog(QDialog):
 
     def _create_alert_list(self) -> None:
         """创建告警列表滚动区域"""
-        colors = get_colors(self._is_dark)
+        colors = self._colors
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setStyleSheet(
@@ -339,7 +340,7 @@ class AnomalyAlertDialog(QDialog):
         if not alerts:
             hint = QLabel("✅ 暂无异常告警，一切正常！")
             hint.setAlignment(Qt.AlignCenter)
-            colors = get_colors(self._is_dark)
+            colors = self._colors
             hint.setStyleSheet(f"font-size: 14px; color: {colors['text_muted']}; padding: 40px;")
             hint.setProperty("empty_hint", True)
             # 插入到stretch之前
@@ -369,7 +370,8 @@ class AnomalyAlertDialog(QDialog):
     def set_dark_mode(self, is_dark: bool) -> None:
         """设置暗色模式"""
         self._is_dark = is_dark
-        colors = get_colors(is_dark)
+        self._colors = get_colors(is_dark)
+        colors = self._colors
         self.setStyleSheet(f"""
             QDialog {{ background: {colors['bg_primary']}; }}
             QLabel {{ color: {colors['text_primary']}; }}

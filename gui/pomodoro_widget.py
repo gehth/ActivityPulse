@@ -40,6 +40,7 @@ class PomodoroWidget(QWidget):
         super().__init__(parent)
         self.db = db
         self._is_dark = False
+        self._colors = get_colors(False)
 
         # 从数据库读取配置
         self.work_minutes = int(self.db.get_config("pomodoro_work", str(DEFAULT_WORK_MINUTES)))
@@ -218,11 +219,11 @@ class PomodoroWidget(QWidget):
 
     def _apply_styles(self) -> None:
         """应用样式"""
-        self.setStyleSheet(self._build_qss(get_colors(False)))
+        self.setStyleSheet(self._build_qss(self._colors))
 
     def _apply_dark_styles(self) -> None:
         """应用暗色主题样式"""
-        self.setStyleSheet(self._build_qss(get_colors(True)))
+        self.setStyleSheet(self._build_qss(self._colors))
 
     def _build_qss(self, c: dict) -> str:
         """构建番茄钟QSS样式 - 由5个样式构建函数组合而成"""
@@ -547,7 +548,7 @@ class PomodoroWidget(QWidget):
         rect = QRectF(x + margin, y + margin, w - margin * 2, h - margin * 2)
 
         # 背景轨道
-        colors = get_colors("dark" if self._is_dark else "light")
+        colors = self._colors
         bg_color = QColor(colors["border"])
         painter.setPen(QPen(bg_color, pen_width, Qt.SolidLine, Qt.RoundCap))
         painter.drawArc(rect, 0, 360 * 16)
@@ -583,6 +584,7 @@ class PomodoroWidget(QWidget):
     def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
         self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
         if is_dark:
             self._apply_dark_styles()
         else:
@@ -599,6 +601,7 @@ class PomodoroDialog(QFrame):
         super().__init__(parent)
         self.db = db
         self._is_dark = False
+        self._colors = get_colors(False)
         self._visible = False
 
         self.setObjectName("pomodoro_dialog")
@@ -632,7 +635,7 @@ class PomodoroDialog(QFrame):
 
     def _get_qss(self, is_dark: bool) -> str:
         """获取当前QSS样式表"""
-        c = get_colors(is_dark)
+        c = self._colors
         return f"""
             #pomodoro_dialog {{
                 background-color: {c['bg_card']};
