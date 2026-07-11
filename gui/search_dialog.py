@@ -333,8 +333,9 @@ class SearchDialog(QDialog):
         """高亮关键词匹配部分"""
         text = item.text()
         if keyword.lower() in text.lower():
-            # 使用蓝色文字标识匹配项
-            item.setForeground(QColor("#1e40af"))
+            # 使用主题色文字标识匹配项
+            colors = get_colors("dark" if self._is_dark else "light")
+            item.setForeground(QColor(colors["primary_hover"]))
 
     def _format_duration(self, seconds: int) -> str:
         """格式化时长"""

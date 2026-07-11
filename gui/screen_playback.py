@@ -129,7 +129,7 @@ class ScreenPlaybackDialog(QDialog):
         self._image_label.setAlignment(Qt.AlignCenter)
         self._image_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._image_label.setMinimumSize(640, 360)
-        self._image_label.setStyleSheet("background-color: #F3F4F6;")  # 浅色默认，set_theme会覆盖
+        self._image_label.setStyleSheet(f"background-color: {self._colors['bg_sidebar_hover']};")  # 浅色默认，set_theme会覆盖
         image_layout.addWidget(self._image_label)
 
         # 应用名叠加层
@@ -138,7 +138,7 @@ class ScreenPlaybackDialog(QDialog):
         self._app_overlay.setStyleSheet("""
             QLabel {
                 background-color: rgba(0, 0, 0, 160);
-                color: #F9FAFB;
+                color: white;
                 border-radius: 6px;
                 padding: 4px 12px;
                 font-size: 12px;
@@ -272,7 +272,7 @@ class ScreenPlaybackDialog(QDialog):
         hint_label = QLabel("空格：播放/暂停  |  ←→：切换截图  |  ↑↓：调速  |  Home/End：首尾跳转")
         hint_label.setObjectName("section_desc")
         hint_label.setAlignment(Qt.AlignCenter)
-        hint_label.setStyleSheet("font-size: 10px; color: #9CA3AF;")  # muted灰色，由set_theme统一覆盖
+        hint_label.setStyleSheet(f"font-size: 10px; color: {self._colors['text_muted']};")  # muted灰色，由set_theme统一覆盖
         control_layout.addWidget(hint_label)
 
         return control_frame
@@ -304,7 +304,7 @@ class ScreenPlaybackDialog(QDialog):
         """加载当前帧截图"""
         if not self._valid_screenshots:
             self._image_label.setText("📷 没有可播放的截图")
-            img_bg = "#111827" if self._is_dark else "#F3F4F6"
+            img_bg = self._colors['bg_primary'] if self._is_dark else self._colors['bg_sidebar_hover']
             self._image_label.setStyleSheet(
                 f"font-size: 48px; color: {self._colors['text_muted']}; "
                 f"background-color: {img_bg}; min-width: 640px; min-height: 360px;"
@@ -326,7 +326,7 @@ class ScreenPlaybackDialog(QDialog):
     def _display_frame_image(self, file_path: str, thumb_path: str) -> None:
         """加载并显示帧图片（带缓存）"""
         load_path = file_path if os.path.exists(file_path) else thumb_path
-        img_bg = "#111827" if self._is_dark else "#F3F4F6"
+        img_bg = self._colors['bg_primary'] if self._is_dark else self._colors['bg_sidebar_hover']
 
         if load_path and os.path.exists(load_path):
             # 检查缓存
@@ -548,7 +548,7 @@ class ScreenPlaybackDialog(QDialog):
         colors = self._colors
 
         # 图片区域背景
-        img_bg = "#111827" if is_dark else "#F3F4F6"
+        img_bg = colors['bg_primary'] if is_dark else colors['bg_sidebar_hover']
         self._image_label.setStyleSheet(f"background-color: {img_bg};")
 
         # 控制栏样式

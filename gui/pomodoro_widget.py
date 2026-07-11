@@ -249,7 +249,7 @@ class PomodoroWidget(QWidget):
                 background-color: {c['border']};
             }}
             #mode_btn_active {{
-                background-color: #ef4444;
+                background-color: {c['danger']};
                 color: white;
                 border: none;
                 border-radius: 6px;
@@ -269,7 +269,7 @@ class PomodoroWidget(QWidget):
                 padding: 2px;
             }}
             #pomodoro_start {{
-                background-color: #ef4444;
+                background-color: {c['danger']};
                 color: white;
                 border: none;
                 border-radius: 8px;
@@ -278,7 +278,7 @@ class PomodoroWidget(QWidget):
                 padding: 8px 20px;
             }}
             #pomodoro_start:hover {{
-                background-color: #dc2626;
+                background-color: {c['danger_hover']};
             }}
             #pomodoro_reset {{
                 background-color: {c['bg_sidebar_hover']};
@@ -519,7 +519,8 @@ class PomodoroWidget(QWidget):
         rect = QRectF(x + margin, y + margin, w - margin * 2, h - margin * 2)
 
         # 背景轨道
-        bg_color = QColor("#e2e8f0") if not self._is_dark else QColor("#334155")
+        colors = get_colors("dark" if self._is_dark else "light")
+        bg_color = QColor(colors["border"])
         painter.setPen(QPen(bg_color, pen_width, Qt.SolidLine, Qt.RoundCap))
         painter.drawArc(rect, 0, 360 * 16)
 
@@ -531,11 +532,11 @@ class PomodoroWidget(QWidget):
 
         # 颜色根据模式变化
         if self._mode == "work":
-            arc_color = QColor("#ef4444")  # 红色-专注
+            arc_color = QColor(colors["danger"])  # 红色-专注
         elif self._mode == "short_break":
-            arc_color = QColor("#22c55e")  # 绿色-短休息
+            arc_color = QColor(colors["success"])  # 绿色-短休息
         else:
-            arc_color = QColor("#3b82f6")  # 蓝色-长休息
+            arc_color = QColor(colors["primary"])  # 蓝色-长休息
 
         # 渐变效果
         gradient = QConicalGradient(rect.center(), 90)

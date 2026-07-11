@@ -22,6 +22,7 @@ COLORS = {
         "success": "#10B981",
         "warning": "#F59E0B",
         "danger": "#EF4444",
+        "danger_hover": "#DC2626",
         "danger_light": "#FEE2E2",
         "shadow": "rgba(0,0,0,0.08)",
     },
@@ -41,6 +42,7 @@ COLORS = {
         "success": "#10B981",
         "warning": "#F59E0B",
         "danger": "#EF4444",
+        "danger_hover": "#F87171",
         "danger_light": "#7F1D1D",
         "shadow": "rgba(0,0,0,0.3)",
     }
@@ -438,8 +440,14 @@ def get_theme_qss(theme: str = "light") -> str:
     """
 
 
-def get_colors(theme: str = "light") -> dict:
-    """获取当前主题的颜色字典"""
+def get_colors(theme="light") -> dict:
+    """获取当前主题的颜色字典
+    
+    Args:
+        theme: 主题名称("light"/"dark")或布尔值(True=暗色, False=浅色)
+    """
+    if isinstance(theme, bool):
+        theme = "dark" if theme else "light"
     return COLORS.get(theme, COLORS["light"])
 
 
