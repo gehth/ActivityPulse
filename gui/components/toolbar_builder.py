@@ -50,18 +50,8 @@ def create_toolbar(callbacks: dict) -> tuple:
 
     layout.addStretch()
 
-    # 导出按钮
-    layout.addWidget(_make_btn("📥 导出CSV", "btn_outline", callbacks.get("on_export_csv")))
-    btn_export_pdf = HoverButton("📄 导出PDF")
-    btn_export_pdf.setObjectName("btn_outline")
-    btn_export_pdf.clicked.connect(callbacks.get("on_export_pdf"))
-    layout.addWidget(btn_export_pdf)
-
-    # 主题切换
-    btn_theme = HoverButton("🌙 深色")
-    btn_theme.setObjectName("btn_outline")
-    btn_theme.clicked.connect(callbacks.get("on_toggle_theme"))
-    layout.addWidget(btn_theme)
+    # 导出按钮 + 主题切换
+    btn_theme = _add_export_and_theme_buttons(layout, callbacks)
 
     # 返回工具栏和需要外部访问的控件
     widgets = SimpleNamespace(
@@ -76,6 +66,22 @@ def create_toolbar(callbacks: dict) -> tuple:
     )
 
     return toolbar, widgets
+
+
+def _add_export_and_theme_buttons(layout: QHBoxLayout, callbacks: dict) -> HoverButton:
+    """添加导出按钮和主题切换按钮到工具栏布局，返回主题按钮"""
+    layout.addWidget(_make_btn("📥 导出CSV", "btn_outline", callbacks.get("on_export_csv")))
+    btn_export_pdf = HoverButton("📄 导出PDF")
+    btn_export_pdf.setObjectName("btn_outline")
+    btn_export_pdf.clicked.connect(callbacks.get("on_export_pdf"))
+    layout.addWidget(btn_export_pdf)
+
+    btn_theme = HoverButton("🌙 深色")
+    btn_theme.setObjectName("btn_outline")
+    btn_theme.clicked.connect(callbacks.get("on_toggle_theme"))
+    layout.addWidget(btn_theme)
+
+    return btn_theme
 
 
 def _create_time_selector(callbacks: dict) -> dict:

@@ -133,6 +133,15 @@ class DonutChartWidget(QWidget):
             painter.end()
             return
 
+        self._draw_pie_slices(painter, cx, cy, outer_r)
+        self._draw_center(painter, colors, cx, cy, inner_r, total)
+
+        painter.end()
+
+    def _draw_pie_slices(self, painter: QPainter,
+                         cx: int, cy: int, outer_r: int) -> None:
+        """绘制饼图扇区（含hover偏移效果）"""
+        total = sum(v for _, v, _ in self.data)
         start_angle = 90 * 16  # 从12点方向开始
         for i, (name, value, color) in enumerate(self.data):
             span = int((value / total) * 360 * 16)
@@ -159,6 +168,9 @@ class DonutChartWidget(QWidget):
                           start_angle, -span)
             start_angle -= span
 
+    def _draw_center(self, painter: QPainter, colors: dict,
+                     cx: int, cy: int, inner_r: int, total: float) -> None:
+        """绘制中心圆和文字"""
         # 中心圆（形成环形）
         painter.setBrush(QBrush(QColor(colors["bg_card"])))
         painter.setPen(Qt.NoPen)
@@ -175,8 +187,6 @@ class DonutChartWidget(QWidget):
         painter.setFont(QFont("Microsoft YaHei", 9))
         painter.drawText(QRect(int(cx - inner_r), int(cy + 5),
                               int(inner_r * 2), 20), Qt.AlignCenter, "总时长(分)")
-
-        painter.end()
 
 
 class LineChartWidget(QWidget):
@@ -437,18 +447,30 @@ class BarChartWidget(QWidget):
         n = len(self.data)
         bar_width = max(w / n - 4, 8)
 
-        # Y轴刻度
+        self._draw_y_axis(painter, colors, margin_left, margin_top, h, max_val)
+        self._bar_rects = []
+        self._draw_bars(painter, colors, margin_left, margin_top, w, h,
+                        max_val, n, bar_width)
+
+        painter.end()
+
+    def _draw_y_axis(self, painter: QPainter, colors: dict,
+                     margin_left: int, margin_top: int,
+                     h: float, max_val: float) -> None:
+        """绘制Y轴刻度"""
         painter.setPen(QColor(colors["text_muted"]))
         painter.setFont(QFont("Consolas", 8))
         for i in range(5):
             y = margin_top + h - (h * i / 4)
             val = max_val * i / 4
-            painter.drawText(0, int(y - 4), margin_left - 5, 16, Qt.AlignRight, f"{val:.0f}")
+            painter.drawText(0, int(y - 4), margin_left - 5, 16,
+                             Qt.AlignRight, f"{val:.0f}")
 
-        # 缓存柱子矩形
-        self._bar_rects = []
-
-        # 绘制柱子
+    def _draw_bars(self, painter: QPainter, colors: dict,
+                   margin_left: int, margin_top: int,
+                   w: float, h: float, max_val: float,
+                   n: int, bar_width: float) -> None:
+        """绘制柱状图柱子（含hover高亮和数值标签）"""
         for i, (label, value) in enumerate(self.data):
             x = margin_left + (w * i / n) + 2
             bar_h = h * value / max_val if max_val > 0 else 0
@@ -488,8 +510,6 @@ class BarChartWidget(QWidget):
             painter.setFont(QFont("Consolas", 8))
             painter.drawText(int(x - 5), self.height() - 10, int(bar_width + 10), 20,
                            Qt.AlignCenter, label)
-
-        painter.end()
 
 
 class InsightsPage(QWidget):

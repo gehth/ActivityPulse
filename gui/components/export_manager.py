@@ -96,50 +96,57 @@ class ExportManager:
             return
 
         try:
-            # 获取数据
-            app_summary, total_seconds, input_counts = self._fetch_pdf_data(
-                start_date, end_date, is_range
-            )
-            duration_str = format_duration(total_seconds)
-
-            # 分类统计
-            from utils.category_stats import compute_category_stats
-            cat_stats, cat_names, cat_colors = compute_category_stats(app_summary, include_apps=False)
-
-            # 构建分类表格行
-            cat_rows = self._build_category_rows(cat_stats, cat_names, cat_colors, total_seconds)
-
-            # 操作详情
-            key_count = input_counts.get("keypress", 0) if isinstance(input_counts, dict) else 0
-            click_count = input_counts.get("click", 0) if isinstance(input_counts, dict) else 0
-            scroll_count = input_counts.get("scroll", 0) if isinstance(input_counts, dict) else 0
-
-            # 构建HTML报告
-            html = self._build_pdf_html({
-                "date_label": date_label,
-                "duration_str": duration_str,
-                "app_summary": app_summary,
-                "total_seconds": total_seconds,
-                "input_counts": input_counts,
-                "cat_rows": cat_rows,
-                "key_count": key_count,
-                "click_count": click_count,
-                "scroll_count": scroll_count,
-            })
-
-            # 使用QPrinter输出PDF
-            printer = QPrinter(QPrinter.HighResolution)
-            printer.setOutputFormat(QPrinter.PdfFormat)
-            printer.setOutputFileName(path)
-            printer.setPageSize(QPrinter.A4)
-
-            doc = QTextDocument()
-            doc.setHtml(html)
-            doc.print_(printer)
-
+            ctx = self._prepare_pdf_context(start_date, end_date, is_range, date_label)
+            self._write_pdf(path, ctx["html"])
             self.callbacks["show_status"](f"PDF已导出到: {path}")
         except Exception as e:
             QMessageBox.critical(self.parent, "错误", f"PDF导出失败: {e}")
+
+    def _prepare_pdf_context(self, start_date: str, end_date: str,
+                             is_range: bool, date_label: str) -> dict:
+        """准备PDF导出所需的数据上下文"""
+        app_summary, total_seconds, input_counts = self._fetch_pdf_data(
+            start_date, end_date, is_range
+        )
+        duration_str = format_duration(total_seconds)
+
+        # 分类统计
+        from utils.category_stats import compute_category_stats
+        cat_stats, cat_names, cat_colors = compute_category_stats(app_summary, include_apps=False)
+
+        # 构建分类表格行
+        cat_rows = self._build_category_rows(cat_stats, cat_names, cat_colors, total_seconds)
+
+        # 操作详情
+        key_count = input_counts.get("keypress", 0) if isinstance(input_counts, dict) else 0
+        click_count = input_counts.get("click", 0) if isinstance(input_counts, dict) else 0
+        scroll_count = input_counts.get("scroll", 0) if isinstance(input_counts, dict) else 0
+
+        # 构建HTML报告
+        html = self._build_pdf_html({
+            "date_label": date_label,
+            "duration_str": duration_str,
+            "app_summary": app_summary,
+            "total_seconds": total_seconds,
+            "input_counts": input_counts,
+            "cat_rows": cat_rows,
+            "key_count": key_count,
+            "click_count": click_count,
+            "scroll_count": scroll_count,
+        })
+
+        return {"html": html, "total_seconds": total_seconds}
+
+    def _write_pdf(self, path: str, html: str) -> None:
+        """使用QPrinter将HTML内容输出为PDF文件"""
+        printer = QPrinter(QPrinter.HighResolution)
+        printer.setOutputFormat(QPrinter.PdfFormat)
+        printer.setOutputFileName(path)
+        printer.setPageSize(QPrinter.A4)
+
+        doc = QTextDocument()
+        doc.setHtml(html)
+        doc.print_(printer)
 
     def _fetch_pdf_data(self, start_date: str, end_date: str, is_range: bool) -> dict:
         """获取PDF报告所需数据"""
