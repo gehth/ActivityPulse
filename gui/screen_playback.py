@@ -159,7 +159,20 @@ class ScreenPlaybackDialog(QDialog):
         control_layout.setContentsMargins(16, 8, 16, 8)
         control_layout.setSpacing(6)
 
-        # --- 时间轴滑块行 ---
+        control_layout.addLayout(self._create_timeline_row())
+        control_layout.addLayout(self._create_play_controls_row())
+
+        # --- 快捷键提示 ---
+        hint_label = QLabel("空格：播放/暂停  |  ←→：切换截图  |  ↑↓：调速  |  Home/End：首尾跳转")
+        hint_label.setObjectName("section_desc")
+        hint_label.setAlignment(Qt.AlignCenter)
+        hint_label.setStyleSheet(f"font-size: 10px; color: {self._colors['text_muted']};")
+        control_layout.addWidget(hint_label)
+
+        return control_frame
+
+    def _create_timeline_row(self) -> QHBoxLayout:
+        """创建时间轴滑块行"""
         timeline_row = QHBoxLayout()
         timeline_row.setSpacing(8)
 
@@ -184,13 +197,14 @@ class ScreenPlaybackDialog(QDialog):
         self._end_time_label.setStyleSheet("font-size: 11px; font-weight: 400;")
         timeline_row.addWidget(self._end_time_label)
 
-        control_layout.addLayout(timeline_row)
+        return timeline_row
 
-        # --- 播放控制行 ---
+    def _create_play_controls_row(self) -> QHBoxLayout:
+        """创建播放控制行（播放按钮 + 速度控制 + 进度 + 关闭）"""
         play_row = QHBoxLayout()
         play_row.setSpacing(8)
 
-        # 上一张
+        # 播放导航按钮
         self._btn_prev = QPushButton("⏮")
         self._btn_prev.setFixedSize(36, 36)
         self._btn_prev.setObjectName("btn_outline")
@@ -198,7 +212,6 @@ class ScreenPlaybackDialog(QDialog):
         self._btn_prev.clicked.connect(self._show_prev)
         play_row.addWidget(self._btn_prev)
 
-        # 播放/暂停
         self._btn_play = QPushButton("▶")
         self._btn_play.setFixedSize(44, 44)
         self._btn_play.setObjectName("btn_primary")
@@ -206,7 +219,6 @@ class ScreenPlaybackDialog(QDialog):
         self._btn_play.clicked.connect(self._toggle_play)
         play_row.addWidget(self._btn_play)
 
-        # 下一张
         self._btn_next = QPushButton("⏭")
         self._btn_next.setFixedSize(36, 36)
         self._btn_next.setObjectName("btn_outline")
@@ -214,7 +226,6 @@ class ScreenPlaybackDialog(QDialog):
         self._btn_next.clicked.connect(self._show_next)
         play_row.addWidget(self._btn_next)
 
-        # 停止
         self._btn_stop = QPushButton("⏹")
         self._btn_stop.setFixedSize(36, 36)
         self._btn_stop.setObjectName("btn_outline")
@@ -266,16 +277,7 @@ class ScreenPlaybackDialog(QDialog):
         self._btn_close.clicked.connect(self._on_close)
         play_row.addWidget(self._btn_close)
 
-        control_layout.addLayout(play_row)
-
-        # --- 快捷键提示 ---
-        hint_label = QLabel("空格：播放/暂停  |  ←→：切换截图  |  ↑↓：调速  |  Home/End：首尾跳转")
-        hint_label.setObjectName("section_desc")
-        hint_label.setAlignment(Qt.AlignCenter)
-        hint_label.setStyleSheet(f"font-size: 10px; color: {self._colors['text_muted']};")  # muted灰色，由set_theme统一覆盖
-        control_layout.addWidget(hint_label)
-
-        return control_frame
+        return play_row
 
     def _format_time(self, timestamp: str) -> str:
         """格式化时间戳为HH:MM"""

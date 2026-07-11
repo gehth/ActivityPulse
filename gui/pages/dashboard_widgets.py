@@ -759,53 +759,58 @@ class WeekBarWidget(QWidget):
         # 绘制柱状图
         for i in range(n):
             group_x = margin_left + i * group_width
-
-            # 上周柱
-            if i < len(last_week):
-                s = last_week[i].get("seconds", 0)
-                h = (s / max_seconds) * chart_height if max_seconds > 0 else 0
-                x = group_x + group_width / 2 - bar_width - gap / 2
-                y = margin_top + chart_height - h
-                color = QColor(colors['bg_sidebar_hover'])
-                painter.setBrush(QBrush(color))
-                painter.setPen(Qt.NoPen)
-                painter.drawRoundedRect(int(x), int(y), int(bar_width), int(h), 2, 2)
-                # 数值标签
-                if h > 12:
-                    painter.setPen(QColor(colors['text_muted']))
-                    painter.setFont(QFont("Consolas", 7))
-                    val_min = int(s / 60)
-                    painter.drawText(int(x - 2), int(y - 3), int(bar_width + 4), 12,
-                                     Qt.AlignCenter, f"{val_min}m")
-
-            # 本周柱
-            if i < len(this_week):
-                s = this_week[i].get("seconds", 0)
-                h = (s / max_seconds) * chart_height if max_seconds > 0 else 0
-                x = group_x + group_width / 2 + gap / 2
-                y = margin_top + chart_height - h
-                color = QColor(colors['primary'])
-                painter.setBrush(QBrush(color))
-                painter.setPen(Qt.NoPen)
-                painter.drawRoundedRect(int(x), int(y), int(bar_width), int(h), 2, 2)
-                # 数值标签
-                if h > 12:
-                    painter.setPen(QColor(colors['primary']))
-                    painter.setFont(QFont("Consolas", 7))
-                    val_min = int(s / 60)
-                    painter.drawText(int(x - 2), int(y - 3), int(bar_width + 4), 12,
-                                     Qt.AlignCenter, f"{val_min}m")
-
-            # 日标签
-            day_name = this_week[i].get("day", "") if i < len(this_week) else ""
-            if day_name:
-                painter.setPen(QColor(colors['text_muted']))
-                font = QFont("Microsoft YaHei", 8)
-                painter.setFont(font)
-                label_x = group_x + group_width / 2
-                painter.drawText(int(label_x - 10), self.height() - 5, day_name)
+            self._draw_bar_group(painter, colors, i, group_x, group_width,
+                                 bar_width, gap, margin_top, chart_height,
+                                 max_seconds, this_week, last_week)
 
         painter.end()
+
+    def _draw_bar_group(self, painter: QPainter, colors: dict, index: int,
+                        group_x: float, group_width: float, bar_width: float,
+                        gap: float, margin_top: int, chart_height: int,
+                        max_seconds: int, this_week: list, last_week: list) -> None:
+        """绘制一组柱状图（上周柱 + 本周柱 + 日标签）"""
+        # 上周柱
+        if index < len(last_week):
+            s = last_week[index].get("seconds", 0)
+            h = (s / max_seconds) * chart_height if max_seconds > 0 else 0
+            x = group_x + group_width / 2 - bar_width - gap / 2
+            y = margin_top + chart_height - h
+            color = QColor(colors['bg_sidebar_hover'])
+            painter.setBrush(QBrush(color))
+            painter.setPen(Qt.NoPen)
+            painter.drawRoundedRect(int(x), int(y), int(bar_width), int(h), 2, 2)
+            if h > 12:
+                painter.setPen(QColor(colors['text_muted']))
+                painter.setFont(QFont("Consolas", 7))
+                val_min = int(s / 60)
+                painter.drawText(int(x - 2), int(y - 3), int(bar_width + 4), 12,
+                                 Qt.AlignCenter, f"{val_min}m")
+
+        # 本周柱
+        if index < len(this_week):
+            s = this_week[index].get("seconds", 0)
+            h = (s / max_seconds) * chart_height if max_seconds > 0 else 0
+            x = group_x + group_width / 2 + gap / 2
+            y = margin_top + chart_height - h
+            color = QColor(colors['primary'])
+            painter.setBrush(QBrush(color))
+            painter.setPen(Qt.NoPen)
+            painter.drawRoundedRect(int(x), int(y), int(bar_width), int(h), 2, 2)
+            if h > 12:
+                painter.setPen(QColor(colors['primary']))
+                painter.setFont(QFont("Consolas", 7))
+                val_min = int(s / 60)
+                painter.drawText(int(x - 2), int(y - 3), int(bar_width + 4), 12,
+                                 Qt.AlignCenter, f"{val_min}m")
+
+        # 日标签
+        day_name = this_week[index].get("day", "") if index < len(this_week) else ""
+        if day_name:
+            painter.setPen(QColor(colors['text_muted']))
+            painter.setFont(QFont("Microsoft YaHei", 8))
+            label_x = group_x + group_width / 2
+            painter.drawText(int(label_x - 10), self.height() - 5, day_name)
 
 
 class HourlyDistCard(AnimatedCard):

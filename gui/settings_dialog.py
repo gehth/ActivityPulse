@@ -392,107 +392,12 @@ class SettingsDialog(QDialog):
         desc_a0.setObjectName("section_desc")
         layout.addWidget(desc_a0)
 
-        # 连续使用阈值
-        row_a1 = QHBoxLayout()
-        label_a1 = QLabel("连续使用阈值")
-        label_a1.setObjectName("card_title")
-        row_a1.addWidget(label_a1)
-        row_a1.addStretch()
-        self.spin_continuous_minutes = QSpinBox()
-        self.spin_continuous_minutes.setRange(30, 480)
-        self.spin_continuous_minutes.setSuffix(" 分钟")
-        self.spin_continuous_minutes.setFixedWidth(120)
-        row_a1.addWidget(self.spin_continuous_minutes)
-        layout.addLayout(row_a1)
-
-        desc_a1 = QLabel("同一应用连续使用超过此时长将触发告警")
-        desc_a1.setObjectName("section_desc")
-        layout.addWidget(desc_a1)
-
-        # 深夜检测
-        row_a2 = QHBoxLayout()
-        self.cb_late_night = QCheckBox("深夜异常活跃检测")
-        self.cb_late_night.setChecked(True)
-        row_a2.addWidget(self.cb_late_night)
-        row_a2.addStretch()
-        layout.addLayout(row_a2)
-
-        row_a2b = QHBoxLayout()
-        label_a2b = QLabel("深夜使用阈值")
-        label_a2b.setObjectName("card_title")
-        row_a2b.addWidget(label_a2b)
-        row_a2b.addStretch()
-        self.spin_late_night_minutes = QSpinBox()
-        self.spin_late_night_minutes.setRange(10, 300)
-        self.spin_late_night_minutes.setSuffix(" 分钟")
-        self.spin_late_night_minutes.setFixedWidth(120)
-        row_a2b.addWidget(self.spin_late_night_minutes)
-        layout.addLayout(row_a2b)
-
-        # 日使用偏离检测
-        row_a3 = QHBoxLayout()
-        self.cb_deviation = QCheckBox("日使用时长偏离检测")
-        self.cb_deviation.setChecked(True)
-        row_a3.addWidget(self.cb_deviation)
-        row_a3.addStretch()
-        layout.addLayout(row_a3)
-
-        row_a3b = QHBoxLayout()
-        label_a3b = QLabel("偏离倍数阈值")
-        label_a3b.setObjectName("card_title")
-        row_a3b.addWidget(label_a3b)
-        row_a3b.addStretch()
-        self.spin_deviation_factor = QSpinBox()
-        self.spin_deviation_factor.setRange(12, 30)  # 1.2 ~ 3.0 (÷10)
-        self.spin_deviation_factor.setSuffix("")
-        self.spin_deviation_factor.setFixedWidth(80)
-        self._deviation_label = QLabel("1.5 倍")
-        self._deviation_label.setObjectName("card_title")
-        self.spin_deviation_factor.valueChanged.connect(
-            lambda v: self._deviation_label.setText(f"{v / 10:.1f} 倍")
-        )
-        row_a3b.addWidget(self.spin_deviation_factor)
-        row_a3b.addWidget(self._deviation_label)
-        row_a3b.addStretch()
-        layout.addLayout(row_a3b)
-
-        desc_a3 = QLabel("今日使用时长超过近7日均值的指定倍数时触发告警")
-        desc_a3.setObjectName("section_desc")
-        layout.addWidget(desc_a3)
-
-        # 无休息阈值
-        row_a4 = QHBoxLayout()
-        label_a4 = QLabel("无休息连续使用阈值")
-        label_a4.setObjectName("card_title")
-        row_a4.addWidget(label_a4)
-        row_a4.addStretch()
-        self.spin_no_break_minutes = QSpinBox()
-        self.spin_no_break_minutes.setRange(60, 720)
-        self.spin_no_break_minutes.setSuffix(" 分钟")
-        self.spin_no_break_minutes.setFixedWidth(120)
-        row_a4.addWidget(self.spin_no_break_minutes)
-        layout.addLayout(row_a4)
-
-        desc_a4 = QLabel("连续使用电脑超过此时长（无10分钟以上休息）将触发告警")
-        desc_a4.setObjectName("section_desc")
-        layout.addWidget(desc_a4)
-
-        # 检测间隔
-        row_a5 = QHBoxLayout()
-        label_a5 = QLabel("检测间隔")
-        label_a5.setObjectName("card_title")
-        row_a5.addWidget(label_a5)
-        row_a5.addStretch()
-        self.spin_anomaly_interval = QSpinBox()
-        self.spin_anomaly_interval.setRange(1, 30)
-        self.spin_anomaly_interval.setSuffix(" 分钟")
-        self.spin_anomaly_interval.setFixedWidth(120)
-        row_a5.addWidget(self.spin_anomaly_interval)
-        layout.addLayout(row_a5)
-
-        desc_a5 = QLabel("每隔多少分钟执行一次异常检测")
-        desc_a5.setObjectName("section_desc")
-        layout.addWidget(desc_a5)
+        # 各检测项
+        layout.addLayout(self._create_continuous_threshold_row())
+        layout.addLayout(self._create_late_night_rows())
+        layout.addLayout(self._create_deviation_rows())
+        layout.addLayout(self._create_no_break_row())
+        layout.addLayout(self._create_interval_row())
 
         # 通知方式
         row_a6 = QHBoxLayout()
@@ -506,6 +411,142 @@ class SettingsDialog(QDialog):
         layout.addLayout(row_a6)
 
         return group
+
+    def _create_continuous_threshold_row(self) -> QHBoxLayout:
+        """创建连续使用阈值设置行"""
+        row = QHBoxLayout()
+        label = QLabel("连续使用阈值")
+        label.setObjectName("card_title")
+        row.addWidget(label)
+        row.addStretch()
+        self.spin_continuous_minutes = QSpinBox()
+        self.spin_continuous_minutes.setRange(30, 480)
+        self.spin_continuous_minutes.setSuffix(" 分钟")
+        self.spin_continuous_minutes.setFixedWidth(120)
+        row.addWidget(self.spin_continuous_minutes)
+
+        desc = QLabel("同一应用连续使用超过此时长将触发告警")
+        desc.setObjectName("section_desc")
+        # 返回带描述的布局
+        wrapper = QVBoxLayout()
+        wrapper.addLayout(row)
+        wrapper.addWidget(desc)
+        h_wrapper = QHBoxLayout()
+        h_wrapper.addLayout(wrapper)
+        return h_wrapper
+
+    def _create_late_night_rows(self) -> QHBoxLayout:
+        """创建深夜检测设置行"""
+        wrapper = QVBoxLayout()
+
+        row = QHBoxLayout()
+        self.cb_late_night = QCheckBox("深夜异常活跃检测")
+        self.cb_late_night.setChecked(True)
+        row.addWidget(self.cb_late_night)
+        row.addStretch()
+        wrapper.addLayout(row)
+
+        row2 = QHBoxLayout()
+        label = QLabel("深夜使用阈值")
+        label.setObjectName("card_title")
+        row2.addWidget(label)
+        row2.addStretch()
+        self.spin_late_night_minutes = QSpinBox()
+        self.spin_late_night_minutes.setRange(10, 300)
+        self.spin_late_night_minutes.setSuffix(" 分钟")
+        self.spin_late_night_minutes.setFixedWidth(120)
+        row2.addWidget(self.spin_late_night_minutes)
+        wrapper.addLayout(row2)
+
+        h_wrapper = QHBoxLayout()
+        h_wrapper.addLayout(wrapper)
+        return h_wrapper
+
+    def _create_deviation_rows(self) -> QHBoxLayout:
+        """创建日使用偏离检测设置行"""
+        wrapper = QVBoxLayout()
+
+        row = QHBoxLayout()
+        self.cb_deviation = QCheckBox("日使用时长偏离检测")
+        self.cb_deviation.setChecked(True)
+        row.addWidget(self.cb_deviation)
+        row.addStretch()
+        wrapper.addLayout(row)
+
+        row2 = QHBoxLayout()
+        label = QLabel("偏离倍数阈值")
+        label.setObjectName("card_title")
+        row2.addWidget(label)
+        row2.addStretch()
+        self.spin_deviation_factor = QSpinBox()
+        self.spin_deviation_factor.setRange(12, 30)  # 1.2 ~ 3.0 (÷10)
+        self.spin_deviation_factor.setSuffix("")
+        self.spin_deviation_factor.setFixedWidth(80)
+        self._deviation_label = QLabel("1.5 倍")
+        self._deviation_label.setObjectName("card_title")
+        self.spin_deviation_factor.valueChanged.connect(
+            lambda v: self._deviation_label.setText(f"{v / 10:.1f} 倍")
+        )
+        row2.addWidget(self.spin_deviation_factor)
+        row2.addWidget(self._deviation_label)
+        row2.addStretch()
+        wrapper.addLayout(row2)
+
+        desc = QLabel("今日使用时长超过近7日均值的指定倍数时触发告警")
+        desc.setObjectName("section_desc")
+        wrapper.addWidget(desc)
+
+        h_wrapper = QHBoxLayout()
+        h_wrapper.addLayout(wrapper)
+        return h_wrapper
+
+    def _create_no_break_row(self) -> QHBoxLayout:
+        """创建无休息连续使用阈值设置行"""
+        wrapper = QVBoxLayout()
+
+        row = QHBoxLayout()
+        label = QLabel("无休息连续使用阈值")
+        label.setObjectName("card_title")
+        row.addWidget(label)
+        row.addStretch()
+        self.spin_no_break_minutes = QSpinBox()
+        self.spin_no_break_minutes.setRange(60, 720)
+        self.spin_no_break_minutes.setSuffix(" 分钟")
+        self.spin_no_break_minutes.setFixedWidth(120)
+        row.addWidget(self.spin_no_break_minutes)
+        wrapper.addLayout(row)
+
+        desc = QLabel("连续使用电脑超过此时长（无10分钟以上休息）将触发告警")
+        desc.setObjectName("section_desc")
+        wrapper.addWidget(desc)
+
+        h_wrapper = QHBoxLayout()
+        h_wrapper.addLayout(wrapper)
+        return h_wrapper
+
+    def _create_interval_row(self) -> QHBoxLayout:
+        """创建检测间隔设置行"""
+        wrapper = QVBoxLayout()
+
+        row = QHBoxLayout()
+        label = QLabel("检测间隔")
+        label.setObjectName("card_title")
+        row.addWidget(label)
+        row.addStretch()
+        self.spin_anomaly_interval = QSpinBox()
+        self.spin_anomaly_interval.setRange(1, 30)
+        self.spin_anomaly_interval.setSuffix(" 分钟")
+        self.spin_anomaly_interval.setFixedWidth(120)
+        row.addWidget(self.spin_anomaly_interval)
+        wrapper.addLayout(row)
+
+        desc = QLabel("每隔多少分钟执行一次异常检测")
+        desc.setObjectName("section_desc")
+        wrapper.addWidget(desc)
+
+        h_wrapper = QHBoxLayout()
+        h_wrapper.addLayout(wrapper)
+        return h_wrapper
 
     def _load_settings(self) -> None:
         """从数据库加载设置"""

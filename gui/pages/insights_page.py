@@ -256,50 +256,63 @@ class LineChartWidget(QWidget):
         margin_bottom = self._margin_bottom
         w = self.width() - margin_left - margin_right
         h = self.height() - margin_top - margin_bottom
-
-        # Y轴刻度
         max_val = max(v for _, v in self.data) or 1
+        n = len(self.data)
+
+        self._draw_axes(painter, colors, margin_left, margin_top, w, h, max_val, n)
+
+        # 计算数据点坐标
+        points = []
+        for i, (_, value) in enumerate(self.data):
+            x = margin_left + (w * i / max(n - 1, 1))
+            y = margin_top + h - (h * value / max_val)
+            points.append((int(x), int(y)))
+        self._points = points
+
+        self._draw_line_and_fill(painter, colors, points, margin_top, h)
+        self._draw_data_points(painter, colors, points, margin_top, h)
+
+        painter.end()
+
+    def _draw_axes(self, painter: QPainter, colors: dict,
+                   margin_left: int, margin_top: int, w: int, h: int,
+                   max_val: float, n: int) -> None:
+        """绘制Y轴刻度、网格线和X轴标签"""
+        # Y轴刻度
         painter.setPen(QColor(colors["text_muted"]))
         painter.setFont(QFont("Consolas", 8))
         for i in range(5):
             y = margin_top + h - (h * i / 4)
             val = max_val * i / 4
             painter.drawText(0, int(y - 4), margin_left - 5, 16, Qt.AlignRight, f"{val:.0f}")
-            # 网格线
             pen = QPen(QColor(colors["border"]))
             pen.setStyle(Qt.DotLine)
             painter.setPen(pen)
-            painter.drawLine(margin_left, int(y), self.width() - margin_right, int(y))
+            painter.drawLine(margin_left, int(y), margin_left + w, int(y))
 
         # X轴标签
         painter.setPen(QColor(colors["text_muted"]))
         painter.setFont(QFont("Microsoft YaHei", 8))
-        n = len(self.data)
         for i, (label, _) in enumerate(self.data):
             x = margin_left + (w * i / max(n - 1, 1))
-            painter.drawText(int(x - 20), self.height() - 10, 40, 20, Qt.AlignCenter, label)
+            painter.drawText(int(x - 20), margin_top + h + 10, 40, 20, Qt.AlignCenter, label)
 
-        # 绘制折线
-        points = []
-        for i, (_, value) in enumerate(self.data):
-            x = margin_left + (w * i / max(n - 1, 1))
-            y = margin_top + h - (h * value / max_val)
-            points.append((int(x), int(y)))
-
-        # 缓存点坐标供hover使用
-        self._points = points
+    def _draw_line_and_fill(self, painter: QPainter, colors: dict,
+                            points: list, margin_top: int, h: int) -> None:
+        """绘制折线和填充区域"""
+        if len(points) < 2:
+            return
 
         # 填充区域
-        if len(points) >= 2:
-            fill_color = QColor(colors["primary"])
-            fill_color.setAlpha(30)
-            painter.setBrush(QBrush(fill_color))
-            painter.setPen(Qt.NoPen)
-            polygon_points = [QPoint(points[0][0], margin_top + h)]
-            for px, py in points:
-                polygon_points.append(QPoint(px, py))
-            polygon_points.append(QPoint(points[-1][0], margin_top + h))
-            painter.drawPolygon(QPolygon(polygon_points))
+        fill_color = QColor(colors["primary"])
+        fill_color.setAlpha(30)
+        painter.setBrush(QBrush(fill_color))
+        painter.setPen(Qt.NoPen)
+        polygon_points = [QPoint(points[0][0], margin_top + h)]
+        for px, py in points:
+            polygon_points.append(QPoint(px, py))
+        polygon_points.append(QPoint(points[-1][0], margin_top + h))
+        painter.drawPolygon(QPolygon(polygon_points))
 
         # 绘制线条
         pen = QPen(QColor(colors["primary"]))
@@ -309,7 +322,9 @@ class LineChartWidget(QWidget):
             painter.drawLine(points[i][0], points[i][1],
                            points[i + 1][0], points[i + 1][1])
 
-        # 绘制数据点 + hover高亮
+    def _draw_data_points(self, painter: QPainter, colors: dict,
+                          points: list, margin_top: int, h: int) -> None:
+        """绘制数据点和hover高亮效果"""
         for i, (x, y) in enumerate(points):
             if i == self._hover_index:
                 # hover: 垂直参考线
@@ -336,8 +351,6 @@ class LineChartWidget(QWidget):
                 painter.setBrush(QBrush(QColor(colors["primary"])))
                 painter.setPen(Qt.NoPen)
                 painter.drawEllipse(x - 4, y - 4, 8, 8)
-
-        painter.end()
 
 
 class BarChartWidget(QWidget):

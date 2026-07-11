@@ -170,23 +170,21 @@ class ExportManager:
                 </tr>"""
         return cat_rows
 
-    def _build_pdf_html(self, data: dict) -> None:
-        """构建PDF报告HTML内容"""
-        date_label = data["date_label"]
-        duration_str = data["duration_str"]
-        app_summary = data["app_summary"]
-        total_seconds = data["total_seconds"]
-        input_counts = data["input_counts"]
-        cat_rows = data["cat_rows"]
-        key_count = data["key_count"]
-        click_count = data["click_count"]
-        scroll_count = data["scroll_count"]
-        input_count = sum(input_counts.values()) if isinstance(input_counts, dict) else 0
-
+    def _build_pdf_html(self, data: dict) -> str:
+        """构建PDF报告HTML内容 - 由4个HTML构建函数组合而成"""
         # PDF始终使用浅色主题（打印友好）
         c = get_colors(False)
 
-        html = f"""
+        return (
+            self._pdf_css(c)
+            + self._pdf_overview(data, c)
+            + self._pdf_category_table(data["cat_rows"])
+            + self._pdf_app_table(data["app_summary"], data["total_seconds"], c)
+        )
+
+    def _pdf_css(self, c: dict) -> str:
+        """PDF报告CSS样式和HTML头部"""
+        return f"""
             <html><head><style>
                 body {{ font-family: "Microsoft YaHei", sans-serif; padding: 40px; color: {c['text_primary']}; }}
                 h1 {{ color: {c['primary']}; font-size: 24px; }}
@@ -204,16 +202,21 @@ class ExportManager:
                 .bar-fill {{ height: 8px; border-radius: 4px; }}
             </style></head><body>
             <h1>📊 行为记录报告</h1>
-            <p style="color:{c['text_secondary']};">报告日期: {date_label} | 生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+            <p style="color:{c['text_secondary']};">报告日期: {data['date_label']} | 生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+        """
 
+    def _pdf_overview(self, data: dict, c: dict) -> str:
+        """PDF报告概览区域：指标卡片 + 操作详情"""
+        input_count = sum(data["input_counts"].values()) if isinstance(data["input_counts"], dict) else 0
+        return f"""
             <h2>概览</h2>
             <div class="metrics">
                 <div class="metric-card">
-                    <div class="metric-value">{duration_str}</div>
+                    <div class="metric-value">{data['duration_str']}</div>
                     <div class="metric-label">专注时长</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-value">{len(app_summary)}</div>
+                    <div class="metric-value">{len(data['app_summary'])}</div>
                     <div class="metric-label">活跃应用</div>
                 </div>
                 <div class="metric-card">
@@ -225,37 +228,42 @@ class ExportManager:
             <h3>操作详情</h3>
             <table>
                 <tr><th>类型</th><th>次数</th></tr>
-                <tr><td>⌨️ 键盘输入</td><td>{key_count:,}</td></tr>
-                <tr><td>🖱️ 鼠标点击</td><td>{click_count:,}</td></tr>
-                <tr><td>📜 滚轮滚动</td><td>{scroll_count:,}</td></tr>
+                <tr><td>⌨️ 键盘输入</td><td>{data['key_count']:,}</td></tr>
+                <tr><td>🖱️ 鼠标点击</td><td>{data['click_count']:,}</td></tr>
+                <tr><td>📜 滚轮滚动</td><td>{data['scroll_count']:,}</td></tr>
             </table>
+        """
 
+    def _pdf_category_table(self, cat_rows: str) -> str:
+        """PDF报告分类统计表格"""
+        return f"""
             <h2>分类统计</h2>
             <table>
                 <tr><th>分类</th><th>时长</th><th>应用数</th><th>占比</th></tr>
                 {cat_rows}
             </table>
+        """
 
-            <h2>应用使用详情 (Top 20)</h2>
-            <table>
-                <tr><th>排名</th><th>应用名称</th><th>时长</th><th>会话数</th><th>占比</th></tr>
-            """
-
+    def _pdf_app_table(self, app_summary: list, total_seconds: int, c: dict) -> str:
+        """PDF报告应用使用详情表格(Top 20) + 页脚"""
+        rows_html = ""
         for i, item in enumerate(app_summary[:20]):
             secs = item.get("total_seconds", 0) or 0
             dur = format_duration(secs)
             pct = f"{secs/max(total_seconds,1)*100:.1f}%"
-            html += f"""<tr>
+            rows_html += f"""<tr>
                     <td>{i+1}</td>
                     <td>{item.get('app_name', 'Unknown')}</td>
                     <td>{dur}</td>
                     <td>{item.get('session_count', 0)}</td>
                     <td>{pct}</td>
                 </tr>"""
-
-        html += f"""
+        return f"""
+            <h2>应用使用详情 (Top 20)</h2>
+            <table>
+                <tr><th>排名</th><th>应用名称</th><th>时长</th><th>会话数</th><th>占比</th></tr>
+                {rows_html}
             </table>
             <div class="footer">🛡 所有数据均存储于本地，未经您允许不会上传 | 行为记录 v{self._app_version}</div>
             </body></html>
-            """
-        return html
+        """

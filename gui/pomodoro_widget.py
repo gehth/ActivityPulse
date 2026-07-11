@@ -225,7 +225,15 @@ class PomodoroWidget(QWidget):
         self.setStyleSheet(self._build_qss(get_colors(True)))
 
     def _build_qss(self, c: dict) -> str:
-        """构建番茄钟QSS样式"""
+        """构建番茄钟QSS样式 - 由5个样式构建函数组合而成"""
+        return (
+            self._qss_container(c) + self._qss_mode_buttons(c)
+            + self._qss_timer(c) + self._qss_controls(c)
+            + self._qss_settings(c)
+        )
+
+    def _qss_container(self, c: dict) -> str:
+        """容器和标题样式"""
         return f"""
             #pomodoro_widget {{
                 background-color: {c['bg_card']};
@@ -237,6 +245,11 @@ class PomodoroWidget(QWidget):
                 color: {c['text_primary']};
                 padding: 4px;
             }}
+        """
+
+    def _qss_mode_buttons(self, c: dict) -> str:
+        """模式选择按钮样式"""
+        return f"""
             #mode_btn {{
                 background-color: {c['bg_sidebar_hover']};
                 color: {c['text_muted']};
@@ -257,6 +270,11 @@ class PomodoroWidget(QWidget):
                 font-weight: bold;
                 padding: 4px 12px;
             }}
+        """
+
+    def _qss_timer(self, c: dict) -> str:
+        """计时器显示样式"""
+        return f"""
             #pomodoro_time {{
                 font-size: 42px;
                 font-weight: bold;
@@ -268,6 +286,11 @@ class PomodoroWidget(QWidget):
                 color: {c['text_muted']};
                 padding: 2px;
             }}
+        """
+
+    def _qss_controls(self, c: dict) -> str:
+        """控制按钮样式"""
+        return f"""
             #pomodoro_start {{
                 background-color: {c['danger']};
                 color: white;
@@ -301,6 +324,11 @@ class PomodoroWidget(QWidget):
             #pomodoro_settings_btn:hover {{
                 color: {c['text_secondary']};
             }}
+        """
+
+    def _qss_settings(self, c: dict) -> str:
+        """设置面板和输入控件样式"""
+        return f"""
             #pomodoro_settings {{
                 background-color: {c['bg_primary']};
                 border: 1px solid {c['border']};

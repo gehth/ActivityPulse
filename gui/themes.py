@@ -92,11 +92,8 @@ QSS_STYLES = {
 }
 
 
-def get_theme_qss(theme: str = "light") -> str:
-    """获取主题QSS样式表"""
-    c = COLORS[theme]
-    is_dark = theme == "dark"
-
+def _qss_global(c: dict) -> str:
+    """全局基础样式"""
     return f"""
     /* ===== 全局样式 ===== */
     QMainWindow {{
@@ -106,7 +103,12 @@ def get_theme_qss(theme: str = "light") -> str:
         font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
         color: {c['text_primary']};
     }}
+    """
 
+
+def _qss_sidebar(c: dict) -> str:
+    """侧边栏样式"""
+    return f"""
     /* ===== 侧边栏 ===== */
     #sidebar {{
         background-color: {c['bg_sidebar']};
@@ -190,7 +192,12 @@ def get_theme_qss(theme: str = "light") -> str:
         padding: 4px 12px;
         border-radius: 12px;
     }}
+    """
 
+
+def _qss_content(c: dict) -> str:
+    """内容区、卡片、指标卡样式"""
+    return f"""
     /* ===== 右侧内容区 ===== */
     #content_area {{
         background-color: {c['bg_primary']};
@@ -244,7 +251,12 @@ def get_theme_qss(theme: str = "light") -> str:
         color: {c['danger']};
         font-family: "Consolas", monospace;
     }}
+    """
 
+
+def _qss_buttons(c: dict) -> str:
+    """按钮样式"""
+    return f"""
     /* ===== 按钮 ===== */
     QPushButton {{
         padding: 8px 16px;
@@ -279,10 +291,15 @@ def get_theme_qss(theme: str = "light") -> str:
         background-color: {c['danger']};
     }}
     #btn_danger:hover {{
-        background-color: #DC2626;
+        background-color: {c['danger_hover']};
         padding-top: 6px;
     }}
+    """
 
+
+def _qss_inputs(c: dict) -> str:
+    """输入控件样式（ComboBox/SpinBox/DateEdit/Table）"""
+    return f"""
     /* ===== 输入框 ===== */
     QComboBox, QSpinBox, QDateEdit {{
         padding: 6px 12px;
@@ -324,7 +341,12 @@ def get_theme_qss(theme: str = "light") -> str:
         font-weight: bold;
         font-size: 12px;
     }}
+    """
 
+
+def _qss_misc(c: dict) -> str:
+    """滚动条、选项卡、隐私遮罩、进度条、分隔线、页面通用、GroupBox等杂项样式"""
+    return f"""
     /* ===== 滚动条 ===== */
     QScrollBar:vertical {{
         background: transparent;
@@ -438,6 +460,18 @@ def get_theme_qss(theme: str = "light") -> str:
         color: {c['primary']};
     }}
     """
+
+
+def get_theme_qss(theme: str = "light") -> str:
+    """获取主题QSS样式表
+
+    由6个样式构建函数组合而成：全局、侧边栏、内容区/卡片、按钮、输入控件、杂项
+    """
+    c = COLORS[theme]
+    return (
+        _qss_global(c) + _qss_sidebar(c) + _qss_content(c)
+        + _qss_buttons(c) + _qss_inputs(c) + _qss_misc(c)
+    )
 
 
 def get_colors(theme="light") -> dict:

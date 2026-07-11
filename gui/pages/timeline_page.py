@@ -85,23 +85,41 @@ class TimelineWidget(QWidget):
         hour_width = (self.width() - margin_left - margin_right) / 24
 
         # 绘制时间刻度
+        self._draw_time_scale(painter, colors, margin_left, margin_top, hour_width)
+
+        # 绘制时间轴色块
+        total_height = self._draw_blocks(painter, margin_left, margin_top, row_height, row_gap, hour_width)
+        self.setMinimumHeight(max(total_height, 500))
+
+        # 绘制空闲时段
+        self._draw_idle_blocks(painter, margin_left, margin_top, total_height, hour_width)
+
+        # 绘制当前时间指示线
+        self._draw_current_time_line(painter, colors, margin_left, margin_top, hour_width)
+
+        painter.end()
+
+    def _draw_time_scale(self, painter: QPainter, colors: dict,
+                         margin_left: int, margin_top: int, hour_width: float) -> None:
+        """绘制时间刻度和垂直网格线"""
         font = QFont("Consolas", 9)
         painter.setFont(font)
         painter.setPen(QColor(colors["text_muted"]))
         for h in range(0, 25, 2):
             x = margin_left + h * hour_width
             painter.drawText(int(x - 12), 18, f"{h:02d}:00")
-            # 绘制垂直网格线
             pen = QPen(QColor(colors["border"]))
             pen.setStyle(Qt.DotLine)
             painter.setPen(pen)
             painter.drawLine(int(x), margin_top, int(x), self.height())
 
-        # 绘制时间轴色块
+    def _draw_blocks(self, painter: QPainter, margin_left: int, margin_top: int,
+                     row_height: int, row_gap: int, hour_width: float) -> int:
+        """绘制时间轴色块，返回总高度"""
         current_y = margin_top
         for block in self.blocks:
             x = margin_left + block.start_hour * hour_width
-            w = max(block.duration_hours * hour_width, 4)  # 最小宽度4px
+            w = max(block.duration_hours * hour_width, 4)
             y = current_y
             h = row_height
 
@@ -112,7 +130,7 @@ class TimelineWidget(QWidget):
             painter.setPen(Qt.NoPen)
             painter.drawRoundedRect(int(x), int(y), int(w), int(h), 4, 4)
 
-            # 色块内文字（如果宽度足够）
+            # 色块内文字
             if w > 60:
                 painter.setPen(QColor("#FFFFFF"))
                 painter.setFont(QFont("Microsoft YaHei", 9))
@@ -121,13 +139,13 @@ class TimelineWidget(QWidget):
                     text = f"{block.app_name} - {block.window_title[:20]}"
                 painter.drawText(int(x + 8), int(y + h // 2 + 4), text)
 
-            # 绘制活动标签指示器（色块右上角彩色圆点）
+            # 活动标签指示器（右上角彩色圆点）
             if block.tags:
                 tag_size = 8
                 tag_gap = 3
                 tag_start_x = int(x + w - tag_size - 4)
                 tag_y = int(y + 4)
-                for ti, tag_info in enumerate(block.tags[:4]):  # 最多显示4个标签
+                for ti, tag_info in enumerate(block.tags[:4]):
                     tx = tag_start_x - ti * (tag_size + tag_gap)
                     if tx < int(x) + 4:
                         break
@@ -138,15 +156,14 @@ class TimelineWidget(QWidget):
 
             current_y += row_height + row_gap
 
-        # 设置控件高度
-        total_height = margin_top + len(self.blocks) * (row_height + row_gap) + 20
-        self.setMinimumHeight(max(total_height, 500))
+        return margin_top + len(self.blocks) * (row_height + row_gap) + 20
 
-        # 绘制空闲时段（半透明斜线纹理灰色块）
+    def _draw_idle_blocks(self, painter: QPainter, margin_left: int, margin_top: int,
+                          total_height: int, hour_width: float) -> None:
+        """绘制空闲时段（半透明斜线纹理灰色块）"""
         for idle_block in self.idle_blocks:
             ix = margin_left + idle_block.start_hour * hour_width
             iw = max(idle_block.duration_hours * hour_width, 4)
-            # 空闲时段跨越所有行
             iy = margin_top
             ih = max(total_height - margin_top - 20, 100)
 
@@ -158,12 +175,11 @@ class TimelineWidget(QWidget):
             painter.drawRect(int(ix), int(iy), int(iw), int(ih))
 
             # 斜线纹理
-            stripe_pen = QPen(QColor(CATEGORY_COLORS["idle"]))
-            stripe_pen.setStyle(Qt.DiagLinePattern)
-            stripe_pen.setWidth(1)
             stripe_color = QColor(CATEGORY_COLORS["idle"])
             stripe_color.setAlpha(60)
-            stripe_pen.setColor(stripe_color)
+            stripe_pen = QPen(stripe_color)
+            stripe_pen.setStyle(Qt.DiagLinePattern)
+            stripe_pen.setWidth(1)
             painter.setPen(stripe_pen)
             step = 8
             for sx in range(int(ix), int(ix + iw), step):
@@ -177,7 +193,9 @@ class TimelineWidget(QWidget):
                 idle_min = int(idle_block.duration_hours * 60)
                 painter.drawText(int(ix + 4), int(iy + 14), f"空闲 {idle_min}m")
 
-        # 绘制当前时间指示线（红色虚线）
+    def _draw_current_time_line(self, painter: QPainter, colors: dict,
+                                margin_left: int, margin_top: int, hour_width: float) -> None:
+        """绘制当前时间指示线（红色虚线）"""
         now = datetime.now()
         current_hour = now.hour + now.minute / 60
         if 0 <= current_hour <= 24:
@@ -187,13 +205,10 @@ class TimelineWidget(QWidget):
             pen.setWidth(2)
             painter.setPen(pen)
             painter.drawLine(int(x_now), margin_top, int(x_now), self.height())
-            # 时间标签
             painter.setPen(QColor(colors["danger"]))
             painter.setFont(QFont("Consolas", 8))
             painter.drawText(int(x_now - 20), margin_top - 5, 40, 14,
                            Qt.AlignCenter, f"{now.hour:02d}:{now.minute:02d}")
-
-        painter.end()
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """鼠标移动事件重写"""

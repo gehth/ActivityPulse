@@ -143,7 +143,15 @@ class SearchDialog(QDialog):
         self.setStyleSheet(self._build_qss(get_colors(False)))
 
     def _build_qss(self, c: dict) -> str:
-        """构建主题QSS样式表"""
+        """构建主题QSS样式表 - 由5个样式构建函数组合而成"""
+        return (
+            self._qss_container(c) + self._qss_buttons(c)
+            + self._qss_table(c) + self._qss_inputs(c)
+            + self._qss_labels(c)
+        )
+
+    def _qss_container(self, c: dict) -> str:
+        """对话框容器和搜索输入框样式"""
         return f"""
             SearchDialog {{
                 background-color: {c['bg_card']};
@@ -160,6 +168,11 @@ class SearchDialog(QDialog):
                 border-color: {c['primary']};
                 background: {c['bg_card']};
             }}
+        """
+
+    def _qss_buttons(self, c: dict) -> str:
+        """按钮样式"""
+        return f"""
             #btn_primary {{
                 background-color: {c['primary']};
                 color: white;
@@ -187,9 +200,11 @@ class SearchDialog(QDialog):
                 background-color: {c['border']};
                 color: {c['text_primary']};
             }}
-            #separator {{
-                color: {c['border']};
-            }}
+        """
+
+    def _qss_table(self, c: dict) -> str:
+        """结果表格样式"""
+        return f"""
             QTableWidget {{
                 border: 1px solid {c['border']};
                 border-radius: 8px;
@@ -215,6 +230,11 @@ class SearchDialog(QDialog):
                 font-weight: bold;
                 font-size: 12px;
             }}
+        """
+
+    def _qss_inputs(self, c: dict) -> str:
+        """日期输入控件样式"""
+        return f"""
             QDateEdit {{
                 padding: 4px 8px;
                 border: 1px solid {c['border']};
@@ -225,6 +245,14 @@ class SearchDialog(QDialog):
             }}
             QDateEdit:focus {{
                 border-color: {c['primary']};
+            }}
+        """
+
+    def _qss_labels(self, c: dict) -> str:
+        """标签和提示样式"""
+        return f"""
+            #separator {{
+                color: {c['border']};
             }}
             QLabel {{
                 color: {c['text_secondary']};
