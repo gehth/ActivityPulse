@@ -139,6 +139,7 @@ class AppLimitDialog(QDialog):
     def _load_limits(self) -> None:
         """加载已有限制列表"""
         self.table.setRowCount(0)
+        colors = get_colors("dark" if self._is_dark else "light")
         limits = self.db.get_all_limits()
         
         for i, lim in enumerate(limits):
@@ -160,9 +161,9 @@ class AppLimitDialog(QDialog):
             status_item.setFlags(status_item.flags() & ~Qt.ItemIsEditable)
             status_item.setTextAlignment(Qt.AlignCenter)
             if lim.get("enabled"):
-                status_item.setForeground(QColor("#10B981"))
+                status_item.setForeground(QColor(colors["success"]))
             else:
-                status_item.setForeground(QColor("#9CA3AF"))
+                status_item.setForeground(QColor(colors["text_muted"]))
             self.table.setItem(i, 2, status_item)
             
             # 操作按钮
@@ -239,8 +240,8 @@ class AppLimitDialog(QDialog):
         # 更新表格样式
         self.table.setStyleSheet(f"""
             QTableWidget {{
-                background-color: {colors['card_bg']};
-                alternate-background-color: {colors['hover_bg']};
+                background-color: {colors['bg_card']};
+                alternate-background-color: {colors['bg_sidebar_hover']};
                 gridline-color: {colors['border']};
                 border: 1px solid {colors['border']};
                 border-radius: 6px;
@@ -249,7 +250,7 @@ class AppLimitDialog(QDialog):
                 padding: 6px;
             }}
             QHeaderView::section {{
-                background-color: {colors['sidebar_bg']};
+                background-color: {colors['bg_sidebar']};
                 color: {colors['text_secondary']};
                 padding: 6px;
                 border: none;
@@ -257,3 +258,5 @@ class AppLimitDialog(QDialog):
                 font-weight: bold;
             }}
         """)
+        # 刷新表格以更新状态颜色
+        self._load_limits()

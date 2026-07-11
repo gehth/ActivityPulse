@@ -152,9 +152,10 @@ class ImageViewerDialog(QDialog):
 
         if self._original_pixmap.isNull():
             self.image_label.setText("📷 无法加载图片")
+            colors = get_colors("dark" if self._is_dark else "light")
             self.image_label.setStyleSheet(
-                "font-size: 48px; color: #9CA3AF; background-color: #1F2937; "
-                "min-width: 600px; min-height: 400px;"
+                f"font-size: 48px; color: {colors['text_muted']}; background-color: {colors['bg_primary']}; "
+                f"min-width: 600px; min-height: 400px;"
             )
             return
 
@@ -288,8 +289,8 @@ class ImageViewerDialog(QDialog):
         colors = get_colors("dark" if is_dark else "light")
         self.setStyleSheet(f"""
             QDialog {{ background-color: {colors['bg_primary']}; }}
-            #toolbar {{ background-color: {colors['surface']}; border-bottom: 1px solid {colors['border']}; }}
-            QScrollArea {{ background-color: #111827; }}
+            #toolbar {{ background-color: {colors['bg_card']}; border-bottom: 1px solid {colors['border']}; }}
+            QScrollArea {{ background-color: {colors['bg_primary']}; }}
         """)
 
 

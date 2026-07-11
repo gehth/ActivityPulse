@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QFont
 
+from gui.themes import get_colors
+
 
 class AboutDialog(QDialog):
     """关于对话框"""
@@ -17,6 +19,7 @@ class AboutDialog(QDialog):
     def __init__(self, parent: QWidget=None, version: str = None) -> None:
         super().__init__(parent)
         self._version = version or self.APP_VERSION
+        self._is_dark = False
         self.setWindowTitle("关于")
         self.setFixedSize(420, 340)
         self._setup_ui()
@@ -28,12 +31,13 @@ class AboutDialog(QDialog):
         layout.setContentsMargins(32, 28, 32, 24)
 
         # 应用图标
+        colors = get_colors("dark" if self._is_dark else "light")
         icon_label = QLabel()
         pixmap = QPixmap(64, 64)
         pixmap.fill(Qt.transparent)
         p = QPainter(pixmap)
         p.setRenderHint(QPainter.Antialiasing)
-        p.setBrush(QColor("#3B82F6"))
+        p.setBrush(QColor(colors["primary"]))
         p.setPen(Qt.NoPen)
         p.drawRoundedRect(4, 4, 56, 56, 12, 12)
         p.setPen(QColor("#FFFFFF"))
@@ -42,6 +46,7 @@ class AboutDialog(QDialog):
         p.end()
         icon_label.setPixmap(pixmap)
         icon_label.setAlignment(Qt.AlignCenter)
+        self._icon_label = icon_label
         layout.addWidget(icon_label)
 
         # 应用名称
@@ -70,7 +75,9 @@ class AboutDialog(QDialog):
         # 隐私声明
         privacy_label = QLabel("🛡 所有数据均存储于本地，不会上传至任何服务器")
         privacy_label.setAlignment(Qt.AlignCenter)
-        privacy_label.setStyleSheet("color: #10B981; font-size: 12px; font-weight: bold;")
+        colors = get_colors("dark" if self._is_dark else "light")
+        privacy_label.setStyleSheet(f"color: {colors['success']}; font-size: 12px; font-weight: bold;")
+        self._privacy_label = privacy_label
         layout.addWidget(privacy_label)
 
         # 技术信息
@@ -88,3 +95,27 @@ class AboutDialog(QDialog):
         btn_layout.addWidget(btn_close)
         btn_layout.addStretch()
         layout.addLayout(btn_layout)
+
+    def set_theme(self, is_dark: bool) -> None:
+        """设置主题样式（明/暗模式）"""
+        self._is_dark = is_dark
+        colors = get_colors("dark" if is_dark else "light")
+        # 更新隐私声明颜色
+        if hasattr(self, '_privacy_label'):
+            self._privacy_label.setStyleSheet(
+                f"color: {colors['success']}; font-size: 12px; font-weight: bold;"
+            )
+        # 重绘图标
+        if hasattr(self, '_icon_label'):
+            pixmap = QPixmap(64, 64)
+            pixmap.fill(Qt.transparent)
+            p = QPainter(pixmap)
+            p.setRenderHint(QPainter.Antialiasing)
+            p.setBrush(QColor(colors["primary"]))
+            p.setPen(Qt.NoPen)
+            p.drawRoundedRect(4, 4, 56, 56, 12, 12)
+            p.setPen(QColor("#FFFFFF"))
+            p.setFont(QFont("Microsoft YaHei", 28, QFont.Bold))
+            p.drawText(pixmap.rect(), Qt.AlignCenter, "记")
+            p.end()
+            self._icon_label.setPixmap(pixmap)
