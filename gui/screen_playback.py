@@ -12,16 +12,17 @@
 import os
 from datetime import datetime
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
+    QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QFrame, QSlider, QWidget, QSizePolicy
 )
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 
 from gui.themes import get_colors, QSS_STYLES
+from gui.components.base_dialog import BaseDialog
 
 
-class ScreenPlaybackDialog(QDialog):
+class ScreenPlaybackDialog(BaseDialog):
     """屏幕回放对话框"""
 
     # 播放速度选项
@@ -34,15 +35,13 @@ class ScreenPlaybackDialog(QDialog):
             db_manager: 数据库管理器（用于获取关联的应用使用记录）
             parent: 父窗口
         """
-        super().__init__(parent)
+        super().__init__(is_dark=False, parent=parent, dialog_style="")
         self._screenshots = screenshots
         self._db = db_manager
         self._current_index = 0
         self._is_playing = False
         self._speed_index = 2  # 默认1x (SPEED_OPTIONS[2]=1.0... 不对，index 1才是1.0)
         self._speed_index = 1  # 默认1x
-        self._is_dark = False
-        self._colors = get_colors(False)
 
         # 播放定时器
         self._play_timer = QTimer(self)
@@ -545,8 +544,7 @@ class ScreenPlaybackDialog(QDialog):
 
     def set_theme(self, is_dark: bool) -> None:
         """设置深色/浅色主题"""
-        self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
+        super().set_theme(is_dark)
         colors = self._colors
 
         # 图片区域背景

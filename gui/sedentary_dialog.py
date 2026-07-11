@@ -1,12 +1,13 @@
 """久坐提醒对话框 - 系统通知 + 声音提示 + 休息建议 + 暂停"""
 
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
+    QVBoxLayout, QHBoxLayout, QLabel,
     QFrame
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from gui.themes import get_colors, QSS_STYLES, HoverButton
+from gui.components.base_dialog import BaseDialog
 from utils.time_utils import format_minutes
 import random
 
@@ -22,7 +23,7 @@ REST_SUGGESTIONS = [
 ]
 
 
-class SedentaryDialog(QDialog):
+class SedentaryDialog(BaseDialog):
     """久坐提醒对话框
 
     显示连续使用时长、休息建议、暂停按钮。
@@ -32,9 +33,7 @@ class SedentaryDialog(QDialog):
     snoozed = pyqtSignal()  # 暂停15分钟
 
     def __init__(self, continuous_minutes: int, parent: QWidget=None) -> None:
-        super().__init__(parent)
-        self._is_dark = False
-        self._colors = get_colors(False)
+        super().__init__(is_dark=False, parent=parent, dialog_style="")
         self._continuous_minutes = continuous_minutes
         self._setup_ui()
         self._play_notification_sound()
@@ -146,8 +145,7 @@ class SedentaryDialog(QDialog):
 
     def set_theme(self, is_dark: bool) -> None:
         """更新主题"""
-        self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
+        super().set_theme(is_dark)
         c = self._colors
         # 重应用标签样式
         if hasattr(self, '_title_label'):

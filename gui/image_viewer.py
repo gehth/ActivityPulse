@@ -2,14 +2,15 @@
 
 import os
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
+    QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QScrollArea, QWidget, QSizePolicy
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QCursor
+from gui.components.base_dialog import BaseDialog
 
 
-class ImageViewerDialog(QDialog):
+class ImageViewerDialog(BaseDialog):
     """图片大图查看器
     
     支持功能：
@@ -27,11 +28,9 @@ class ImageViewerDialog(QDialog):
             current_index: 当前图片在列表中的索引
             parent: 父窗口
         """
-        super().__init__(parent)
+        super().__init__(is_dark=False, parent=parent, dialog_style="")
         self._image_list = image_list or [image_path]
         self._current_index = current_index
-        self._is_dark = False
-        self._colors = get_colors(False)
 
         # 缩放状态
         self._scale = 1.0
@@ -286,14 +285,10 @@ class ImageViewerDialog(QDialog):
 
     def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
-        self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
+        super().set_theme(is_dark)
         colors = self._colors
         self.setStyleSheet(f"""
             QDialog {{ background-color: {colors['bg_primary']}; }}
             #toolbar {{ background-color: {colors['bg_card']}; border-bottom: 1px solid {colors['border']}; }}
             QScrollArea {{ background-color: {colors['bg_primary']}; }}
         """)
-
-
-from gui.themes import get_colors

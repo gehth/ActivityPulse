@@ -1,7 +1,7 @@
 """应用使用限制对话框 - 设置每日使用时间限制"""
 
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
+    QVBoxLayout, QHBoxLayout, QLabel,
     QTableWidget, QTableWidgetItem, QHeaderView,
     QPushButton, QSpinBox, QCheckBox, QComboBox,
     QGroupBox, QMessageBox
@@ -11,18 +11,17 @@ from PyQt5.QtGui import QColor
 
 from database.db_manager import DatabaseManager
 from gui.themes import get_colors, HoverButton
+from gui.components.base_dialog import BaseDialog
 
 
-class AppLimitDialog(QDialog):
+class AppLimitDialog(BaseDialog):
     """应用使用限制设置对话框"""
     
     limits_changed = pyqtSignal()  # 限制变更信号
     
     def __init__(self, db_manager: DatabaseManager, parent: QWidget=None) -> None:
-        super().__init__(parent)
+        super().__init__(is_dark=False, parent=parent, dialog_style="")
         self.db = db_manager
-        self._is_dark = False
-        self._colors = get_colors(False)
         self.setWindowTitle("应用使用限制")
         self.setMinimumSize(520, 420)
         self._setup_ui()
@@ -236,8 +235,7 @@ class AppLimitDialog(QDialog):
     
     def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
-        self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
+        super().set_theme(is_dark)
         colors = self._colors
         # 更新表格样式
         self.table.setStyleSheet(f"""

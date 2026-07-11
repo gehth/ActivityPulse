@@ -1,7 +1,7 @@
 """数据搜索对话框 - 搜索应用使用记录"""
 
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton,
+    QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton,
     QTableWidget, QTableWidgetItem, QHeaderView, QLabel,
     QDateEdit, QFrame, QAbstractItemView
 )
@@ -11,19 +11,18 @@ from PyQt5.QtGui import QColor
 from database.db_manager import DatabaseManager
 from utils.time_utils import format_duration
 from gui.themes import get_colors
+from gui.components.base_dialog import BaseDialog
 
 
-class SearchDialog(QDialog):
+class SearchDialog(BaseDialog):
     """数据搜索对话框"""
 
     # 双击记录时发送信号: (date_str, app_name)
     navigate_to_record = pyqtSignal(str, str)
 
     def __init__(self, db: DatabaseManager, parent: QWidget=None) -> None:
-        super().__init__(parent)
+        super().__init__(is_dark=False, parent=parent, dialog_style="")
         self.db = db
-        self._is_dark = False
-        self._colors = get_colors(False)
         self.setWindowTitle("搜索记录")
         self.setMinimumSize(750, 500)
         self.resize(850, 600)
@@ -141,8 +140,6 @@ class SearchDialog(QDialog):
 
     def _apply_styles(self) -> None:
         """应用QSS样式表"""
-        self._is_dark = False
-        self._colors = get_colors(False)
         self.setStyleSheet(self._build_qss(self._colors))
 
     def _build_qss(self, c: dict) -> str:
@@ -275,8 +272,7 @@ class SearchDialog(QDialog):
 
     def set_theme(self, is_dark: bool) -> None:
         """设置主题"""
-        self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
+        super().set_theme(is_dark)
         self.setStyleSheet(self._build_qss(self._colors))
 
     def _set_date_range(self, days: int) -> None:

@@ -1,26 +1,25 @@
 """关于对话框 - 自定义美化弹窗"""
 
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
+    QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QFrame
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QFont
 
 from gui.themes import get_colors
+from gui.components.base_dialog import BaseDialog
 
 
-class AboutDialog(QDialog):
+class AboutDialog(BaseDialog):
     """关于对话框"""
 
     # 版本号常量，与main_window.APP_VERSION保持同步
     APP_VERSION = "1.0"
 
     def __init__(self, parent: QWidget=None, version: str = None) -> None:
-        super().__init__(parent)
+        super().__init__(is_dark=False, parent=parent, dialog_style="")
         self._version = version or self.APP_VERSION
-        self._is_dark = False
-        self._colors = get_colors(False)
         self.setWindowTitle("关于")
         self.setFixedSize(420, 340)
         self._setup_ui()
@@ -99,8 +98,7 @@ class AboutDialog(QDialog):
 
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
-        self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
+        super().set_theme(is_dark)
         colors = self._colors
         # 更新隐私声明颜色
         if hasattr(self, '_privacy_label'):

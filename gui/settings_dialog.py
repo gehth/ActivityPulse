@@ -2,14 +2,15 @@
 
 import os
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
+    QVBoxLayout, QHBoxLayout, QLabel,
     QSpinBox, QCheckBox, QPushButton, QComboBox, QLineEdit,
     QGroupBox, QMessageBox, QFileDialog, QProgressBar
 )
 from PyQt5.QtCore import QThread, pyqtSignal
 
 from database.db_manager import DatabaseManager
-from gui.themes import get_colors, get_theme_qss, HoverButton
+from gui.themes import get_theme_qss, HoverButton
+from gui.components.base_dialog import BaseDialog
 from utils.autostart import is_auto_start_enabled, enable_auto_start, disable_auto_start
 from utils.backup_restore import create_backup, restore_backup, get_backup_info
 from utils.global_hotkey import DEFAULT_HOTKEY_DISPLAY, DEFAULT_HOTKEYS, GlobalHotkeyManager
@@ -53,14 +54,12 @@ class RestoreWorker(QThread):
             self.error.emit(str(e))
 
 
-class SettingsDialog(QDialog):
+class SettingsDialog(BaseDialog):
     """设置对话框"""
 
     def __init__(self, db_manager: DatabaseManager, parent: QWidget=None) -> None:
-        super().__init__(parent)
+        super().__init__(is_dark=False, parent=parent, dialog_style="")
         self.db = db_manager
-        self._is_dark = False
-        self._colors = get_colors(False)
         self.setWindowTitle("设置")
         self.setMinimumWidth(480)
         self._setup_ui()
@@ -766,8 +765,7 @@ class SettingsDialog(QDialog):
 
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
-        self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
+        super().set_theme(is_dark)
         colors = self._colors
         
         # 应用主题QSS到对话框
