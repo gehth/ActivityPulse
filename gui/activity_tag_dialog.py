@@ -10,6 +10,7 @@ from PyQt5.QtCore import Qt, QTime, pyqtSignal
 
 from database.db_manager import DatabaseManager
 from gui.themes import get_colors, QSS_STYLES
+from gui.components.base_dialog import BaseDialog
 
 # 预定义标签颜色
 TAG_COLORS = [
@@ -111,15 +112,13 @@ class TagItemWidget(QFrame):
         self._apply_styles()
 
 
-class AddTagDialog(QDialog):
+class AddTagDialog(BaseDialog):
     """添加标签对话框"""
 
     tag_added = pyqtSignal(dict)  # {tag, note, start_time, end_time, color}
 
     def __init__(self, date: str, is_dark: bool = False, parent: QWidget=None) -> None:
-        super().__init__(parent)
-        self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
+        super().__init__(is_dark=is_dark, parent=parent, dialog_style="dialog_card")
         self._date = date
         self._selected_color = TAG_COLORS[0]
         self.setWindowTitle("添加活动标签")
@@ -129,7 +128,6 @@ class AddTagDialog(QDialog):
     def _setup_ui(self) -> None:
         """初始化UI界面布局和组件"""
         colors = self._colors
-        self.setStyleSheet(QSS_STYLES["dialog_card"].format(c=colors))
 
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
@@ -271,17 +269,15 @@ class AddTagDialog(QDialog):
         self.accept()
 
 
-class ActivityTagDialog(QDialog):
+class ActivityTagDialog(BaseDialog):
     """活动标签管理对话框"""
 
     tags_changed = pyqtSignal()  # 标签变更信号
 
     def __init__(self, db_manager: DatabaseManager, date: str, is_dark: bool = False, parent: QWidget=None) -> None:
-        super().__init__(parent)
+        super().__init__(is_dark=is_dark, parent=parent, dialog_style="dialog_base")
         self.db = db_manager
         self._date = date
-        self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
         self._tag_widgets = []
         self.setWindowTitle(f"活动标签 - {date}")
         self.setFixedSize(420, 520)
@@ -291,7 +287,6 @@ class ActivityTagDialog(QDialog):
     def _setup_ui(self) -> None:
         """初始化UI界面布局和组件"""
         colors = self._colors
-        self.setStyleSheet(QSS_STYLES["dialog_base"].format(c=colors))
 
         layout = QVBoxLayout(self)
         layout.setSpacing(12)

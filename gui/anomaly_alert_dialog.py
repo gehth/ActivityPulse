@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from gui.themes import get_colors, HoverButton, QSS_STYLES
+from gui.components.base_dialog import BaseDialog
+from database.db_manager import DatabaseManager
 
 # 告警类型图标和颜色
 ALERT_TYPE_CONFIG = {
@@ -202,7 +204,7 @@ class AlertCard(QFrame):
             self._dismiss_btn.setStyleSheet(self._get_dismiss_btn_style())
 
 
-class AnomalyAlertDialog(QDialog):
+class AnomalyAlertDialog(BaseDialog):
     """异常告警中心对话框
 
     展示所有异常行为告警，支持：
@@ -215,10 +217,8 @@ class AnomalyAlertDialog(QDialog):
     alerts_changed = pyqtSignal()  # 告警状态变更信号
 
     def __init__(self, db: DatabaseManager, parent: QWidget=None) -> None:
-        super().__init__(parent)
+        super().__init__(is_dark=False, parent=parent, dialog_style="dialog_base")
         self.db = db
-        self._is_dark = False
-        self._colors = get_colors(False)
         self._cards = []
         self._setup_ui()
         self._load_alerts()
@@ -369,9 +369,7 @@ class AnomalyAlertDialog(QDialog):
 
     def set_dark_mode(self, is_dark: bool) -> None:
         """设置暗色模式"""
-        self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
+        super().set_theme(is_dark)
         colors = self._colors
-        self.setStyleSheet(QSS_STYLES["dialog_base"].format(c=colors))
         for card in self._cards:
             card.set_dark_mode(is_dark)
