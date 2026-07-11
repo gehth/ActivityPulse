@@ -264,21 +264,7 @@ class GoalProgressCard(AnimatedCard):
     def _apply_styles(self) -> None:
         """应用QSS样式表"""
         colors = self._colors
-        self.goal_btn.setStyleSheet(f"""
-            QPushButton {{
-                border: 1px solid {colors['border']};
-                border-radius: 4px;
-                background: transparent;
-                color: {colors['text_secondary']};
-                font-size: 11px;
-                padding: 0px 6px;
-            }}
-            QPushButton:hover {{
-                background: {colors['bg_sidebar_hover']};
-                color: {colors['primary']};
-                border-color: {colors['primary']};
-            }}
-        """)
+        self.goal_btn.setStyleSheet(QSS_STYLES["btn_ghost_sm"].format(c=colors))
 
     def set_progress(self, current_seconds: float) -> None:
         """设置当前进度（秒）"""
@@ -343,15 +329,7 @@ class GoalProgressCard(AnimatedCard):
         dialog = QDialog(self)
         dialog.setWindowTitle("设置每日目标")
         dialog.setFixedSize(280, 150)
-        dialog.setStyleSheet(f"""
-            QDialog {{
-                background-color: {colors['bg_card']};
-            }}
-            QLabel {{
-                color: {colors['text_primary']};
-                font-size: 13px;
-            }}
-        """)
+        dialog.setStyleSheet(QSS_STYLES["dialog_card"].format(c=colors))
 
         layout = QVBoxLayout(dialog)
         layout.setSpacing(12)
@@ -364,16 +342,7 @@ class GoalProgressCard(AnimatedCard):
         spin.setSingleStep(30)
         spin.setValue(self._goal_minutes)
         spin.setSuffix(" 分钟")
-        spin.setStyleSheet(f"""
-            QSpinBox {{
-                background: {colors['bg_sidebar_hover']};
-                color: {colors['text_primary']};
-                border: 1px solid {colors['border']};
-                border-radius: 4px;
-                padding: 6px;
-                font-size: 14px;
-            }}
-        """)
+        spin.setStyleSheet(QSS_STYLES["spinbox"].format(c=colors))
         layout.addWidget(spin)
 
         # 快捷按钮
@@ -382,38 +351,13 @@ class GoalProgressCard(AnimatedCard):
             btn = QPushButton(text)
             btn.setFixedSize(48, 28)
             btn.setCursor(Qt.PointingHandCursor)
-            btn.setStyleSheet(f"""
-                QPushButton {{
-                    border: 1px solid {colors['border']};
-                    border-radius: 4px;
-                    background: transparent;
-                    color: {colors['text_secondary']};
-                    font-size: 11px;
-                }}
-                QPushButton:hover {{
-                    background: {colors['primary_light']};
-                    color: {colors['primary']};
-                    border-color: {colors['primary']};
-                }}
-            """)
+            btn.setStyleSheet(QSS_STYLES["btn_ghost"].format(c=colors))
             btn.clicked.connect(lambda checked, v=val: spin.setValue(v))
             quick_row.addWidget(btn)
         layout.addLayout(quick_row)
 
         btn_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        btn_box.setStyleSheet(f"""
-            QPushButton {{
-                background: {colors['primary']};
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 6px 20px;
-                font-size: 12px;
-            }}
-            QPushButton:hover {{
-                background: {colors['primary_hover']};
-            }}
-        """)
+        btn_box.setStyleSheet(QSS_STYLES["btn_primary_md"].format(c=colors))
         layout.addWidget(btn_box)
 
         return dialog, spin, btn_box
@@ -1042,15 +986,9 @@ class TopAppItem(QFrame):
         self.progress_bar.setFixedHeight(8)
         self.progress_bar.setFixedWidth(150)
         self.progress_bar.setTextVisible(False)
-        self.progress_bar.setStyleSheet(f"""
-            QProgressBar {{
-                border: none; border-radius: 4px;
-                background-color: {colors['bg_sidebar_hover']};
-            }}
-            QProgressBar::chunk {{
-                border-radius: 4px; background-color: {color};
-            }}
-        """)
+        self.progress_bar.setStyleSheet(
+            QSS_STYLES["progressbar"].format(c=colors).replace("{c[primary]}", color)
+        )
         layout.addWidget(self.progress_bar)
 
         # 时长
@@ -1065,15 +1003,9 @@ class TopAppItem(QFrame):
         self._is_dark = is_dark
         self._colors = get_colors(is_dark)
         colors = self._colors
-        self.progress_bar.setStyleSheet(f"""
-            QProgressBar {{
-                border: none; border-radius: 4px;
-                background-color: {colors['bg_sidebar_hover']};
-            }}
-            QProgressBar::chunk {{
-                border-radius: 4px; background-color: {self._color};
-            }}
-        """)
+        self.progress_bar.setStyleSheet(
+            QSS_STYLES["progressbar"].format(c=colors).replace("{c[primary]}", self._color)
+        )
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """点击时发出信号，跳转到分类管理"""

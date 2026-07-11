@@ -372,9 +372,6 @@ class AnomalyAlertDialog(QDialog):
         self._is_dark = is_dark
         self._colors = get_colors(is_dark)
         colors = self._colors
-        self.setStyleSheet(f"""
-            QDialog {{ background: {colors['bg_primary']}; }}
-            QLabel {{ color: {colors['text_primary']}; }}
-        """)
+        self.setStyleSheet(QSS_STYLES["dialog_base"].format(c=colors))
         for card in self._cards:
             card.set_dark_mode(is_dark)

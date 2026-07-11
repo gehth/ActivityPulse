@@ -102,18 +102,11 @@ class TagItemWidget(QFrame):
     def _apply_styles(self) -> None:
         """应用QSS样式表"""
         colors = self._colors
-        self.setStyleSheet(f"""
-            QFrame#card {{
-                background-color: {colors['bg_card']};
-                border: 1px solid {colors['border']};
-                border-radius: 8px;
-            }}
-        """)
+        self.setStyleSheet(QSS_STYLES["card_frame"].format(c=colors))
 
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
         self._is_dark = is_dark
-        self._colors = get_colors(is_dark)
         self._colors = get_colors(is_dark)
         self._apply_styles()
 
@@ -136,7 +129,7 @@ class AddTagDialog(QDialog):
     def _setup_ui(self) -> None:
         """初始化UI界面布局和组件"""
         colors = self._colors
-        self.setStyleSheet(f"background-color: {colors['bg_card']};")
+        self.setStyleSheet(QSS_STYLES["dialog_card"].format(c=colors))
 
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
@@ -150,16 +143,7 @@ class AddTagDialog(QDialog):
         layout.addWidget(QLabel("标签名称："))
         self.tag_input = QLineEdit()
         self.tag_input.setPlaceholderText("输入标签名称...")
-        self.tag_input.setStyleSheet(f"""
-            QLineEdit {{
-                background: {colors['bg_sidebar_hover']};
-                color: {colors['text_primary']};
-                border: 1px solid {colors['border']};
-                border-radius: 4px;
-                padding: 6px;
-                font-size: 13px;
-            }}
-        """)
+        self.tag_input.setStyleSheet(QSS_STYLES["input_field"].format(c=colors))
         layout.addWidget(self.tag_input)
         layout.addLayout(self._create_preset_tags(colors))
 
@@ -172,16 +156,7 @@ class AddTagDialog(QDialog):
         self.note_input = QTextEdit()
         self.note_input.setFixedHeight(60)
         self.note_input.setPlaceholderText("添加备注...")
-        self.note_input.setStyleSheet(f"""
-            QTextEdit {{
-                background: {colors['bg_sidebar_hover']};
-                color: {colors['text_primary']};
-                border: 1px solid {colors['border']};
-                border-radius: 4px;
-                padding: 4px;
-                font-size: 12px;
-            }}
-        """)
+        self.note_input.setStyleSheet(QSS_STYLES["text_edit"].format(c=colors))
         layout.addWidget(self.note_input)
 
         # 颜色选择
@@ -190,20 +165,7 @@ class AddTagDialog(QDialog):
 
         # 确认按钮
         btn_add = QPushButton("✅ 添加标签")
-        btn_add.setStyleSheet(f"""
-            QPushButton {{
-                background: {colors['primary']};
-                color: white;
-                border: none;
-                border-radius: 6px;
-                padding: 8px;
-                font-size: 13px;
-                font-weight: bold;
-            }}
-            QPushButton:hover {{
-                background: {colors['primary_hover']};
-            }}
-        """)
+        btn_add.setStyleSheet(QSS_STYLES["btn_primary"].format(c=colors))
         btn_add.clicked.connect(self._on_add)
         layout.addWidget(btn_add)
 
@@ -239,15 +201,7 @@ class AddTagDialog(QDialog):
         self.start_time = QTimeEdit()
         self.start_time.setDisplayFormat("HH:mm")
         self.start_time.setTime(QTime.currentTime().addSecs(-3600))
-        self.start_time.setStyleSheet(f"""
-            QTimeEdit {{
-                background: {colors['bg_sidebar_hover']};
-                color: {colors['text_primary']};
-                border: 1px solid {colors['border']};
-                border-radius: 4px;
-                padding: 4px;
-            }}
-        """)
+        self.start_time.setStyleSheet(QSS_STYLES["time_edit"].format(c=colors))
         time_row.addWidget(self.start_time)
 
         time_to = QLabel("→")
@@ -257,15 +211,7 @@ class AddTagDialog(QDialog):
         self.end_time = QTimeEdit()
         self.end_time.setDisplayFormat("HH:mm")
         self.end_time.setTime(QTime.currentTime())
-        self.end_time.setStyleSheet(f"""
-            QTimeEdit {{
-                background: {colors['bg_sidebar_hover']};
-                color: {colors['text_primary']};
-                border: 1px solid {colors['border']};
-                border-radius: 4px;
-                padding: 4px;
-            }}
-        """)
+        self.end_time.setStyleSheet(QSS_STYLES["time_edit"].format(c=colors))
         time_row.addWidget(self.end_time)
         return time_row
 
@@ -345,7 +291,7 @@ class ActivityTagDialog(QDialog):
     def _setup_ui(self) -> None:
         """初始化UI界面布局和组件"""
         colors = self._colors
-        self.setStyleSheet(f"background-color: {colors['bg_primary']};")
+        self.setStyleSheet(QSS_STYLES["dialog_base"].format(c=colors))
 
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
@@ -360,19 +306,7 @@ class ActivityTagDialog(QDialog):
 
         btn_add = QPushButton("➕ 添加")
         btn_add.setCursor(Qt.PointingHandCursor)
-        btn_add.setStyleSheet(f"""
-            QPushButton {{
-                background: {colors['primary']};
-                color: white;
-                border: none;
-                border-radius: 6px;
-                padding: 6px 16px;
-                font-size: 12px;
-            }}
-            QPushButton:hover {{
-                background: {colors['primary_hover']};
-            }}
-        """)
+        btn_add.setStyleSheet(QSS_STYLES["btn_primary_md"].format(c=colors))
         btn_add.clicked.connect(self._open_add_dialog)
         title_row.addWidget(btn_add)
         layout.addLayout(title_row)
@@ -399,19 +333,7 @@ class ActivityTagDialog(QDialog):
 
         # 关闭按钮
         btn_close = QPushButton("关闭")
-        btn_close.setStyleSheet(f"""
-            QPushButton {{
-                background: {colors['bg_sidebar_hover']};
-                color: {colors['text_primary']};
-                border: 1px solid {colors['border']};
-                border-radius: 6px;
-                padding: 8px;
-                font-size: 13px;
-            }}
-            QPushButton:hover {{
-                background: {colors['border']};
-            }}
-        """)
+        btn_close.setStyleSheet(QSS_STYLES["btn_secondary"].format(c=colors))
         btn_close.clicked.connect(self.accept)
         layout.addWidget(btn_close)
 

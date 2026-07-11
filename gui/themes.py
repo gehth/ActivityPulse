@@ -89,6 +89,45 @@ QSS_STYLES = {
 
     # 分隔
     "divider": "background-color: {c[border]}; max-height: 1px; margin: 8px 0;",
+
+    # ===== 组件样式块（多选择器） =====
+
+    # 卡片容器
+    "card_frame": "QFrame#card {{ background-color: {c[bg_card]}; border: 1px solid {c[border]}; border-radius: 8px; }}",
+
+    # 对话框基础
+    "dialog_base": "QDialog {{ background: {c[bg_primary]}; }} QLabel {{ color: {c[text_primary]}; }}",
+    "dialog_card": "QDialog {{ background-color: {c[bg_card]}; }} QLabel {{ color: {c[text_primary]}; font-size: 13px; }}",
+
+    # 主按钮（primary风格）
+    "btn_primary": "QPushButton {{ background: {c[primary]}; color: white; border: none; border-radius: 6px; padding: 8px; font-size: 13px; font-weight: bold; }} QPushButton:hover {{ background: {c[primary_hover]}; }}",
+
+    # 主按钮（小尺寸）
+    "btn_primary_md": "QPushButton {{ background: {c[primary]}; color: white; border: none; border-radius: 6px; padding: 6px 16px; font-size: 12px; }} QPushButton:hover {{ background: {c[primary_hover]}; }}",
+
+    # 幽灵按钮（outline风格）
+    "btn_ghost": "QPushButton {{ border: 1px solid {c[border]}; border-radius: 4px; background: transparent; color: {c[text_secondary]}; font-size: 11px; }} QPushButton:hover {{ background: {c[primary_light]}; color: {c[primary]}; }}",
+
+    # 幽灵按钮（带padding变体）
+    "btn_ghost_sm": "QPushButton {{ border: 1px solid {c[border]}; border-radius: 4px; background: transparent; color: {c[text_secondary]}; font-size: 11px; padding: 0px 6px; }} QPushButton:hover {{ background: {c[bg_sidebar_hover]}; color: {c[text_primary]}; }}",
+
+    # 次要按钮（sidebar_hover背景）
+    "btn_secondary": "QPushButton {{ background: {c[bg_sidebar_hover]}; color: {c[text_primary]}; border: 1px solid {c[border]}; border-radius: 6px; padding: 8px; font-size: 13px; }} QPushButton:hover {{ background: {c[border]}; }}",
+
+    # 输入框
+    "input_field": "QLineEdit {{ background: {c[bg_sidebar_hover]}; color: {c[text_primary]}; border: 1px solid {c[border]}; border-radius: 4px; padding: 6px; font-size: 13px; }}",
+
+    # 文本编辑框
+    "text_edit": "QTextEdit {{ background: {c[bg_sidebar_hover]}; color: {c[text_primary]}; border: 1px solid {c[border]}; border-radius: 4px; padding: 4px; font-size: 12px; }}",
+
+    # 时间选择器
+    "time_edit": "QTimeEdit {{ background: {c[bg_sidebar_hover]}; color: {c[text_primary]}; border: 1px solid {c[border]}; border-radius: 4px; padding: 4px; }}",
+
+    # 数字输入框
+    "spinbox": "QSpinBox {{ background: {c[bg_sidebar_hover]}; color: {c[text_primary]}; border: 1px solid {c[border]}; border-radius: 4px; padding: 6px; font-size: 14px; }}",
+
+    # 进度条
+    "progressbar": "QProgressBar {{ border: none; border-radius: 4px; background-color: {c[bg_sidebar_hover]}; }} QProgressBar::chunk {{ border-radius: 4px; background-color: {c[primary]}; }}",
 }
 
 
