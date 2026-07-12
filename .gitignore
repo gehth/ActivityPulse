@@ -14,7 +14,7 @@ venv/
 env/
 
 # PyInstaller
-*.spec
+# *.spec  # 注释掉以追踪build.spec打包配置
 
 # Pytest
 .pytest_cache/
