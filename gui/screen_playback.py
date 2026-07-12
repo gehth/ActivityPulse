@@ -203,80 +203,84 @@ class ScreenPlaybackDialog(BaseDialog):
         play_row = QHBoxLayout()
         play_row.setSpacing(8)
 
-        # 播放导航按钮
+        self._add_nav_buttons(play_row)
+        play_row.addSpacing(16)
+        self._add_speed_controls(play_row)
+        play_row.addStretch()
+        self._add_progress_and_close(play_row)
+
+        return play_row
+
+    def _add_nav_buttons(self, layout: QHBoxLayout) -> None:
+        """添加播放导航按钮（上一张/播放/下一张/停止）"""
         self._btn_prev = QPushButton("⏮")
         self._btn_prev.setFixedSize(36, 36)
         self._btn_prev.setObjectName("btn_outline")
         self._btn_prev.setToolTip("上一张 (←)")
         self._btn_prev.clicked.connect(self._show_prev)
-        play_row.addWidget(self._btn_prev)
+        layout.addWidget(self._btn_prev)
 
         self._btn_play = QPushButton("▶")
         self._btn_play.setFixedSize(44, 44)
         self._btn_play.setObjectName("btn_primary")
         self._btn_play.setToolTip("播放/暂停 (空格)")
         self._btn_play.clicked.connect(self._toggle_play)
-        play_row.addWidget(self._btn_play)
+        layout.addWidget(self._btn_play)
 
         self._btn_next = QPushButton("⏭")
         self._btn_next.setFixedSize(36, 36)
         self._btn_next.setObjectName("btn_outline")
         self._btn_next.setToolTip("下一张 (→)")
         self._btn_next.clicked.connect(self._show_next)
-        play_row.addWidget(self._btn_next)
+        layout.addWidget(self._btn_next)
 
         self._btn_stop = QPushButton("⏹")
         self._btn_stop.setFixedSize(36, 36)
         self._btn_stop.setObjectName("btn_outline")
         self._btn_stop.setToolTip("停止并回到开头")
         self._btn_stop.clicked.connect(self._stop_playback)
-        play_row.addWidget(self._btn_stop)
+        layout.addWidget(self._btn_stop)
 
-        play_row.addSpacing(16)
-
-        # 速度控制
+    def _add_speed_controls(self, layout: QHBoxLayout) -> None:
+        """添加速度控制（减速/标签/加速）"""
         speed_label = QLabel("速度：")
         speed_label.setObjectName("metric_title")
         speed_label.setStyleSheet("font-size: 12px; font-weight: 500;")
-        play_row.addWidget(speed_label)
+        layout.addWidget(speed_label)
 
         self._btn_speed_down = QPushButton("➖")
         self._btn_speed_down.setFixedSize(28, 28)
         self._btn_speed_down.setObjectName("btn_outline")
         self._btn_speed_down.setToolTip("减速 (↓)")
         self._btn_speed_down.clicked.connect(self._speed_down)
-        play_row.addWidget(self._btn_speed_down)
+        layout.addWidget(self._btn_speed_down)
 
         self._speed_label = QLabel("1x")
         self._speed_label.setFixedWidth(40)
         self._speed_label.setAlignment(Qt.AlignCenter)
         self._speed_label.setObjectName("metric_title")
         self._speed_label.setStyleSheet("font-size: 14px; font-weight: bold;")
-        play_row.addWidget(self._speed_label)
+        layout.addWidget(self._speed_label)
 
         self._btn_speed_up = QPushButton("➕")
         self._btn_speed_up.setFixedSize(28, 28)
         self._btn_speed_up.setObjectName("btn_outline")
         self._btn_speed_up.setToolTip("加速 (↑)")
         self._btn_speed_up.clicked.connect(self._speed_up)
-        play_row.addWidget(self._btn_speed_up)
+        layout.addWidget(self._btn_speed_up)
 
-        play_row.addStretch()
-
-        # 进度信息
+    def _add_progress_and_close(self, layout: QHBoxLayout) -> None:
+        """添加进度信息和关闭按钮"""
         self._progress_label = QLabel("")
         self._progress_label.setObjectName("section_desc")
         self._progress_label.setStyleSheet("font-size: 11px; font-weight: 400;")
-        play_row.addWidget(self._progress_label)
+        layout.addWidget(self._progress_label)
 
-        # 关闭按钮
         self._btn_close = QPushButton("✕ 关闭")
         self._btn_close.setFixedHeight(32)
         self._btn_close.setObjectName("btn_outline")
         self._btn_close.clicked.connect(self._on_close)
-        play_row.addWidget(self._btn_close)
-
-        return play_row
+        layout.addWidget(self._btn_close)
 
     def _format_time(self, timestamp: str) -> str:
         """格式化时间戳为HH:MM"""
@@ -551,13 +555,16 @@ class ScreenPlaybackDialog(BaseDialog):
         img_bg = colors['bg_primary'] if is_dark else colors['bg_sidebar_hover']
         self._image_label.setStyleSheet(f"background-color: {img_bg};")
 
-        # 控制栏样式
-        toolbar_bg = colors['bg_card']
-        toolbar_border = colors['border']
-        text_color = colors['text_primary']
-        text_secondary = colors['text_secondary']
+        self.setStyleSheet(self._build_control_qss(colors))
 
-        control_qss = f"""
+    def _build_control_qss(self, c: dict) -> str:
+        """构建控制栏QSS样式"""
+        toolbar_bg = c['bg_card']
+        toolbar_border = c['border']
+        text_color = c['text_primary']
+        text_secondary = c['text_secondary']
+
+        return f"""
             QFrame#toolbar {{
                 background-color: {toolbar_bg};
                 border-top: 1px solid {toolbar_border};
@@ -577,25 +584,25 @@ class ScreenPlaybackDialog(BaseDialog):
                 border-radius: 3px;
             }}
             QSlider#timeline_slider::handle:horizontal {{
-                background: {colors['primary']};
+                background: {c['primary']};
                 width: 16px;
                 height: 16px;
                 margin: -5px 0;
                 border-radius: 8px;
             }}
             QSlider#timeline_slider::sub-page:horizontal {{
-                background: {colors['primary']};
+                background: {c['primary']};
                 border-radius: 3px;
             }}
             QPushButton#btn_primary {{
-                background-color: {colors['primary']};
+                background-color: {c['primary']};
                 color: white;
                 border: none;
                 border-radius: 22px;
                 font-size: 18px;
             }}
             QPushButton#btn_primary:hover {{
-                background-color: {colors['primary_hover']};
+                background-color: {c['primary_hover']};
             }}
             QPushButton#btn_outline {{
                 background-color: transparent;
@@ -612,5 +619,4 @@ class ScreenPlaybackDialog(BaseDialog):
                 border-color: {toolbar_border};
             }}
         """
-        self.setStyleSheet(control_qss)
 

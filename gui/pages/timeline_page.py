@@ -421,6 +421,20 @@ class TimelinePage(QWidget):
         main_layout.addWidget(title)
 
         # 语义化配色图例
+        main_layout.addWidget(self._create_legend_card())
+
+        # 时间轴控件
+        main_layout.addWidget(self._create_timeline_card())
+
+        main_layout.addStretch()
+        scroll.setWidget(container)
+
+        outer_layout = QVBoxLayout(self)
+        outer_layout.setContentsMargins(0, 0, 0, 0)
+        outer_layout.addWidget(scroll)
+
+    def _create_legend_card(self) -> QWidget:
+        """创建配色图例卡片"""
         legend_card = AnimatedCard()
         legend_card.setObjectName("card")
         apply_card_shadow(legend_card)
@@ -445,9 +459,10 @@ class TimelinePage(QWidget):
         tag_legend.setStyleSheet(f"color: {self._colors['primary']}; font-size: 12px; font-weight: bold;")
         self._tag_legend = tag_legend
         legend_layout.addWidget(tag_legend)
-        main_layout.addWidget(legend_card)
+        return legend_card
 
-        # 时间轴控件
+    def _create_timeline_card(self) -> QWidget:
+        """创建时间轴卡片（含TimelineWidget和空状态）"""
         timeline_card = AnimatedCard()
         timeline_card.setObjectName("card")
         apply_card_shadow(timeline_card)
@@ -470,15 +485,7 @@ class TimelinePage(QWidget):
         self.empty_state.setFixedHeight(300)
         self.empty_state.hide()
         timeline_layout.addWidget(self.empty_state)
-
-        main_layout.addWidget(timeline_card)
-
-        main_layout.addStretch()
-        scroll.setWidget(container)
-
-        outer_layout = QVBoxLayout(self)
-        outer_layout.setContentsMargins(0, 0, 0, 0)
-        outer_layout.addWidget(scroll)
+        return timeline_card
 
     def refresh(self, date: str = None, start_date: str = None, is_range: bool = False) -> None:
         """异步刷新时间轴数据"""

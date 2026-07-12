@@ -68,7 +68,12 @@ class DatabaseManager(
 
     def _create_tables(self, cursor: sqlite3.Cursor) -> None:
         """创建所有数据库表"""
-        # 应用使用记录表
+        self._create_core_tables(cursor)
+        self._create_config_tables(cursor)
+        self._create_feature_tables(cursor)
+
+    def _create_core_tables(self, cursor: sqlite3.Cursor) -> None:
+        """创建核心数据表（app_usage/input_events/screenshots）"""
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS app_usage (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,7 +86,6 @@ class DatabaseManager(
             )
         """)
 
-        # 键鼠操作记录表
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS input_events (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -93,7 +97,6 @@ class DatabaseManager(
             )
         """)
 
-        # 屏幕截图记录表
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS screenshots (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,7 +108,8 @@ class DatabaseManager(
             )
         """)
 
-        # 应用设置表（自定义分类、敏感标记）
+    def _create_config_tables(self, cursor: sqlite3.Cursor) -> None:
+        """创建配置表（app_settings/config/app_limits）"""
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS app_settings (
                 app_name TEXT PRIMARY KEY,
@@ -114,7 +118,6 @@ class DatabaseManager(
             )
         """)
 
-        # 配置表
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS config (
                 key TEXT PRIMARY KEY,
@@ -122,7 +125,6 @@ class DatabaseManager(
             )
         """)
 
-        # 应用使用限制表
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS app_limits (
                 app_name TEXT PRIMARY KEY,
@@ -132,7 +134,8 @@ class DatabaseManager(
             )
         """)
 
-        # 活动标签表
+    def _create_feature_tables(self, cursor: sqlite3.Cursor) -> None:
+        """创建功能扩展表（activity_tags/anomaly_alerts）"""
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS activity_tags (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -146,7 +149,6 @@ class DatabaseManager(
             )
         """)
 
-        # 异常告警记录表
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS anomaly_alerts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

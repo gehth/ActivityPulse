@@ -72,6 +72,13 @@ def _qss_global(c: dict) -> str:
 
 def _qss_sidebar(c: dict) -> str:
     """侧边栏样式"""
+    return (
+        _qss_sidebar_frame(c) + _qss_sidebar_nav(c) + _qss_sidebar_status(c)
+    )
+
+
+def _qss_sidebar_frame(c: dict) -> str:
+    """侧边栏框架 + 品牌区样式"""
     return f"""
     /* ===== 侧边栏 ===== */
     #sidebar {{
@@ -102,7 +109,12 @@ def _qss_sidebar(c: dict) -> str:
         font-weight: bold;
         color: {c['primary']};
     }}
+    """
 
+
+def _qss_sidebar_nav(c: dict) -> str:
+    """侧边栏导航按钮样式"""
+    return f"""
     /* 导航按钮 */
     #nav_button {{
         text-align: left;
@@ -129,7 +141,12 @@ def _qss_sidebar(c: dict) -> str:
         font-weight: bold;
         margin: 2px 8px;
     }}
+    """
 
+
+def _qss_sidebar_status(c: dict) -> str:
+    """侧边栏底部操作区 + 状态指示灯样式"""
+    return f"""
     /* 底部操作区 */
     #sidebar_bottom {{
         border-top: 1px solid {c['border']};
@@ -310,6 +327,13 @@ def _qss_inputs(c: dict) -> str:
 
 def _qss_misc(c: dict) -> str:
     """滚动条、选项卡、隐私遮罩、进度条、分隔线、页面通用、GroupBox等杂项样式"""
+    return (
+        _qss_scrollbar(c) + _qss_privacy(c) + _qss_page_common(c) + _qss_groupbox(c)
+    )
+
+
+def _qss_scrollbar(c: dict) -> str:
+    """滚动条 + 选项卡样式"""
     return f"""
     /* ===== 滚动条 ===== */
     QScrollBar:vertical {{
@@ -333,7 +357,12 @@ def _qss_misc(c: dict) -> str:
     QTabWidget::pane {{
         border: none;
     }}
+    """
 
+
+def _qss_privacy(c: dict) -> str:
+    """隐私模式遮罩 + 进度条 + 分隔线样式"""
+    return f"""
     /* ===== 隐私模式遮罩 ===== */
     #privacy_overlay {{
         background-color: rgba(239, 68, 68, 0.05);
@@ -367,7 +396,12 @@ def _qss_misc(c: dict) -> str:
         max-height: 1px;
         margin: 8px 16px;
     }}
+    """
 
+
+def _qss_page_common(c: dict) -> str:
+    """页面通用样式（标题/卡片hover/QScrollArea）"""
+    return f"""
     /* ===== 页面通用样式 ===== */
     #page_title {{
         font-size: 20px;
@@ -406,7 +440,12 @@ def _qss_misc(c: dict) -> str:
         background: transparent;
         border: none;
     }}
+    """
 
+
+def _qss_groupbox(c: dict) -> str:
+    """QGroupBox样式"""
+    return f"""
     /* ===== QGroupBox ===== */
     QGroupBox {{
         font-size: 14px;
@@ -429,12 +468,14 @@ def _qss_misc(c: dict) -> str:
 def get_theme_qss(theme: str = "light") -> str:
     """获取主题QSS样式表
 
-    由6个样式构建函数组合而成：全局、侧边栏、内容区/卡片、按钮、输入控件、杂项
+    由多个样式构建函数组合而成：全局、侧边栏、内容区/卡片、按钮、输入控件、杂项
     """
     c = COLORS[theme]
     return (
-        _qss_global(c) + _qss_sidebar(c) + _qss_content(c)
-        + _qss_buttons(c) + _qss_inputs(c) + _qss_misc(c)
+        _qss_global(c) + _qss_sidebar_frame(c) + _qss_sidebar_nav(c)
+        + _qss_sidebar_status(c) + _qss_content(c) + _qss_buttons(c)
+        + _qss_inputs(c) + _qss_scrollbar(c) + _qss_privacy(c)
+        + _qss_page_common(c) + _qss_groupbox(c)
     )
 
 

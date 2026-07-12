@@ -340,10 +340,8 @@ class HourlyBarWidget(QWidget):
         for d in data:
             hour_map[d.get("hour", 0)] = d.get("total", 0) or 0
 
-        margin_left = 30
-        margin_right = 10
-        margin_top = 5
-        margin_bottom = 20
+        margin_left, margin_right = 30, 10
+        margin_top, margin_bottom = 5, 20
         chart_width = self.width() - margin_left - margin_right
         chart_height = self.height() - margin_top - margin_bottom
         bar_width = max(chart_width / 24 - 2, 3)
@@ -352,7 +350,18 @@ class HourlyBarWidget(QWidget):
         if max_total == 0:
             max_total = 1
 
-        # Y轴标签
+        self._draw_y_axis(painter, colors, margin_left, margin_top,
+                          chart_height, max_total)
+        self._draw_hourly_bars(painter, colors, hour_map, max_total,
+                               margin_left, margin_top,
+                               chart_width, chart_height, bar_width)
+
+        painter.end()
+
+    def _draw_y_axis(self, painter: QPainter, colors: dict,
+                     margin_left: int, margin_top: int,
+                     chart_height: float, max_total: float) -> None:
+        """绘制Y轴标签"""
         painter.setPen(QColor(colors['text_muted']))
         font = QFont("Consolas", 7)
         painter.setFont(font)
@@ -361,7 +370,12 @@ class HourlyBarWidget(QWidget):
             y = margin_top + chart_height - (val * 60 / max_total) * chart_height if max_total > 0 else margin_top + chart_height
             painter.drawText(0, int(y) + 4, f"{val}m")
 
-        # 绘制柱状图
+    def _draw_hourly_bars(self, painter: QPainter, colors: dict,
+                          hour_map: dict, max_total: float,
+                          margin_left: int, margin_top: int,
+                          chart_width: float, chart_height: float,
+                          bar_width: float) -> None:
+        """绘制24小时柱状图（含渐变色和hover高亮）"""
         for h in range(24):
             total = hour_map.get(h, 0)
             x = margin_left + h * (chart_width / 24)
@@ -391,5 +405,3 @@ class HourlyBarWidget(QWidget):
                 painter.setPen(QColor(colors['text_muted']))
                 painter.setFont(QFont("Consolas", 7))
                 painter.drawText(int(x - 4), self.height() - 4, f"{h:02d}")
-
-        painter.end()

@@ -30,7 +30,15 @@ class AboutDialog(BaseDialog):
         layout.setSpacing(16)
         layout.setContentsMargins(32, 28, 32, 24)
 
-        # 应用图标
+        layout.addWidget(self._create_icon())
+        layout.addWidget(self._create_title_section())
+        layout.addWidget(self._create_separator())
+        layout.addWidget(self._create_privacy_label())
+        layout.addWidget(self._create_tech_label())
+        layout.addLayout(self._create_close_button())
+
+    def _create_icon(self) -> QLabel:
+        """创建应用图标"""
         colors = self._colors
         icon_label = QLabel()
         pixmap = QPixmap(64, 64)
@@ -47,46 +55,54 @@ class AboutDialog(BaseDialog):
         icon_label.setPixmap(pixmap)
         icon_label.setAlignment(Qt.AlignCenter)
         self._icon_label = icon_label
-        layout.addWidget(icon_label)
+        return icon_label
 
-        # 应用名称
+    def _create_title_section(self) -> QWidget:
+        """创建标题区域（名称+描述+功能列表）"""
+        widget = QWidget()
+        vbox = QVBoxLayout(widget)
+        vbox.setContentsMargins(0, 0, 0, 0)
+        vbox.setSpacing(4)
+
         name_label = QLabel(f"行为记录 v{self._version}")
         name_label.setObjectName("page_title")
         name_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(name_label)
+        vbox.addWidget(name_label)
 
-        # 描述
         desc_label = QLabel("一款电脑行为记录与分析工具")
         desc_label.setObjectName("section_desc")
         desc_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(desc_label)
+        vbox.addWidget(desc_label)
 
-        # 功能列表
         features = QLabel("应用使用追踪 · 键鼠操作记录 · 屏幕截图")
         features.setObjectName("section_desc")
         features.setAlignment(Qt.AlignCenter)
-        layout.addWidget(features)
+        vbox.addWidget(features)
+        return widget
 
-        # 分隔线
+    def _create_separator(self) -> QFrame:
+        """创建分隔线"""
         separator = QFrame()
         separator.setObjectName("separator")
-        layout.addWidget(separator)
+        return separator
 
-        # 隐私声明
+    def _create_privacy_label(self) -> QLabel:
+        """创建隐私声明标签"""
         privacy_label = QLabel("🛡 所有数据均存储于本地，不会上传至任何服务器")
         privacy_label.setAlignment(Qt.AlignCenter)
-        colors = self._colors
-        privacy_label.setStyleSheet(f"color: {colors['success']}; font-size: 12px; font-weight: bold;")
+        privacy_label.setStyleSheet(f"color: {self._colors['success']}; font-size: 12px; font-weight: bold;")
         self._privacy_label = privacy_label
-        layout.addWidget(privacy_label)
+        return privacy_label
 
-        # 技术信息
+    def _create_tech_label(self) -> QLabel:
+        """创建技术信息标签"""
         tech_label = QLabel("基于 Python · PyQt5 · SQLite 构建")
         tech_label.setObjectName("section_desc")
         tech_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(tech_label)
+        return tech_label
 
-        # 关闭按钮
+    def _create_close_button(self) -> QHBoxLayout:
+        """创建关闭按钮行"""
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
         btn_close = QPushButton("确定")
@@ -94,7 +110,7 @@ class AboutDialog(BaseDialog):
         btn_close.clicked.connect(self.accept)
         btn_layout.addWidget(btn_close)
         btn_layout.addStretch()
-        layout.addLayout(btn_layout)
+        return btn_layout
 
     def set_theme(self, is_dark: bool) -> None:
         """设置主题样式（明/暗模式）"""
