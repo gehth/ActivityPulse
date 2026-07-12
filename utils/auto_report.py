@@ -1,7 +1,11 @@
 """自动报告生成模块 - 每日/每周自动生成行为报告并通过系统通知推送"""
 
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING
 from utils.time_utils import format_duration
+
+if TYPE_CHECKING:
+    from database.db_manager import DatabaseManager
 
 
 def generate_daily_report(db: DatabaseManager, date: str = None) -> dict:

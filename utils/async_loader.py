@@ -1,7 +1,9 @@
 """异步数据加载模块 - 使用QThread避免主线程阻塞"""
 
 import logging
+from typing import Callable
 from PyQt5.QtCore import QThread, pyqtSignal, QObject
+from PyQt5.QtWidgets import QWidget
 
 logger = logging.getLogger(__name__)
 

@@ -128,6 +128,11 @@ def main() -> None:
 
     logging.info("程序启动")
 
+    # 延迟导入Qt模块（依赖检查通过后再导入）
+    from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtCore import Qt
+    from gui.main_window import MainWindow
+
     # 高DPI支持
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)

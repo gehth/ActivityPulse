@@ -1,5 +1,6 @@
 """全局快捷键工具 - 使用pynput监听全局热键（支持多组快捷键）"""
 
+from typing import Callable, Optional
 from pynput import keyboard
 
 

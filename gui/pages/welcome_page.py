@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 
-from gui.themes import HoverButton
+from gui.themes import HoverButton, get_colors, QSS_STYLES
 
 
 class WelcomePage(QWidget):
@@ -49,28 +49,30 @@ class WelcomePage(QWidget):
 
         layout.addStretch(1)
 
-    def _create_header(self) -> None:
+    def _create_header(self) -> QVBoxLayout:
         """创建欢迎标题区域"""
         vbox = QVBoxLayout()
+        c = get_colors(self._is_dark)
 
         title = QLabel("👋 欢迎使用行为记录")
         title.setObjectName("page_title")
-        title.setStyleSheet("font-size: 28px; font-weight: bold;")
+        title.setStyleSheet(QSS_STYLES["dialog_title"].format(c=c))
         title.setAlignment(Qt.AlignCenter)
         vbox.addWidget(title)
 
         subtitle = QLabel("自动追踪您的电脑使用习惯，帮助您更好地管理时间")
         subtitle.setObjectName("section_desc")
-        subtitle.setStyleSheet("font-size: 14px;")
+        subtitle.setStyleSheet(QSS_STYLES["section_desc"].format(c=c))
         subtitle.setAlignment(Qt.AlignCenter)
         vbox.addWidget(subtitle)
 
         return vbox
 
-    def _create_features_section(self) -> None:
+    def _create_features_section(self) -> QHBoxLayout:
         """创建功能介绍卡片区域"""
         features_layout = QHBoxLayout()
         features_layout.setSpacing(16)
+        c = get_colors(self._is_dark)
 
         features = [
             ("📊", "智能仪表盘", "一目了然查看今日\n专注时长和活跃应用"),
@@ -82,6 +84,7 @@ class WelcomePage(QWidget):
         for icon, title_text, desc_text in features:
             card = QFrame()
             card.setObjectName("metric_card")
+            card.setStyleSheet(QSS_STYLES["card_frame"].format(c=c))
             card_layout = QVBoxLayout(card)
             card_layout.setSpacing(8)
             card_layout.setContentsMargins(16, 16, 16, 16)
@@ -93,12 +96,13 @@ class WelcomePage(QWidget):
 
             card_title = QLabel(title_text)
             card_title.setObjectName("card_title")
+            card_title.setStyleSheet(QSS_STYLES["metric_title"].format(c=c))
             card_title.setAlignment(Qt.AlignCenter)
             card_layout.addWidget(card_title)
 
             card_desc = QLabel(desc_text)
             card_desc.setObjectName("section_desc")
-            card_desc.setStyleSheet("font-size: 12px;")
+            card_desc.setStyleSheet(QSS_STYLES["small_text"].format(c=c))
             card_desc.setAlignment(Qt.AlignCenter)
             card_layout.addWidget(card_desc)
 
@@ -106,17 +110,19 @@ class WelcomePage(QWidget):
 
         return features_layout
 
-    def _create_settings_card(self) -> None:
+    def _create_settings_card(self) -> QFrame:
         """创建快速设置卡片"""
+        c = get_colors(self._is_dark)
         settings_card = QFrame()
         settings_card.setObjectName("card")
+        settings_card.setStyleSheet(QSS_STYLES["card_frame"].format(c=c))
         settings_layout = QVBoxLayout(settings_card)
         settings_layout.setSpacing(12)
         settings_layout.setContentsMargins(24, 16, 24, 16)
 
         settings_title = QLabel("⚡ 快速设置")
         settings_title.setObjectName("card_title")
-        settings_title.setStyleSheet("font-size: 16px;")
+        settings_title.setStyleSheet(QSS_STYLES["section_title"].format(c=c))
         settings_layout.addWidget(settings_title)
 
         # 自动开始记录
@@ -151,22 +157,16 @@ class WelcomePage(QWidget):
 
         return settings_card
 
-    def _create_start_button(self) -> None:
+    def _create_start_button(self) -> QVBoxLayout:
         """创建开始按钮区域"""
         vbox = QVBoxLayout()
+        c = get_colors(self._is_dark)
 
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
 
         self.btn_start = HoverButton("🚀 开始使用")
-        self.btn_start.setStyleSheet("""
-            QPushButton {
-                padding: 12px 48px;
-                font-size: 16px;
-                font-weight: bold;
-                border-radius: 8px;
-            }
-        """)
+        self.btn_start.setStyleSheet(QSS_STYLES["btn_primary_md"].format(c=c))
         self.btn_start.clicked.connect(self._on_start)
         btn_layout.addWidget(self.btn_start)
 
@@ -176,7 +176,7 @@ class WelcomePage(QWidget):
         # 提示
         hint = QLabel("您可以随时在设置中修改这些选项")
         hint.setObjectName("section_desc")
-        hint.setStyleSheet("font-size: 12px;")
+        hint.setStyleSheet(QSS_STYLES["small_text"].format(c=c))
         hint.setAlignment(Qt.AlignCenter)
         vbox.addWidget(hint)
 

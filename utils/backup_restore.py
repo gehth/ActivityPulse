@@ -11,6 +11,7 @@ import tempfile
 import logging
 from datetime import datetime
 from typing import Optional, Callable
+from zipfile import ZipFile
 import sqlite3
 import re
 
