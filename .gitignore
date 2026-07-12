@@ -35,9 +35,21 @@ dist_v14/
 # Old versions
 旧版本/
 
-# Temporary analysis scripts
+# Dev/test scripts (not needed in production)
 _*.py
+test_db.py
+test_modules.py
+test_refactor.py
+generate_icon.py
+app_icon_*.png
+
+# Dev docs (internal planning)
+开发文档/优化/
+开发文档/开发次序/
 
 # OS
 Thumbs.db
 .DS_Store
+
+# Logs
+*.log

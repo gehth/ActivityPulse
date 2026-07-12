@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ActivityPulse 维护与使用手册</title>
+<style>
+:root{--bg:#f8fafc;--card:#fff;--border:#e2e8f0;--text:#1e293b;--text2:#64748b;--primary:#3b82f6;--primary-light:#dbeafe;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--code-bg:#f1f5f9;--sidebar-bg:#1e293b;--sidebar-text:#94a3b8;--sidebar-active:#3b82f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+.container{display:flex;max-width:1400px;margin:0 auto;min-height:100vh}
+.sidebar{width:260px;background:var(--sidebar-bg);padding:24px 0;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.sidebar h2{color:#f1f5f9;font-size:18px;padding:0 20px 16px;border-bottom:1px solid #334155;margin-bottom:8px}
+.sidebar a{display:block;padding:8px 20px;color:var(--sidebar-text);text-decoration:none;font-size:13px;transition:all .2s}
+.sidebar a:hover{color:#f1f5f9;background:#334155}
+.sidebar a.active{color:#fff;background:var(--sidebar-active);border-right:3px solid #60a5fa}
+.sidebar .ver{color:#64748b;font-size:11px;padding:16px 20px 0}
+.main{flex:1;padding:40px 48px;max-width:900px}
+h1{font-size:28px;font-weight:700;margin-bottom:8px;color:var(--text)}
+h1 small{font-size:14px;color:var(--text2);font-weight:400;margin-left:12px}
+.subtitle{color:var(--text2);font-size:15px;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+h2{font-size:22px;font-weight:700;margin:40px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--primary-light);color:var(--text)}
+h3{font-size:17px;font-weight:600;margin:24px 0 12px;color:var(--text)}
+h4{font-size:14px;font-weight:600;margin:16px 0 8px;color:var(--text2)}
+p{margin-bottom:12px;font-size:14px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}
+th{background:var(--primary-light);color:var(--primary);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+td{padding:10px 14px;border:1px solid var(--border);vertical-align:top}
+tr:nth-child(even) td{background:#f8fafc}
+code{background:var(--code-bg);padding:2px 6px;border-radius:4px;font-family:'Consolas','Fira Code',monospace;font-size:12.5px;color:#e11d48}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;margin:12px 0;font-size:13px;line-height:1.6}
+pre code{background:none;padding:0;color:var(--text)}
+.info-box{background:var(--primary-light);border-left:4px solid var(--primary);padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:13px}
+.warn-box{background:#fef3c7;border-left:4px solid var(--warning);padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:13px}
+.tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin:2px}
+.tag-blue{background:var(--primary-light);color:var(--primary)}
+.tag-green{background:#d1fae5;color:var(--success)}
+.tag-red{background:#fee2e2;color:var(--danger)}
+.tag-yellow{background:#fef3c7;color:#92400e}
+.arch-tree{font-family:'Consolas',monospace;font-size:12.5px;line-height:1.8;color:var(--text2);background:var(--code-bg);padding:16px;border-radius:8px;border:1px solid var(--border);margin:12px 0}
+.arch-tree .dir{color:var(--primary);font-weight:600}
+.arch-tree .file{color:var(--text)}
+.arch-tree .comment{color:#94a3b8;font-style:italic}
+.footer{text-align:center;color:var(--text2);font-size:12px;margin-top:48px;padding-top:24px;border-top:1px solid var(--border)}
+@media(max-width:900px){.sidebar{display:none}.main{padding:24px}}
+</style>
+</head>
+<body>
+<div class="container">
+<aside class="sidebar">
+<h2>ActivityPulse</h2>
+<a href="#sec1">1. 项目概览</a>
+<a href="#sec2">2. 快速开始</a>
+<a href="#sec3">3. 项目架构</a>
+<a href="#sec4">4. 核心模块详解</a>
+<a href="#sec5">5. 数据库设计</a>
+<a href="#sec6">6. 主题系统</a>
+<a href="#sec7">7. 对话框基类模式</a>
+<a href="#sec8">8. 配置系统</a>
+<a href="#sec9">9. 监控器</a>
+<a href="#sec10">10. 构建与部署</a>
+<a href="#sec11">11. 开发规范</a>
+<a href="#sec12">12. 常见问题</a>
+<div class="ver">v1.0 | 2026-07-12</div>
+</aside>
+<main class="main">
+<h1>ActivityPulse 维护与使用手册 <small>v1.0</small></h1>
+<p class="subtitle">Windows 桌面端电脑行为记录与数据分析工具 — 维护与使用参考文档</p>
+
+<h2 id="sec1">1. 项目概览</h2>
+<p><strong>ActivityPulse</strong> 是一款基于 PyQt5 构建的 Windows 桌面应用，实时追踪应用使用、输入活动与屏幕时间，用数据洞察数字生活节奏。</p>
+
+<h3>核心功能</h3>
+<table>
+<tr><th>功能</th><th>说明</th></tr>
+<tr><td><span class="tag tag-blue">监控</span> 应用使用追踪</td><td>自动记录前台应用切换，统计使用时长</td></tr>
+<tr><td><span class="tag tag-blue">监控</span> 输入活动检测</td><td>监测键盘/鼠标活动，识别活跃与空闲时段</td></tr>
+<tr><td><span class="tag tag-blue">监控</span> 屏幕截图</td><td>可配置间隔自动截图，按日期浏览与全屏查看</td></tr>
+<tr><td><span class="tag tag-green">分析</span> 仪表盘</td><td>今日概览：专注时长、活跃应用数、目标进度</td></tr>
+<tr><td><span class="tag tag-green">分析</span> 时间轴</td><td>可视化全天活动轨迹，分钟级精度</td></tr>
+<tr><td><span class="tag tag-green">分析</span> 统计洞察</td><td>环形图/折线图/柱状图多维分析</td></tr>
+<tr><td><span class="tag tag-green">分析</span> 分类管理</td><td>自动推断应用分类，自定义分类与敏感标记</td></tr>
+<tr><td><span class="tag tag-yellow">效率</span> 番茄钟</td><td>浮动计时器，专注/休息循环</td></tr>
+<tr><td><span class="tag tag-yellow">效率</span> 应用限制</td><td>设置每日使用时间上限</td></tr>
+<tr><td><span class="tag tag-yellow">效率</span> 每日目标</td><td>设置专注时长目标，实时追踪进度</td></tr>
+<tr><td><span class="tag tag-red">提醒</span> 久坐提醒</td><td>长时间未活动弹出提醒对话框</td></tr>
+<tr><td><span class="tag tag-red">提醒</span> 异常告警</td><td>检测深夜使用、过度使用等模式</td></tr>
+<tr><td><span class="tag tag-blue">系统</span> PDF 报告</td><td>导出每日/每周活动报告</td></tr>
+<tr><td><span class="tag tag-blue">系统</span> 备份恢复</td><td>一键打包/恢复数据</td></tr>
+<tr><td><span class="tag tag-blue">系统</span> 明暗主题</td><td>Light/Dark 双主题切换</td></tr>
+</table>
+
+<h3>技术栈</h3>
+<p><span class="tag tag-blue">Python 3.8+</span> <span class="tag tag-blue">PyQt5 5.15+</span> <span class="tag tag-green">SQLite WAL</span> <span class="tag tag-green">pynput</span> <span class="tag tag-green">Pillow</span> <span class="tag tag-green">psutil</span> <span class="tag tag-green">pygetwindow</span> <span class="tag tag-yellow">PyInstaller</span></p>
+
+<h2 id="sec2">2. 快速开始</h2>
+<h3>环境要求</h3>
+<p>Python 3.8+ / Windows 10/11</p>
+<h3>安装依赖</h3>
+<pre><code>pip install -r requirements.txt</code></pre>
+<p>依赖列表：<code>PyQt5>=5.15</code> <code>pynput>=1.7.6</code> <code>Pillow>=9.0</code> <code>psutil>=5.9</code> <code>pygetwindow>=0.0.5</code></p>
+<h3>运行</h3>
+<pre><code>python main.py</code></pre>
+<h3>打包</h3>
+<pre><code>pyinstaller build.spec</code></pre>
+<div class="warn-box"><strong>注意</strong>：项目路径含中文时，需通过 junction link 绕过 PyInstaller 的编码问题：<br>
+<code>mklink /J "g:\joycode_build" "项目路径"</code> → <code>cd /d g:\joycode_build</code> → 执行打包</div>
+
+<h2 id="sec3">3. 项目架构</h2>
+<div class="arch-tree">
+<span class="dir">电脑行为记录/</span><br>
+├── <span class="file">main.py</span> <span class="comment"># 入口：日志、依赖检查、QApplication</span><br>
+├── <span class="file">build.spec</span> <span class="comment"># PyInstaller 打包配置</span><br>
+├── <span class="file">requirements.txt</span> <span class="comment"># Python 依赖</span><br>
+│<br>
+├── <span class="dir">database/</span> <span class="comment"># 数据层（SQLite + Mixin 模式）</span><br>
+│   ├── <span class="file">db_manager.py</span> <span class="comment"># DatabaseManager 主类（线程安全）</span><br>
+│   ├── <span class="file">app_usage_mixin.py</span> <span class="comment"># 应用使用记录 CRUD</span><br>
+│   ├── <span class="file">screenshot_mixin.py</span> <span class="comment"># 截图记录 CRUD</span><br>
+│   ├── <span class="file">settings_mixin.py</span> <span class="comment"># 配置项 CRUD + 缓存</span><br>
+│   ├── <span class="file">idle_mixin.py</span> <span class="comment"># 空闲时段计算</span><br>
+│   ├── <span class="file">activity_tag_mixin.py</span> <span class="comment"># 活动标签 CRUD</span><br>
+│   ├── <span class="file">app_limit_mixin.py</span> <span class="comment"># 应用限制 CRUD</span><br>
+│   └── <span class="file">anomaly_mixin.py</span> <span class="comment"># 异常告警记录 CRUD</span><br>
+│<br>
+├── <span class="dir">monitors/</span> <span class="comment"># 监控层（后台线程）</span><br>
+│   ├── <span class="file">app_monitor.py</span> <span class="comment"># AppMonitor — 前台应用追踪</span><br>
+│   ├── <span class="file">input_monitor.py</span> <span class="comment"># InputMonitor — 键鼠事件记录</span><br>
+│   └── <span class="file">screen_monitor.py</span> <span class="comment"># ScreenMonitor — 定时截图</span><br>
+│<br>
+├── <span class="dir">gui/</span> <span class="comment"># 界面层（PyQt5）</span><br>
+│   ├── <span class="file">main_window.py</span> <span class="comment"># MainWindow — 主窗口编排</span><br>
+│   ├── <span class="file">sidebar.py</span> <span class="comment"># Sidebar + StatusIndicator + NavButton</span><br>
+│   ├── <span class="file">themes.py</span> <span class="comment"># 主题系统：COLORS + get_theme_qss()</span><br>
+│   ├── <span class="file">qss_styles.py</span> <span class="comment"># QSS_STYLES 字典（37 个样式片段）</span><br>
+│   ├── <span class="dir">components/</span> <span class="comment"># 可复用组件</span><br>
+│   │   ├── <span class="file">base_dialog.py</span> <span class="comment"># BaseDialog — 对话框基类</span><br>
+│   │   ├── <span class="file">toolbar_builder.py</span> <span class="comment"># 工具栏构建器</span><br>
+│   │   ├── <span class="file">tray_manager.py</span> <span class="comment"># 系统托盘管理</span><br>
+│   │   ├── <span class="file">check_manager.py</span> <span class="comment"># 定时检查管理</span><br>
+│   │   ├── <span class="file">export_manager.py</span> <span class="comment"># PDF 导出</span><br>
+│   │   └── <span class="file">icon_factory.py</span> <span class="comment"># 应用图标工厂</span><br>
+│   ├── <span class="dir">pages/</span> <span class="comment"># 页面组件</span><br>
+│   │   ├── <span class="file">dashboard_page.py</span> <span class="comment"># 仪表盘页</span><br>
+│   │   ├── <span class="file">dashboard_cards.py</span> <span class="comment"># 仪表盘卡片</span><br>
+│   │   ├── <span class="file">dashboard_charts.py</span> <span class="comment"># 仪表盘图表</span><br>
+│   │   ├── <span class="file">timeline_page.py</span> <span class="comment"># 时间轴页</span><br>
+│   │   ├── <span class="file">insights_page.py</span> <span class="comment"># 统计洞察页</span><br>
+│   │   ├── <span class="file">categories_page.py</span> <span class="comment"># 分类管理页</span><br>
+│   │   └── <span class="file">screenshots_page.py</span> <span class="comment"># 截图浏览页</span><br>
+│   └── <span class="comment">对话框（均继承 BaseDialog）</span><br>
+│       ├── <span class="file">settings_dialog.py</span> <span class="comment"># 设置对话框</span><br>
+│       ├── <span class="file">search_dialog.py</span> <span class="comment"># 全局搜索</span><br>
+│       ├── <span class="file">about_dialog.py</span> <span class="comment"># 关于对话框</span><br>
+│       └── ... <span class="comment">（7 个对话框）</span><br>
+│<br>
+├── <span class="dir">utils/</span> <span class="comment"># 工具层</span><br>
+│   ├── <span class="file">anomaly_detector.py</span> <span class="comment"># 异常行为检测引擎</span><br>
+│   ├── <span class="file">async_loader.py</span> <span class="comment"># 异步数据加载器</span><br>
+│   ├── <span class="file">auto_report.py</span> <span class="comment"># 每日/每周报告生成</span><br>
+│   ├── <span class="file">autostart.py</span> <span class="comment"># Windows 开机自启</span><br>
+│   ├── <span class="file">backup_restore.py</span> <span class="comment"># 数据备份与恢复</span><br>
+│   ├── <span class="file">global_hotkey.py</span> <span class="comment"># 全局快捷键管理</span><br>
+│   ├── <span class="file">segment_merge.py</span> <span class="comment"># 时间段合并算法</span><br>
+│   └── <span class="file">time_utils.py</span> <span class="comment"># 时间格式化工具</span><br>
+│<br>
+└── <span class="dir">tests/</span> <span class="comment"># 测试（14 个文件，100 用例）</span>
+</div>
+
+<h2 id="sec4">4. 核心模块详解</h2>
+<h3>4.1 MainWindow（主窗口）</h3>
+<p><strong>文件</strong>: <code>gui/main_window.py</code> — 应用的编排中心</p>
+<pre><code>class MainWindow(QMainWindow):
+    def __init__(self):
+        self.db = DatabaseManager()       # 数据库
+        self._init_monitors()             # 三个监控器
+        self._setup_ui()                  # 侧边栏 + 页面堆栈
+        self._init_managers()             # 托盘/检查/导出管理器
+        self._init_post_setup()           # 快捷键/自动启动</code></pre>
+
+<h3>4.2 DatabaseManager（数据库管理器）</h3>
+<p><strong>文件</strong>: <code>database/db_manager.py</code> — Mixin 模式组织数据库操作</p>
+<pre><code>class DatabaseManager(
+    AppUsageMixin,      # 应用使用记录
+    ScreenshotMixin,    # 截图记录
+    SettingsMixin,      # 配置项
+    IdleMixin,          # 空闲时段
+    ActivityTagMixin,   # 活动标签
+    AppLimitMixin,      # 应用限制
+    AnomalyMixin,       # 异常告警
+):</code></pre>
+<div class="info-box"><strong>线程安全机制</strong>：全局写锁 <code>self._lock</code> + 线程本地连接 <code>self._local</code> + WAL 模式 + 配置缓存</div>
+
+<h3>4.3 监控器</h3>
+<table>
+<tr><th>监控器</th><th>类</th><th>默认间隔</th><th>说明</th></tr>
+<tr><td>应用监控</td><td><code>AppMonitor</code></td><td>5s</td><td>追踪前台窗口应用名+标题</td></tr>
+<tr><td>输入监控</td><td><code>InputMonitor</code></td><td>2s</td><td>键鼠事件缓冲写入</td></tr>
+<tr><td>截图监控</td><td><code>ScreenMonitor</code></td><td>60s</td><td>Pillow 截图保存</td></tr>
+</table>
+
+<h2 id="sec5">5. 数据库设计</h2>
+<p><strong>存储位置</strong>: <code>~/.computer_monitor/monitor.db</code></p>
+<table>
+<tr><th>表名</th><th>用途</th><th>关键字段</th></tr>
+<tr><td><code>app_usage</code></td><td>应用使用记录</td><td>app_name, window_title, start_time, end_time, duration_seconds</td></tr>
+<tr><td><code>input_events</code></td><td>键鼠事件</td><td>event_type, event_detail, app_name, timestamp</td></tr>
+<tr><td><code>screenshots</code></td><td>截图记录</td><td>file_path, thumbnail_path, app_name, timestamp</td></tr>
+<tr><td><code>app_settings</code></td><td>应用设置</td><td>app_name(PK), custom_category, is_sensitive</td></tr>
+<tr><td><code>config</code></td><td>全局配置</td><td>key(PK), value</td></tr>
+<tr><td><code>app_limits</code></td><td>应用限制</td><td>app_name(PK), daily_limit_minutes, enabled</td></tr>
+<tr><td><code>activity_tags</code></td><td>活动标签</td><td>date, tag, note, start_time, end_time, color</td></tr>
+<tr><td><code>anomaly_alerts</code></td><td>异常告警</td><td>alert_type, severity, message, timestamp</td></tr>
+</table>
+
+<h2 id="sec6">6. 主题系统</h2>
+<h3>颜色常量</h3>
+<p><strong>文件</strong>: <code>gui/themes.py</code> — <code>COLORS</code> 字典（light/dark 双主题）</p>
+<pre><code>colors = get_colors(is_dark)  # 返回对应主题的颜色字典
+widget.setStyleSheet(f"color: {colors['text_primary']};")</code></pre>
+
+<h3>QSS 样式片段</h3>
+<p><strong>文件</strong>: <code>gui/qss_styles.py</code> — <code>QSS_STYLES</code> 字典（37 个 key）</p>
+<table>
+<tr><th>分类</th><th>数量</th><th>示例 key</th></tr>
+<tr><td>排版</td><td>11</td><td>dialog_title, section_title, metric_value, body_text</td></tr>
+<tr><td>边框/圆角</td><td>3</td><td>card_border, input_border, pill_border</td></tr>
+<tr><td>按钮</td><td>4</td><td>btn_outline, btn_primary_sm, btn_danger_sm</td></tr>
+<tr><td>标签/徽章</td><td>4</td><td>badge, badge_primary, badge_danger, badge_success</td></tr>
+<tr><td>组件样式块</td><td>13</td><td>card_frame, dialog_base, dialog_card, btn_primary, input_field</td></tr>
+</table>
+<pre><code>from gui.qss_styles import QSS_STYLES
+widget.setStyleSheet(QSS_STYLES["section_title"].format(c=colors))</code></pre>
+
+<h3>全局 QSS</h3>
+<p><code>get_theme_qss(theme="light")</code> 由 11 个子函数拼接：<code>_qss_global</code> + <code>_qss_sidebar_frame</code> + <code>_qss_sidebar_nav</code> + <code>_qss_sidebar_status</code> + <code>_qss_content</code> + <code>_qss_buttons</code> + <code>_qss_inputs</code> + <code>_qss_scrollbar</code> + <code>_qss_privacy</code> + <code>_qss_page_common</code> + <code>_qss_groupbox</code></p>
+
+<h2 id="sec7">7. 对话框基类模式</h2>
+<p><strong>文件</strong>: <code>gui/components/base_dialog.py</code></p>
+<pre><code>class BaseDialog(QDialog):
+    def __init__(self, is_dark=False, parent=None, dialog_style="dialog_base"):
+        super().__init__(parent)
+        self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
+        self._dialog_style = dialog_style
+        if dialog_style:
+            self._apply_dialog_style()
+
+    def set_theme(self, is_dark):
+        self._is_dark = is_dark
+        self._colors = get_colors(is_dark)
+        if self._dialog_style:
+            self._apply_dialog_style()</code></pre>
+<h4>dialog_style 参数</h4>
+<table>
+<tr><th>值</th><th>说明</th></tr>
+<tr><td><code>"dialog_base"</code></td><td>基础对话框样式</td></tr>
+<tr><td><code>"dialog_card"</code></td><td>卡片式对话框样式</td></tr>
+<tr><td><code>""</code></td><td>不自动应用样式（子类自行管理）</td></tr>
+</table>
+
+<h2 id="sec8">8. 配置系统</h2>
+<h3>全局配置（config 表）</h3>
+<table>
+<tr><th>配置键</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>app_interval</code></td><td>"5"</td><td>应用监控间隔（秒）</td></tr>
+<tr><td><code>input_interval</code></td><td>"2"</td><td>输入保存间隔（秒）</td></tr>
+<tr><td><code>screenshot_interval</code></td><td>"60"</td><td>截图间隔（秒）</td></tr>
+<tr><td><code>screenshot_quality</code></td><td>"80"</td><td>JPEG 质量</td></tr>
+<tr><td><code>screenshot_enabled</code></td><td>"1"</td><td>截图开关</td></tr>
+<tr><td><code>idle_threshold</code></td><td>"300"</td><td>空闲阈值（秒）</td></tr>
+<tr><td><code>retention_days</code></td><td>"30"</td><td>数据保留天数</td></tr>
+<tr><td><code>theme</code></td><td>"light"</td><td>主题</td></tr>
+<tr><td><code>auto_start</code></td><td>"0"</td><td>开机自启</td></tr>
+<tr><td><code>daily_goal_minutes</code></td><td>"480"</td><td>每日专注目标（分钟）</td></tr>
+</table>
+
+<h3>快捷键配置</h3>
+<table>
+<tr><th>动作</th><th>默认快捷键</th><th>说明</th></tr>
+<tr><td>toggle_window</td><td>Ctrl+Shift+H</td><td>显示/隐藏主窗口</td></tr>
+<tr><td>toggle_pause</td><td>Ctrl+Shift+P</td><td>暂停/恢复记录</td></tr>
+<tr><td>toggle_privacy</td><td>Ctrl+Shift+V</td><td>隐私模式切换</td></tr>
+<tr><td>toggle_pomodoro</td><td>Ctrl+Shift+T</td><td>番茄钟开关</td></tr>
+</table>
+
+<h2 id="sec9">9. 监控器</h2>
+<h3>AppMonitor</h3>
+<pre><code>monitor = AppMonitor(db_manager, interval=5.0)
+monitor.start()   # 启动后台线程
+monitor.stop()    # 停止并记录最后一条</code></pre>
+<p>每 <code>interval</code> 秒获取前台窗口（pygetwindow + psutil 备选），应用切换时记录上一条使用时长。</p>
+
+<h3>InputMonitor</h3>
+<pre><code>monitor = InputMonitor(db_manager, save_interval=2.0, track_mouse_move=False)
+monitor.start()</code></pre>
+<p>pynput 监听键盘按键 + 鼠标点击/滚动，事件缓冲批量写入。不记录具体按键内容（隐私保护）。</p>
+
+<h3>ScreenMonitor</h3>
+<pre><code>monitor = ScreenMonitor(db_manager, interval=60.0, quality=80)
+monitor.start()</code></pre>
+<p>Pillow ImageGrab 定时截图，自动生成缩略图，保存至 <code>~/.computer_monitor/screenshots/YYYY-MM-DD/</code></p>
+
+<h2 id="sec10">10. 构建与部署</h2>
+<h3>PyInstaller 打包</h3>
+<pre><code># 标准打包
+pyinstaller build.spec
+
+# 中文路径问题：创建 junction link
+mklink /J "g:\joycode_build" "项目实际路径"
+cd /d g:\joycode_build
+.venv\Scripts\python.exe -m PyInstaller build.spec --noconfirm</code></pre>
+<p>打包产物：<code>dist/行为记录_v1.0.exe</code>（约 56MB 单文件）</p>
+
+<h3>数据存储位置</h3>
+<pre><code>~/.computer_monitor/
+├── monitor.db              # SQLite 数据库
+├── logs/
+│   ├── monitor_YYYYMMDD.log  # 每日日志
+│   └── crash.log             # 崩溃日志
+└── screenshots/
+    └── YYYY-MM-DD/           # 按日期分目录</code></pre>
+
+<h2 id="sec11">11. 开发规范</h2>
+<h3>代码结构约定</h3>
+<ol>
+<li><strong>对话框</strong>：继承 <code>BaseDialog</code>，使用 <code>dialog_style</code> 参数</li>
+<li><strong>QSS 样式</strong>：优先使用 <code>QSS_STYLES[key].format(c=colors)</code>，避免内联样式</li>
+<li><strong>颜色引用</strong>：使用 <code>get_colors(is_dark)</code> 返回的字典，禁止硬编码颜色值</li>
+<li><strong>主题切换</strong>：实现 <code>set_theme(is_dark)</code> 方法，更新 <code>self._colors</code> 缓存</li>
+<li><strong>数据库操作</strong>：通过 <code>DatabaseManager</code> 的 Mixin 方法，不直接执行 SQL</li>
+<li><strong>线程安全</strong>：数据库写操作通过 <code>self._lock</code> 保护</li>
+</ol>
+
+<h3>测试</h3>
+<pre><code># 运行全部测试
+.venv\Scripts\python.exe -m pytest tests/ -v
+
+# 仅非 GUI 测试
+.venv\Scripts\python.exe -m pytest tests/ -v -k "not feature"</code></pre>
+
+<h2 id="sec12">12. 常见问题</h2>
+
+<h4>Q: PyInstaller 打包报 "Qt plugin directory does not exist"</h4>
+<p><strong>A</strong>: 项目路径含中文字符导致。创建 junction link 到纯英文路径后打包。</p>
+
+<h4>Q: 运行时缺少依赖</h4>
+<p><strong>A</strong>: 执行 <code>pip install -r requirements.txt</code>，或查看启动时的错误提示。</p>
+
+<h4>Q: 数据库锁定 (SQLITE_BUSY)</h4>
+<p><strong>A</strong>: DatabaseManager 使用 WAL 模式 + 线程锁，正常情况不会出现。如出现，检查是否有外部进程访问数据库文件。</p>
+
+<h4>Q: 截图功能不工作</h4>
+<p><strong>A</strong>: 确认 Pillow 已安装，且 <code>screenshot_enabled</code> 配置为 <code>"1"</code>。</p>
+
+<h4>Q: 全局快捷键不生效</h4>
+<p><strong>A</strong>: pynput 需要管理员权限监听全局键盘事件。以管理员身份运行可解决。</p>
+
+<div class="footer">
+文档生成时间: 2026-07-12 | 项目版本: v1.0 | 代码统计: 68 个类, 698 个函数
+</div>
+</main>
+</div>
+<script>
+// 侧边栏高亮
+const links=document.querySelectorAll('.sidebar a');
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));const a=document.querySelector(`.sidebar a[href="#${e.target.id}"]`);if(a)a.classList.add('active')}})},{threshold:0.3});
+document.querySelectorAll('h2[id]').forEach(h=>obs.observe(h));
+</script>
+</body>
+</html>

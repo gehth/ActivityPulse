@@ -10,7 +10,7 @@
 [![PyQt5](https://img.shields.io/badge/PyQt5-5.15+-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[功能特性](#功能特性) · [快速开始](#快速开始) · [项目结构](#项目结构) · [技术栈](#技术栈)
+[功能特性](#功能特性) · [快速开始](#快速开始) · [项目结构](#项目结构) · [技术栈](#技术栈) · [文档](#文档)
 
 </div>
 
@@ -172,6 +172,13 @@ ActivityPulse/
 | 统计洞察 | 分类管理 |
 |:--------:|:--------:|
 | 环形图 + 折线图 + 柱状图 | 自动分类 + 自定义 + 敏感标记 |
+
+---
+
+## 文档
+
+- 📖 [维护与使用手册](开发文档/维护与使用手册.md) — 完整的项目架构、模块详解、配置系统、开发规范
+- 🌐 [HTML 版手册](开发文档/维护与使用手册.html) — 带侧边栏导航的可视化文档
 
 ---
 
