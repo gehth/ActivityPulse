@@ -71,46 +71,12 @@ class ImageViewerDialog(BaseDialog):
         toolbar_layout.addStretch()
 
         # 缩放控制
-        self.btn_zoom_out = QPushButton("➖")
-        self.btn_zoom_out.setFixedSize(32, 32)
-        self.btn_zoom_out.setObjectName("btn_outline")
-        self.btn_zoom_out.setToolTip("缩小")
-        self.btn_zoom_out.clicked.connect(self._zoom_out)
-        toolbar_layout.addWidget(self.btn_zoom_out)
-
-        self.zoom_label = QLabel("100%")
-        self.zoom_label.setFixedWidth(60)
-        self.zoom_label.setAlignment(Qt.AlignCenter)
-        self.zoom_label.setObjectName("metric_title")
-        toolbar_layout.addWidget(self.zoom_label)
-
-        self.btn_zoom_in = QPushButton("➕")
-        self.btn_zoom_in.setFixedSize(32, 32)
-        self.btn_zoom_in.setObjectName("btn_outline")
-        self.btn_zoom_in.setToolTip("放大")
-        self.btn_zoom_in.clicked.connect(self._zoom_in)
-        toolbar_layout.addWidget(self.btn_zoom_in)
-
-        self.btn_fit = QPushButton("🔲 适应窗口")
-        self.btn_fit.setFixedHeight(32)
-        self.btn_fit.setObjectName("btn_outline")
-        self.btn_fit.setToolTip("适应窗口大小")
-        self.btn_fit.clicked.connect(self._fit_to_window)
+        self._add_zoom_controls(toolbar_layout)
         toolbar_layout.addWidget(self.btn_fit)
 
         # 翻页按钮
         if len(self._image_list) > 1:
-            self.btn_prev = QPushButton("◀ 上一张")
-            self.btn_prev.setFixedHeight(32)
-            self.btn_prev.setObjectName("btn_outline")
-            self.btn_prev.clicked.connect(self._show_prev)
-            toolbar_layout.addWidget(self.btn_prev)
-
-            self.btn_next = QPushButton("下一张 ▶")
-            self.btn_next.setFixedHeight(32)
-            self.btn_next.setObjectName("btn_outline")
-            self.btn_next.clicked.connect(self._show_next)
-            toolbar_layout.addWidget(self.btn_next)
+            self._add_nav_buttons(toolbar_layout)
 
         self.btn_close = QPushButton("✕ 关闭")
         self.btn_close.setFixedHeight(32)
@@ -119,6 +85,48 @@ class ImageViewerDialog(BaseDialog):
         toolbar_layout.addWidget(self.btn_close)
 
         return toolbar
+
+    def _add_zoom_controls(self, layout: QHBoxLayout) -> None:
+        """添加缩放控制按钮"""
+        self.btn_zoom_out = QPushButton("➖")
+        self.btn_zoom_out.setFixedSize(32, 32)
+        self.btn_zoom_out.setObjectName("btn_outline")
+        self.btn_zoom_out.setToolTip("缩小")
+        self.btn_zoom_out.clicked.connect(self._zoom_out)
+        layout.addWidget(self.btn_zoom_out)
+
+        self.zoom_label = QLabel("100%")
+        self.zoom_label.setFixedWidth(60)
+        self.zoom_label.setAlignment(Qt.AlignCenter)
+        self.zoom_label.setObjectName("metric_title")
+        layout.addWidget(self.zoom_label)
+
+        self.btn_zoom_in = QPushButton("➕")
+        self.btn_zoom_in.setFixedSize(32, 32)
+        self.btn_zoom_in.setObjectName("btn_outline")
+        self.btn_zoom_in.setToolTip("放大")
+        self.btn_zoom_in.clicked.connect(self._zoom_in)
+        layout.addWidget(self.btn_zoom_in)
+
+        self.btn_fit = QPushButton("🔲 适应窗口")
+        self.btn_fit.setFixedHeight(32)
+        self.btn_fit.setObjectName("btn_outline")
+        self.btn_fit.setToolTip("适应窗口大小")
+        self.btn_fit.clicked.connect(self._fit_to_window)
+
+    def _add_nav_buttons(self, layout: QHBoxLayout) -> None:
+        """添加翻页按钮"""
+        self.btn_prev = QPushButton("◀ 上一张")
+        self.btn_prev.setFixedHeight(32)
+        self.btn_prev.setObjectName("btn_outline")
+        self.btn_prev.clicked.connect(self._show_prev)
+        layout.addWidget(self.btn_prev)
+
+        self.btn_next = QPushButton("下一张 ▶")
+        self.btn_next.setFixedHeight(32)
+        self.btn_next.setObjectName("btn_outline")
+        self.btn_next.clicked.connect(self._show_next)
+        layout.addWidget(self.btn_next)
 
     def _create_image_area(self) -> None:
         """创建图片显示区域"""

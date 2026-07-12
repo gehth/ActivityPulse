@@ -287,60 +287,48 @@ class DatabaseManager(
         with self._lock:
             conn = self._get_conn()
             cursor = conn.cursor()
-            stats = {}
-
-            # 使用参数化查询替代f-string拼接，防止SQL注入
             cutoff_param = f"-{retention_days} days"
 
-            # 清理应用使用记录
-            cursor.execute(
-                "SELECT COUNT(*) FROM app_usage WHERE created_at < datetime('now', ?, 'localtime')",
-                (cutoff_param,)
-            )
-            stats['app_usage'] = cursor.fetchone()[0]
-            cursor.execute(
-                "DELETE FROM app_usage WHERE created_at < datetime('now', ?, 'localtime')",
-                (cutoff_param,)
-            )
-
-            # 清理键鼠操作记录
-            cursor.execute(
-                "SELECT COUNT(*) FROM input_events WHERE created_at < datetime('now', ?, 'localtime')",
-                (cutoff_param,)
-            )
-            stats['input_events'] = cursor.fetchone()[0]
-            cursor.execute(
-                "DELETE FROM input_events WHERE created_at < datetime('now', ?, 'localtime')",
-                (cutoff_param,)
-            )
-
-            # 清理截图记录（同时删除文件）
-            cursor.execute(
-                "SELECT file_path, thumbnail_path FROM screenshots WHERE created_at < datetime('now', ?, 'localtime')",
-                (cutoff_param,)
-            )
-            old_screenshots = cursor.fetchall()
-            for row in old_screenshots:
-                for col_idx in range(len(row)):
-                    fpath = row[col_idx]
-                    if fpath:
-                        try:
-                            if os.path.exists(fpath):
-                                os.remove(fpath)
-                        except Exception:
-                            pass
-            cursor.execute(
-                "SELECT COUNT(*) FROM screenshots WHERE created_at < datetime('now', ?, 'localtime')",
-                (cutoff_param,)
-            )
-            stats['screenshots'] = cursor.fetchone()[0]
-            cursor.execute(
-                "DELETE FROM screenshots WHERE created_at < datetime('now', ?, 'localtime')",
-                (cutoff_param,)
-            )
+            stats = {}
+            stats['app_usage'] = self._cleanup_table(cursor, 'app_usage', cutoff_param)
+            stats['input_events'] = self._cleanup_table(cursor, 'input_events', cutoff_param)
+            stats['screenshots'] = self._cleanup_screenshots(cursor, cutoff_param)
 
             conn.commit()
             return stats
+
+    def _cleanup_table(self, cursor: sqlite3.Cursor, table: str,
+                       cutoff_param: str) -> int:
+        """清理指定数据表中的过期记录，返回删除数量"""
+        cursor.execute(
+            f"SELECT COUNT(*) FROM {table} WHERE created_at < datetime('now', ?, 'localtime')",
+            (cutoff_param,)
+        )
+        count = cursor.fetchone()[0]
+        cursor.execute(
+            f"DELETE FROM {table} WHERE created_at < datetime('now', ?, 'localtime')",
+            (cutoff_param,)
+        )
+        return count
+
+    def _cleanup_screenshots(self, cursor: sqlite3.Cursor,
+                             cutoff_param: str) -> int:
+        """清理截图记录（同时删除文件），返回删除数量"""
+        cursor.execute(
+            "SELECT file_path, thumbnail_path FROM screenshots WHERE created_at < datetime('now', ?, 'localtime')",
+            (cutoff_param,)
+        )
+        old_screenshots = cursor.fetchall()
+        for row in old_screenshots:
+            for col_idx in range(len(row)):
+                fpath = row[col_idx]
+                if fpath:
+                    try:
+                        if os.path.exists(fpath):
+                            os.remove(fpath)
+                    except Exception:
+                        pass
+        return self._cleanup_table(cursor, 'screenshots', cutoff_param)
 
     def close(self) -> None:
         """关闭数据库连接（关闭当前线程的连接，用于程序退出时调用）"""

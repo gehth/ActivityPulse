@@ -126,6 +126,11 @@ class GoalProgressCard(AnimatedCard):
             except (ValueError, TypeError):
                 self._goal_minutes = 480
 
+        self._init_ui()
+        self._apply_styles()
+
+    def _init_ui(self) -> None:
+        """初始化UI布局和组件"""
         layout = QVBoxLayout(self)
         layout.setSpacing(6)
         layout.setContentsMargins(12, 12, 12, 12)
@@ -164,8 +169,6 @@ class GoalProgressCard(AnimatedCard):
         self._anim_timer = QTimer(self)
         self._anim_timer.setInterval(20)
         self._anim_timer.timeout.connect(self._anim_tick)
-
-        self._apply_styles()
 
     def _apply_styles(self) -> None:
         """应用QSS样式表"""

@@ -55,28 +55,8 @@ class DashboardPage(QWidget):
         # ===== 顶部指标卡 =====
         main_layout.addLayout(self._create_metrics_row())
 
-        # ===== 每日目标进度 =====
-        self.goal_card = GoalProgressCard(db_manager=self.db)
-        self.goal_card.goal_changed.connect(self._on_goal_changed)
-        main_layout.addWidget(self.goal_card)
-
-        # ===== 空闲时段统计 =====
-        self.idle_card = IdleTimeCard()
-        main_layout.addWidget(self.idle_card)
-
-        # ===== 周对比 =====
-        self.week_compare_card = WeekCompareCard()
-        main_layout.addWidget(self.week_compare_card)
-
-        # ===== 每小时活跃分布 =====
-        self.hourly_card = HourlyDistCard()
-        main_layout.addWidget(self.hourly_card)
-
-        # ===== 活跃热力图 =====
-        main_layout.addWidget(self._create_heatmap_card())
-
-        # ===== 今日 Top 5 应用 =====
-        main_layout.addWidget(self._create_top5_card())
+        # ===== 功能卡片 =====
+        self._add_feature_cards(main_layout)
 
         # ===== 本地存储标识 =====
         self.privacy_label = QLabel("🛡 所有数据均存储于本地，未经您允许不会上传")
@@ -99,6 +79,24 @@ class DashboardPage(QWidget):
         outer_layout = QVBoxLayout(self)
         outer_layout.setContentsMargins(0, 0, 0, 0)
         outer_layout.addWidget(scroll)
+
+    def _add_feature_cards(self, layout: QVBoxLayout) -> None:
+        """添加功能卡片到布局"""
+        self.goal_card = GoalProgressCard(db_manager=self.db)
+        self.goal_card.goal_changed.connect(self._on_goal_changed)
+        layout.addWidget(self.goal_card)
+
+        self.idle_card = IdleTimeCard()
+        layout.addWidget(self.idle_card)
+
+        self.week_compare_card = WeekCompareCard()
+        layout.addWidget(self.week_compare_card)
+
+        self.hourly_card = HourlyDistCard()
+        layout.addWidget(self.hourly_card)
+
+        layout.addWidget(self._create_heatmap_card())
+        layout.addWidget(self._create_top5_card())
 
     def _create_metrics_row(self) -> None:
         """创建顶部指标卡行"""

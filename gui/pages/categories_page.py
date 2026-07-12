@@ -184,6 +184,19 @@ class CategoriesPage(QWidget):
         table_layout.addWidget(desc)
 
         # 搜索/筛选栏
+        table_layout.addLayout(self._create_filter_row())
+
+        self.app_table = QTableWidget()
+        self.app_table.setColumnCount(4)
+        self.app_table.setHorizontalHeaderLabels(["应用名称", "当前分类", "自定义分类", "敏感标记"])
+        self.app_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.app_table.setAlternatingRowColors(True)
+        table_layout.addWidget(self.app_table)
+
+        return table_card
+
+    def _create_filter_row(self) -> QHBoxLayout:
+        """创建搜索/筛选栏"""
         filter_row = QHBoxLayout()
         filter_row.setSpacing(12)
 
@@ -222,16 +235,7 @@ class CategoriesPage(QWidget):
         filter_row.addWidget(self.btn_app_limit)
 
         filter_row.addStretch()
-        table_layout.addLayout(filter_row)
-
-        self.app_table = QTableWidget()
-        self.app_table.setColumnCount(4)
-        self.app_table.setHorizontalHeaderLabels(["应用名称", "当前分类", "自定义分类", "敏感标记"])
-        self.app_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.app_table.setAlternatingRowColors(True)
-        table_layout.addWidget(self.app_table)
-
-        return table_card
+        return filter_row
 
     def _rebuild_category_tags(self) -> None:
         """重建分类标签"""

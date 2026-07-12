@@ -338,27 +338,15 @@ class TimelineWidget(QWidget):
         layout = QVBoxLayout(dialog)
 
         # 信息标签
-        duration_min = block.duration_hours * 60
-        start_h = int(block.start_hour)
-        start_m = int((block.start_hour - start_h) * 60)
-        end_hour = block.start_hour + block.duration_hours
-        end_h = int(end_hour)
-        end_m = int((end_hour - end_h) * 60)
-
-        info_label = QLabel(
-            f"<b>{block.app_name}</b><br>"
-            f"时间段: {start_h:02d}:{start_m:02d} → {end_h:02d}:{end_m:02d}<br>"
-            f"时长: {duration_min:.0f} 分钟"
-        )
-        layout.addWidget(info_label)
+        layout.addWidget(self._create_split_info(block))
 
         # 滑块选择拆分点
         slider_label = QLabel("拖动滑块选择拆分位置:")
         layout.addWidget(slider_label)
 
         slider = QSlider(Qt.Horizontal)
-        slider.setMinimum(10)  # 最少10%位置
-        slider.setMaximum(90)  # 最多90%位置
+        slider.setMinimum(10)
+        slider.setMaximum(90)
         slider.setValue(50)
         layout.addWidget(slider)
 
@@ -392,6 +380,22 @@ class TimelineWidget(QWidget):
             pct = slider.value() / 100.0
             split_offset_hours = block.duration_hours * pct
             self.block_split.emit(block.record_id, split_offset_hours)
+
+    def _create_split_info(self, block: object) -> QLabel:
+        """创建拆分对话框的信息标签"""
+        duration_min = block.duration_hours * 60
+        start_h = int(block.start_hour)
+        start_m = int((block.start_hour - start_h) * 60)
+        end_hour = block.start_hour + block.duration_hours
+        end_h = int(end_hour)
+        end_m = int((end_hour - end_h) * 60)
+
+        info_label = QLabel(
+            f"<b>{block.app_name}</b><br>"
+            f"时间段: {start_h:02d}:{start_m:02d} → {end_h:02d}:{end_m:02d}<br>"
+            f"时长: {duration_min:.0f} 分钟"
+        )
+        return info_label
 
 
 class TimelinePage(QWidget):
